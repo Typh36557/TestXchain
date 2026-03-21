@@ -10,7 +10,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* STYLES IDENTIQUES À VOTRE VERSION ORIGINALE */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-dark: #0B1A33; --bg-card: #132B4A; --primary: #1E3A5F;
@@ -236,7 +235,12 @@
                 <div class="admin-card"><h2><i class="fas fa-check-circle"></i> Numéros approuvés</h2><div id="numeros-approuves-liste" class="item-list"></div></div>
             </div>
             <div id="demandes-tab" style="display: none;">
-                <div class="admin-card"><h2><i class="fas fa-clipboard-list"></i> Demandes des clients</h2><div style="display: flex; gap: 10px; margin-bottom: 20px;"><button class="btn btn-refresh" onclick="verifierConnexionFirebase()" style="flex: 1;"><i class="fas fa-plug"></i> Vérifier connexion</button><button class="btn btn-success" onclick="afficherDemandes()" style="flex: 1;"><i class="fas fa-sync"></i> Rafraîchir</button></div><div class="filter-bar"><select id="filtre-type" onchange="afficherDemandes()"><option value="all">Tous types</option><option value="ACHAT">ACHAT</option><option value="VENTE">VENTE</option></select><select id="filtre-statut" onchange="afficherDemandes()"><option value="all">Tous statuts</option><option value="en_attente">En attente</option><option value="confirme">Confirmé</option><option value="rejete">Rejeté</option></select></div><div id="demandes-liste" class="item-list"></div></div>
+                <div class="admin-card"><h2><i class="fas fa-clipboard-list"></i> Demandes des clients</h2><div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn btn-refresh" onclick="verifierConnexionFirebase()" style="flex: 1;"><i class="fas fa-plug"></i> Vérifier connexion</button>
+                    <button class="btn btn-success" onclick="afficherDemandes()" style="flex: 1;"><i class="fas fa-sync"></i> Rafraîchir</button>
+                    <button class="btn btn-warning" onclick="forcerChargementDemandes()" style="flex: 1; background: var(--warning);"><i class="fas fa-database"></i> Forcer chargement</button>
+                </div>
+                <div class="filter-bar"><select id="filtre-type" onchange="afficherDemandes()"><option value="all">Tous types</option><option value="ACHAT">ACHAT</option><option value="VENTE">VENTE</option></select><select id="filtre-statut" onchange="afficherDemandes()"><option value="all">Tous statuts</option><option value="en_attente">En attente</option><option value="confirme">Confirmé</option><option value="rejete">Rejeté</option></select></div><div id="demandes-liste" class="item-list"></div></div>
             </div>
             <div id="news-tab" style="display: none;">
                 <div class="admin-card"><h2><i class="fas fa-newspaper"></i> Gestion des actualités</h2><div style="margin-bottom: 30px; padding: 20px; background: var(--primary); border-radius: var(--radius-xl);"><h3 style="color: var(--white); margin-bottom: 20px;" id="news-form-title"><i class="fas fa-plus-circle"></i> Ajouter une actualité</h3><input type="hidden" id="news-editing-id" value=""><div class="form-group"><label>Titre</label><input type="text" id="news-titre" placeholder="Titre de l'actualité" style="width: 100%; padding: 14px; background: var(--bg-dark); border: 1px solid var(--gray-300); border-radius: 40px; color: var(--white);"></div><div class="form-group"><label>Contenu</label><textarea id="news-contenu" placeholder="Contenu détaillé..." rows="4" style="width: 100%; padding: 14px; background: var(--bg-dark); border: 1px solid var(--gray-300); border-radius: 24px; color: var(--white);"></textarea></div><div class="form-group"><label>Auteur</label><input type="text" id="news-auteur" placeholder="Auteur" value="Typh Exchange" style="width: 100%; padding: 14px; background: var(--bg-dark); border: 1px solid var(--gray-300); border-radius: 40px; color: var(--white);"></div><div style="display: flex; gap: 20px; margin: 15px 0;"><label style="display: flex; align-items: center; gap: 10px; color: var(--text-secondary);"><input type="checkbox" id="news-important"> Marquer comme important</label><label style="display: flex; align-items: center; gap: 10px; color: var(--text-secondary);"><input type="checkbox" id="news-statut" checked> Actif (visible)</label></div><div style="display: flex; gap: 10px; margin-top: 20px;"><button class="btn btn-success" onclick="sauvegarderNews()" style="flex: 2;"><i class="fas fa-save"></i> Publier</button><button class="btn btn-cancel" onclick="annulerEditionNews()" style="flex: 1;" id="btn-annuler-news"><i class="fas fa-times"></i> Annuler</button></div></div><h3 style="color: var(--white); margin: 30px 0 15px 0;"><i class="fas fa-list"></i> Liste des actualités</h3><div id="news-liste" class="item-list"></div></div>
@@ -291,75 +295,16 @@
         let dernierCompteTransactions = 0, intervalNotification = null, toastTimer = null, notificationPermission = false;
         let dernierSyncTaux = null;
         
-        // Cache pour les taux
         const cacheTaux = {
-            donnees: null,
-            timestamp: 0,
-            duree: 30 * 60 * 1000, // 30 minutes
-            
-            get() {
-                if(this.donnees && (Date.now() - this.timestamp) < this.duree) {
-                    console.log('📦 Utilisation du cache des taux');
-                    return this.donnees;
-                }
-                return null;
-            },
-            
-            set(donnees) {
-                this.donnees = donnees;
-                this.timestamp = Date.now();
-                try {
-                    localStorage.setItem('tauxCache', JSON.stringify({
-                        data: donnees,
-                        timestamp: this.timestamp
-                    }));
-                } catch(e) {}
-            },
-            
-            chargerLocal() {
-                try {
-                    const cache = localStorage.getItem('tauxCache');
-                    if(cache) {
-                        const { data, timestamp } = JSON.parse(cache);
-                        const age = (Date.now() - timestamp) / 60000;
-                        if(age < 60) { // Cache valide jusqu'à 60 minutes
-                            this.donnees = data;
-                            this.timestamp = timestamp;
-                            return true;
-                        }
-                    }
-                } catch(e) {}
-                return false;
-            }
+            donnees: null, timestamp: 0, duree: 30 * 60 * 1000,
+            get() { if(this.donnees && (Date.now() - this.timestamp) < this.duree) return this.donnees; return null; },
+            set(donnees) { this.donnees = donnees; this.timestamp = Date.now(); try { localStorage.setItem('tauxCache', JSON.stringify({ data: donnees, timestamp: this.timestamp })); } catch(e) {} },
+            chargerLocal() { try { const cache = localStorage.getItem('tauxCache'); if(cache) { const { data, timestamp } = JSON.parse(cache); if((Date.now() - timestamp) < 3600000) { this.donnees = data; this.timestamp = timestamp; return true; } } } catch(e) {} return false; }
         };
         
-        // Rate limiter pour éviter les appels excessifs
-        class RateLimiter {
-            constructor(limite = 15, fenetre = 60000) {
-                this.limite = limite;
-                this.fenetre = fenetre;
-                this.requetes = [];
-            }
-            
-            peutExecuter() {
-                const maintenant = Date.now();
-                this.requetes = this.requetes.filter(t => t > maintenant - this.fenetre);
-                
-                if(this.requetes.length >= this.limite) {
-                    console.warn('⚠️ Limite de requêtes atteinte');
-                    return false;
-                }
-                
-                this.requetes.push(maintenant);
-                return true;
-            }
-        }
-        
+        class RateLimiter { constructor(limite = 15, fenetre = 60000) { this.limite = limite; this.fenetre = fenetre; this.requetes = []; } peutExecuter() { const maintenant = Date.now(); this.requetes = this.requetes.filter(t => t > maintenant - this.fenetre); if(this.requetes.length >= this.limite) return false; this.requetes.push(maintenant); return true; } }
         const rateLimiter = new RateLimiter(15, 60000);
-        
-        // Debounce pour les sauvegardes
         let timeoutSauvegarde = null;
-        
         const pairesBinance = { 'USDT':'USDTUSDT','BTC':'BTCUSDT','ETH':'ETHUSDT','BNB':'BNBUSDT','LTC':'LTCUSDT','SOL':'SOLUSDT','TRX':'TRXUSDT','DOGE':'DOGEUSDT','MATIC':'MATICUSDT','SUI':'SUIUSDT','XRP':'XRPUSDT','TON':'TONUSDT','POL':'POLUSDT','USDC':'USDCUSDT' };
 
         function echapperHTML(t) { if(!t) return ''; return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
@@ -392,63 +337,44 @@
             };
         }
 
-        function sauvegarderDonnees() {
-            if(enCoursDeMiseAJour) return;
-            
-            // Debounce pour éviter les sauvegardes multiples
-            if(timeoutSauvegarde) clearTimeout(timeoutSauvegarde);
-            
-            timeoutSauvegarde = setTimeout(() => {
-                enCoursDeMiseAJour = true;
-                const dataToSave = {
-                    portefeuilles: donnees.portefeuilles,
-                    operateurs: donnees.operateurs,
-                    cryptos: donnees.cryptos,
-                    taux: donnees.taux,
-                    reseaux: donnees.reseaux,
-                    frais: donnees.frais,
-                    pause: donnees.pause,
-                    demandes: donnees.demandes,
-                    news: donnees.news,
-                    tauxMode: donnees.tauxMode,
-                    usdMGA: donnees.usdMGA,
-                    limites: donnees.limites,
-                    messagesSpeciaux: donnees.messagesSpeciaux
-                };
-                database.ref('donnees').update(dataToSave)
-                    .then(() => { enCoursDeMiseAJour = false; })
-                    .catch(e => { console.error(e); enCoursDeMiseAJour = false; });
-            }, 2000);
+        function sauvegarderDonnees() { if(enCoursDeMiseAJour) return; if(timeoutSauvegarde) clearTimeout(timeoutSauvegarde); timeoutSauvegarde = setTimeout(() => { enCoursDeMiseAJour = true; database.ref('donnees').update({ portefeuilles: donnees.portefeuilles, operateurs: donnees.operateurs, cryptos: donnees.cryptos, taux: donnees.taux, reseaux: donnees.reseaux, frais: donnees.frais, pause: donnees.pause, demandes: donnees.demandes, news: donnees.news, tauxMode: donnees.tauxMode, usdMGA: donnees.usdMGA, limites: donnees.limites, messagesSpeciaux: donnees.messagesSpeciaux }).then(() => { enCoursDeMiseAJour = false; }).catch(e => { console.error(e); enCoursDeMiseAJour = false; }); }, 2000); }
+        function sauvegarderUtilisateurs() { if(enCoursDeMiseAJour) return; if(timeoutSauvegarde) clearTimeout(timeoutSauvegarde); timeoutSauvegarde = setTimeout(() => { enCoursDeMiseAJour = true; database.ref('donnees/utilisateurs').set(utilisateurs).then(() => { enCoursDeMiseAJour = false; }).catch(e => { console.error(e); enCoursDeMiseAJour = false; }); }, 2000); }
+        
+        function rafraichirUtilisateurs() { database.ref('donnees/utilisateurs').once('value').then((snap) => { utilisateurs = snap.val() || {}; mettreAJourStats(); afficherNumeros(); afficherUtilisateurs(); }).catch(e => console.error(e)); }
+        
+        function demarrerEcouteDemandes() {
+            database.ref('donnees/demandes').on('value', (snapshot) => {
+                const demandes = snapshot.val();
+                if(demandes) {
+                    donnees.demandes = demandes;
+                    console.log('🔄 Nouvelles demandes détectées:', Object.keys(demandes).length);
+                    const ongletActif = document.getElementById('demandes-tab').style.display !== 'none';
+                    if(ongletActif) afficherDemandes();
+                    const enAttente = demandes.filter ? demandes.filter(d => d.statut === 'en_attente').length : Object.values(demandes).filter(d => d.statut === 'en_attente').length;
+                    const badge = document.getElementById('notif-transactions');
+                    if(badge) { if(enAttente > 0) { badge.textContent = enAttente; badge.style.display = 'inline-block'; } else { badge.style.display = 'none'; } }
+                    verifierNouvellesTransactions();
+                }
+            });
         }
-
-        function sauvegarderUtilisateurs() {
-            if(enCoursDeMiseAJour) return;
-            
-            if(timeoutSauvegarde) clearTimeout(timeoutSauvegarde);
-            timeoutSauvegarde = setTimeout(() => {
-                enCoursDeMiseAJour = true;
-                database.ref('donnees/utilisateurs').set(utilisateurs)
-                    .then(() => { enCoursDeMiseAJour = false; })
-                    .catch(e => { console.error(e); enCoursDeMiseAJour = false; });
-            }, 2000);
+        
+        function forcerChargementDemandes() {
+            console.log('🔄 Forçage du chargement des demandes...');
+            database.ref('donnees/demandes').once('value').then((snapshot) => {
+                const demandes = snapshot.val();
+                console.log('📋 Demandes depuis Firebase:', demandes);
+                if(demandes) {
+                    donnees.demandes = Array.isArray(demandes) ? demandes : Object.values(demandes);
+                    afficherDemandes();
+                    alert(`✅ ${donnees.demandes.length} demande(s) chargée(s)`);
+                } else {
+                    alert('❌ Aucune demande trouvée dans Firebase');
+                }
+            }).catch(err => { console.error('Erreur:', err); alert('Erreur de chargement: ' + err.message); });
         }
-
-        function rafraichirUtilisateurs() {
-            database.ref('donnees/utilisateurs').once('value').then((snap) => {
-                utilisateurs = snap.val() || {};
-                mettreAJourStats();
-                afficherNumeros();
-                afficherUtilisateurs();
-            }).catch(e => console.error(e));
-        }
-
+        
         function chargerDonnees() {
-            // Charger le cache des taux d'abord
-            if(cacheTaux.chargerLocal() && cacheTaux.donnees) {
-                donnees.taux = cacheTaux.donnees;
-                console.log('📦 Taux chargés depuis le cache local');
-            }
-            
+            if(cacheTaux.chargerLocal() && cacheTaux.donnees) { donnees.taux = cacheTaux.donnees; }
             database.ref('donnees').once('value').then(s => {
                 const data = s.val();
                 if(data && Object.keys(data).length > 0){
@@ -461,33 +387,18 @@
                     if(!donnees.portefeuilles) donnees.portefeuilles = obtenirDonneesParDefaut().portefeuilles;
                     if(!donnees.operateurs) donnees.operateurs = obtenirDonneesParDefaut().operateurs;
                     if(!donnees.cryptos) donnees.cryptos = obtenirDonneesParDefaut().cryptos;
+                    if(!donnees.demandes) donnees.demandes = [];
                     tauxUSD_MGA = donnees.usdMGA || 4700;
-                } else {
-                    donnees = obtenirDonneesParDefaut();
-                }
-                
-                // Sauvegarder en cache
+                } else { donnees = obtenirDonneesParDefaut(); }
                 cacheTaux.set(donnees.taux);
-                
-                // Charger les utilisateurs une fois
                 rafraichirUtilisateurs();
-                
-                mettreAJourStats(); 
-                afficherTout();
+                mettreAJourStats(); afficherTout();
                 document.getElementById('usd-mga-display').textContent = donnees.usdMGA.toLocaleString();
             }).catch(e => { console.error(e); donnees = obtenirDonneesParDefaut(); afficherTout(); });
         }
 
-        // ÉCOUTE UTILISATEURS - remplacée par rafraîchissement périodique
         let intervalUtilisateurs = null;
-        
-        function demarrerRafraichissementUtilisateurs() {
-            if(intervalUtilisateurs) clearInterval(intervalUtilisateurs);
-            // Rafraîchir toutes les 2 minutes au lieu d'écoute temps réel
-            intervalUtilisateurs = setInterval(rafraichirUtilisateurs, 120000);
-            // Premier rafraîchissement immédiat
-            rafraichirUtilisateurs();
-        }
+        function demarrerRafraichissementUtilisateurs() { if(intervalUtilisateurs) clearInterval(intervalUtilisateurs); intervalUtilisateurs = setInterval(rafraichirUtilisateurs, 120000); rafraichirUtilisateurs(); }
 
         auth.onAuthStateChanged((user) => {
             if (user && user.email === 'sarobidytyph4@gmail.com') {
@@ -498,6 +409,7 @@
                 demarrerSurveillanceTransactions();
                 verifierPermissionNotification();
                 demarrerRafraichissementUtilisateurs();
+                demarrerEcouteDemandes();
             } else if (document.getElementById('admin-interface').style.display === 'block') {
                 document.getElementById('login-page').style.display = 'flex';
                 document.getElementById('admin-interface').style.display = 'none';
@@ -513,405 +425,70 @@
                 if (userCredential.user.email !== 'sarobidytyph4@gmail.com') { await auth.signOut(); throw new Error('Email non autorisé'); }
             } catch (error) { document.getElementById('admin-error').style.display = 'block'; document.getElementById('admin-error').innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + error.message; }
         }
-
-        function logoutAdmin() { 
-            auth.signOut();
-            if(intervalUtilisateurs) clearInterval(intervalUtilisateurs);
-        }
-
-        function approuverNumero(uid, numeroId) {
-            if(!confirm('✅ Approuver ce numéro ?')) return;
-            const chemin = `donnees/utilisateurs/${uid}/numeros/${numeroId}/statut`;
-            database.ref(chemin).set('approuve')
-                .then(() => {
-                    alert('✅ Numéro approuvé !');
-                    rafraichirUtilisateurs();
-                })
-                .catch(err => console.error(err));
-        }
-
-        function rejeterNumero(uid, numeroId) {
-            if(!confirm('❌ Rejeter ce numéro ?')) return;
-            const chemin = `donnees/utilisateurs/${uid}/numeros/${numeroId}/statut`;
-            database.ref(chemin).set('rejete')
-                .then(() => {
-                    alert('Numéro rejeté');
-                    rafraichirUtilisateurs();
-                })
-                .catch(err => console.error(err));
-        }
-
+        function logoutAdmin() { auth.signOut(); if(intervalUtilisateurs) clearInterval(intervalUtilisateurs); }
+        
+        function approuverNumero(uid, numeroId) { if(!confirm('✅ Approuver ce numéro ?')) return; database.ref(`donnees/utilisateurs/${uid}/numeros/${numeroId}/statut`).set('approuve').then(() => { alert('✅ Numéro approuvé !'); rafraichirUtilisateurs(); }).catch(err => console.error(err)); }
+        function rejeterNumero(uid, numeroId) { if(!confirm('❌ Rejeter ce numéro ?')) return; database.ref(`donnees/utilisateurs/${uid}/numeros/${numeroId}/statut`).set('rejete').then(() => { alert('Numéro rejeté'); rafraichirUtilisateurs(); }).catch(err => console.error(err)); }
+        
         function afficherNumeros() {
             const listeAttente = document.getElementById('numeros-attente-liste');
             const listeApprouves = document.getElementById('numeros-approuves-liste');
             if(!listeAttente || !listeApprouves) return;
-            
             const recherche = document.getElementById('recherche-numero-nom')?.value.toLowerCase() || '';
-            
             let htmlAttente = '', htmlApprouves = '';
-            
             Object.entries(utilisateurs).forEach(([uid, user]) => {
                 if(!user.numeros) return;
-                
                 Object.entries(user.numeros).forEach(([numId, num]) => {
-                    const correspondRecherche = recherche === '' || 
-                        (num.nom && num.nom.toLowerCase().includes(recherche)) || 
-                        (user.nom && user.nom.toLowerCase().includes(recherche));
-                    
+                    const correspondRecherche = recherche === '' || (num.nom && num.nom.toLowerCase().includes(recherche)) || (user.nom && user.nom.toLowerCase().includes(recherche));
                     if(!correspondRecherche) return;
-                    
                     const userNom = user.nom || 'Inconnu';
                     const userEmail = user.email || 'Email non renseigné';
                     const userID = user.id || uid.substring(0,8);
-                    
-                    const html = `
-                        <div class="numero-item">
-                            <div class="numero-header">
-                                <span class="numero-user"><i class="fas fa-user"></i> ${echapperHTML(userNom)} (${echapperHTML(userID)})</span>
-                                <span class="numero-status-badge ${num.statut === 'en_attente' ? 'badge-attente' : (num.statut === 'approuve' ? 'badge-approuve' : 'badge-rejete')}">${num.statut === 'en_attente' ? 'En attente' : (num.statut === 'approuve' ? 'Approuvé' : 'Rejeté')}</span>
-                            </div>
-                            <div class="numero-info">
-                                <div><i class="fas fa-user-tag"></i> Nom: ${echapperHTML(num.nom)}</div>
-                                <div><i class="fas fa-phone"></i> ${echapperHTML(num.numero)}</div>
-                                <div><i class="fas fa-envelope"></i> ${echapperHTML(userEmail)}</div>
-                                <div><i class="fas fa-id-card"></i> UID: ${echapperHTML(uid.substring(0,12))}...</div>
-                            </div>
-                            ${num.statut === 'en_attente' ? `
-                            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                <button class="btn btn-approuver" onclick="approuverNumero('${echapperHTML(uid)}', '${echapperHTML(numId)}')">
-                                    <i class="fas fa-check"></i> Approuver
-                                </button>
-                                <button class="btn btn-rejeter" onclick="rejeterNumero('${echapperHTML(uid)}', '${echapperHTML(numId)}')">
-                                    <i class="fas fa-times"></i> Rejeter
-                                </button>
-                            </div>
-                            ` : ''}
-                        </div>
-                    `;
-                    
-                    if(num.statut === 'en_attente') {
-                        htmlAttente += html;
-                    } else if(num.statut === 'approuve') {
-                        htmlApprouves += html;
-                    }
+                    const html = `<div class="numero-item"><div class="numero-header"><span class="numero-user"><i class="fas fa-user"></i> ${echapperHTML(userNom)} (${echapperHTML(userID)})</span><span class="numero-status-badge ${num.statut === 'en_attente' ? 'badge-attente' : (num.statut === 'approuve' ? 'badge-approuve' : 'badge-rejete')}">${num.statut === 'en_attente' ? 'En attente' : (num.statut === 'approuve' ? 'Approuvé' : 'Rejeté')}</span></div><div class="numero-info"><div><i class="fas fa-user-tag"></i> Nom: ${echapperHTML(num.nom)}</div><div><i class="fas fa-phone"></i> ${echapperHTML(num.numero)}</div><div><i class="fas fa-envelope"></i> ${echapperHTML(userEmail)}</div><div><i class="fas fa-id-card"></i> UID: ${echapperHTML(uid.substring(0,12))}...</div></div>${num.statut === 'en_attente' ? `<div style="display: flex; gap: 10px; margin-top: 10px;"><button class="btn btn-approuver" onclick="approuverNumero('${echapperHTML(uid)}', '${echapperHTML(numId)}')"><i class="fas fa-check"></i> Approuver</button><button class="btn btn-rejeter" onclick="rejeterNumero('${echapperHTML(uid)}', '${echapperHTML(numId)}')"><i class="fas fa-times"></i> Rejeter</button></div>` : ''}</div>`;
+                    if(num.statut === 'en_attente') htmlAttente += html;
+                    else if(num.statut === 'approuve') htmlApprouves += html;
                 });
             });
-            
             listeAttente.innerHTML = htmlAttente || '<div class="item-row">Aucune demande en attente</div>';
             listeApprouves.innerHTML = htmlApprouves || '<div class="item-row">Aucun numéro approuvé</div>';
         }
 
-        // SYNC BINANCE OPTIMISÉE - 30 MINUTES
-        async function demarrerSyncBinance() {
-            if(binanceInterval) clearInterval(binanceInterval);
-            
-            // Charger depuis le cache d'abord
-            if(cacheTaux.chargerLocal() && cacheTaux.donnees) {
-                donnees.taux = cacheTaux.donnees;
-                afficherTauxSimplifies();
-            }
-            
-            await syncBinance();
-            // Synchronisation toutes les 30 MINUTES (1800000 ms)
-            binanceInterval = setInterval(syncBinance, 1800000);
-            
-            let tempsRestantSync = 30; // minutes
-            setInterval(() => {
-                tempsRestantSync--;
-                if(tempsRestantSync < 0) tempsRestantSync = 30;
-                const syncElement = document.getElementById('next-sync');
-                if(syncElement) syncElement.textContent = `${tempsRestantSync}m`;
-            }, 60000);
-        }
+        async function demarrerSyncBinance() { if(binanceInterval) clearInterval(binanceInterval); if(cacheTaux.chargerLocal() && cacheTaux.donnees) { donnees.taux = cacheTaux.donnees; afficherTauxSimplifies(); } await syncBinance(); binanceInterval = setInterval(syncBinance, 1800000); let tempsRestantSync = 30; setInterval(() => { tempsRestantSync--; if(tempsRestantSync < 0) tempsRestantSync = 30; const syncElement = document.getElementById('next-sync'); if(syncElement) syncElement.textContent = `${tempsRestantSync}m`; }, 60000); }
+        async function syncBinanceManuel() { if(!rateLimiter.peutExecuter()) { alert('Veuillez attendre un moment avant de rafraîchir à nouveau'); return; } alert('🔄 Synchronisation manuelle des taux en cours...'); await syncBinance(); alert('✅ Taux mis à jour !'); }
+        async function getTauxMGA() { try{ const r=await fetch('https://api.exchangerate-api.com/v4/latest/USD'); const d=await r.json(); if(d.rates&&d.rates.MGA){ tauxUSD_MGA=d.rates.MGA; return tauxUSD_MGA; } }catch(e){} return donnees.usdMGA||4700; }
+        async function syncBinance() { if(donnees.tauxMode !== 'auto') return; if(!rateLimiter.peutExecuter()) return; try{ document.getElementById('sync-badge').textContent='Synchronisation...'; document.getElementById('sync-badge').style.background='var(--warning)'; const tauxMGA=await getTauxMGA(); const r=await fetch('https://api.binance.com/api/v3/ticker/price'); const prices=await r.json(); let u={}; Object.entries(pairesBinance).forEach(([crypto,paire])=>{ if(crypto==='USDT') u[`donnees/taux/${crypto}`]={prixUSD:1,prixMGA:tauxMGA,variation:'0',couleur:'positive',lastUpdate:new Date().toISOString(),source:'binance'}; else{ const ticker=prices.find(p=>p.symbol===paire); if(ticker){ const pu=parseFloat(ticker.price); const pm=Math.round(pu*tauxMGA); const v=(Math.random()*4-2).toFixed(1); u[`donnees/taux/${crypto}`]={prixUSD:pu,prixMGA:pm,variation:(v>0?'+':'')+v,couleur:v>=0?'positive':'negative',lastUpdate:new Date().toISOString(),source:'binance'}; } } }); await database.ref().update(u); const snap=await database.ref('donnees/taux').once('value'); if(snap.val()) { donnees.taux=snap.val(); cacheTaux.set(donnees.taux); } document.getElementById('sync-badge').textContent='Actif (30min)'; document.getElementById('sync-badge').style.background='var(--success)'; afficherTauxSimplifies(); dernierSyncTaux=Date.now(); const lastUpdateSpan=document.getElementById('usd-mga-lastupdate'); if(lastUpdateSpan) lastUpdateSpan.innerHTML=`Dernière mise à jour: ${new Date().toLocaleTimeString()} (automatique toutes les 30 min)`; } catch(e){ console.error(e); document.getElementById('sync-badge').textContent='Erreur'; document.getElementById('sync-badge').style.background='var(--danger)'; } }
+        function setTauxMode(mode) { donnees.tauxMode=mode; document.getElementById('mode-auto').classList.toggle('active',mode==='auto'); document.getElementById('mode-manual').classList.toggle('active',mode==='manual'); database.ref('donnees/tauxMode').set(mode); if(mode==='auto') syncBinance(); }
+        function mettreAJourTauxUSD() { const v=parseFloat(document.getElementById('usd-mga-input').value); if(isNaN(v)||v<1000||v>10000){ alert('Taux valide 1000-10000'); return; } donnees.usdMGA=v; tauxUSD_MGA=v; document.getElementById('usd-mga-display').textContent=v.toLocaleString(); document.getElementById('usd-mga-lastupdate').innerHTML='Dernière mise à jour: '+new Date().toLocaleTimeString()+' (manuel)'; document.getElementById('usd-mga-input').value=''; database.ref('donnees/usdMGA').set(v); if(donnees.tauxMode==='manual'){ Object.keys(donnees.taux||{}).forEach(c=>{ if(donnees.taux[c]&&donnees.taux[c].prixUSD) donnees.taux[c].prixMGA=Math.round(donnees.taux[c].prixUSD*v); }); database.ref('donnees/taux').set(donnees.taux); cacheTaux.set(donnees.taux); afficherTauxSimplifies(); } }
+        async function syncTauxUSD() { await getTauxMGA(); alert(`✅ Taux USD/MGA: ${tauxUSD_MGA.toLocaleString()} Ar`); }
+        function afficherTauxSimplifies() { const liste=document.getElementById('taux-liste'); if(!liste) return; if(!donnees.taux) donnees.taux={}; const cryptos=donnees.cryptos||[]; if(cryptos.length===0){ liste.innerHTML='<div class="item-row">Aucune crypto</div>'; return; } liste.innerHTML=cryptos.map(crypto=>{ const taux=donnees.taux[crypto]||{prixUSD:crypto==='USDT'?1:0,prixMGA:crypto==='USDT'?donnees.usdMGA:0,variation:"0",couleur:"positive",source:'manual'}; const vc=taux.couleur==='positive'?'positive':'negative'; const vi=taux.couleur==='positive'?'arrow-up':'arrow-down'; let sa=crypto; if(crypto==='MATIC') sa='POL'; return `<div class="taux-card"><div class="taux-header"><span class="taux-symbole"><i class="fas fa-coins"></i> ${echapperHTML(sa)}</span><div class="item-actions"><button class="btn btn-edit" onclick="ouvrirModal('taux', null, '${echapperHTML(crypto)}')"><i class="fas fa-edit"></i></button></div></div><div class="taux-valeur-principale">${taux.prixMGA.toLocaleString()} Ar</div><div class="taux-details"><span><i class="fas fa-dollar-sign"></i> $${taux.prixUSD.toFixed(2)}</span><span class="taux-variation ${vc}"><i class="fas fa-${vi}"></i> ${taux.variation}%</span><span class="taux-source ${taux.source}">${taux.source==='binance'?'<i class="fab fa-binance"></i> Binance':'<i class="fas fa-pencil-alt"></i> Manuel'}</span></div><div style="font-size:0.7rem; color:var(--text-secondary); margin-top:10px; text-align:right;"><i class="far fa-clock"></i> ${taux.lastUpdate?new Date(taux.lastUpdate).toLocaleTimeString():''}</div></div>`; }).join(''); }
         
-        async function syncBinanceManuel() {
-            if(!rateLimiter.peutExecuter()) {
-                alert('Veuillez attendre un moment avant de rafraîchir à nouveau');
-                return;
-            }
-            alert('🔄 Synchronisation manuelle des taux en cours...');
-            await syncBinance();
-            alert('✅ Taux mis à jour !');
-        }
+        function afficherNews(){ const liste=document.getElementById('news-liste'); if(!liste) return; if(!donnees.news||donnees.news.length===0){ liste.innerHTML='<div class="no-news"><i class="fas fa-newspaper"></i><p>Aucune actualité publiée</p></div>'; return; } const newsTriees=[...donnees.news].sort((a,b)=>new Date(b.date)-new Date(a.date)); liste.innerHTML=newsTriees.map(news=>{ const dateObj=new Date(news.date); const dateFormatee=dateObj.toLocaleDateString('fr-FR')+' à '+dateObj.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); const statut=news.statut!==false?'active':'archive'; return `<div class="news-item-admin"><div class="news-header-admin"><div class="news-titre-admin"><i class="fas ${news.important?'fa-exclamation-circle':'fa-newspaper'}" style="color: var(--accent);"></i> ${echapperHTML(news.titre)}</div><div class="item-actions"><button class="btn btn-edit" onclick="editerNews('${echapperHTML(news.id)}')"><i class="fas fa-edit"></i></button><button class="btn btn-delete" onclick="supprimerNews('${echapperHTML(news.id)}')"><i class="fas fa-trash"></i></button></div></div><div class="news-contenu-admin">${echapperHTML(news.contenu)}</div><div class="news-footer-admin"><div><span class="news-author"><i class="fas fa-user-shield"></i> ${echapperHTML(news.auteur||'Typh Exchange')}</span><span class="news-date-admin" style="margin-left: 10px;"><i class="far fa-calendar-alt"></i> ${echapperHTML(dateFormatee)}</span></div><div style="display: flex; gap: 10px;">${news.important?'<span class="news-important"><i class="fas fa-star"></i> IMPORTANT</span>':''}<span class="news-statut-badge ${statut==='active'?'news-statut-active':'news-statut-archive'}">${statut==='active'?'✓ Visible':'🗄️ Archivée'}</span></div></div></div>`; }).join(''); }
+        function editerNews(id){ const n=donnees.news.find(n=>n.id===id); if(!n) return; document.getElementById('news-editing-id').value=id; document.getElementById('news-titre').value=n.titre; document.getElementById('news-contenu').value=n.contenu; document.getElementById('news-auteur').value=n.auteur||'Typh Exchange'; document.getElementById('news-important').checked=n.important||false; document.getElementById('news-statut').checked=n.statut!==false; document.getElementById('news-form-title').innerHTML='<i class="fas fa-edit"></i> Modifier l\'actualité'; document.getElementById('btn-annuler-news').style.display='block'; }
+        function annulerEditionNews(){ document.getElementById('news-editing-id').value=''; document.getElementById('news-titre').value=''; document.getElementById('news-contenu').value=''; document.getElementById('news-auteur').value='Typh Exchange'; document.getElementById('news-important').checked=false; document.getElementById('news-statut').checked=true; document.getElementById('news-form-title').innerHTML='<i class="fas fa-plus-circle"></i> Ajouter une actualité'; document.getElementById('btn-annuler-news').style.display='none'; }
+        function sauvegarderNews(){ const titre=document.getElementById('news-titre').value.trim(); const contenu=document.getElementById('news-contenu').value.trim(); const auteur=document.getElementById('news-auteur').value.trim()||'Typh Exchange'; const important=document.getElementById('news-important').checked; const actif=document.getElementById('news-statut').checked; if(!titre||!contenu){ alert('Veuillez remplir tous les champs'); return; } if(!donnees.news) donnees.news=[]; const id=document.getElementById('news-editing-id').value; if(id){ const idx=donnees.news.findIndex(n=>n.id===id); if(idx!==-1){ donnees.news[idx]={...donnees.news[idx],titre,contenu,auteur,important,statut:actif,dateModification:new Date().toISOString()}; } } else { donnees.news.push({id:'NEWS-'+Date.now()+'-'+Math.random().toString(36).substr(2,9),titre,contenu,auteur,important,statut:actif,date:new Date().toISOString()}); } database.ref('donnees/news').set(donnees.news); annulerEditionNews(); afficherNews(); alert('✅ Actualité enregistrée avec succès'); }
+        function supprimerNews(id){ if(!confirm('❌ Supprimer cette actualité ?')) return; donnees.news=donnees.news.filter(n=>n.id!==id); database.ref('donnees/news').set(donnees.news); afficherNews(); alert('✅ Actualité supprimée'); }
         
-        async function getTauxMGA() { 
-            try{ 
-                const r=await fetch('https://api.exchangerate-api.com/v4/latest/USD'); 
-                const d=await r.json(); 
-                if(d.rates&&d.rates.MGA){ 
-                    tauxUSD_MGA=d.rates.MGA; 
-                    return tauxUSD_MGA; 
-                } 
-            }catch(e){} 
-            return donnees.usdMGA||4700; 
-        }
+        function demarrerSurveillanceTransactions() { if(intervalNotification) clearInterval(intervalNotification); intervalNotification = setInterval(() => verifierNouvellesTransactions(), 60000); verifierNouvellesTransactions(); }
         
-        async function syncBinance() {
-            if(donnees.tauxMode !== 'auto') return;
-            if(!rateLimiter.peutExecuter()) {
-                console.log('🛑 Sync Binance ignorée - limite de requêtes atteinte');
-                return;
-            }
-            
-            try{ 
-                document.getElementById('sync-badge').textContent='Synchronisation...'; 
-                document.getElementById('sync-badge').style.background='var(--warning)'; 
-                const tauxMGA=await getTauxMGA(); 
-                const r=await fetch('https://api.binance.com/api/v3/ticker/price'); 
-                const prices=await r.json(); 
-                let u={}; 
-                Object.entries(pairesBinance).forEach(([crypto,paire])=>{ 
-                    if(crypto==='USDT') u[`donnees/taux/${crypto}`]={prixUSD:1,prixMGA:tauxMGA,variation:'0',couleur:'positive',lastUpdate:new Date().toISOString(),source:'binance'}; 
-                    else{ 
-                        const ticker=prices.find(p=>p.symbol===paire); 
-                        if(ticker){ 
-                            const pu=parseFloat(ticker.price); 
-                            const pm=Math.round(pu*tauxMGA); 
-                            const v=(Math.random()*4-2).toFixed(1); 
-                            u[`donnees/taux/${crypto}`]={prixUSD:pu,prixMGA:pm,variation:(v>0?'+':'')+v,couleur:v>=0?'positive':'negative',lastUpdate:new Date().toISOString(),source:'binance'}; 
-                        } 
-                    } 
-                }); 
-                await database.ref().update(u); 
-                
-                // Mettre à jour les données locales
-                const snap = await database.ref('donnees/taux').once('value');
-                if(snap.val()) {
-                    donnees.taux = snap.val();
-                    cacheTaux.set(donnees.taux);
-                }
-                
-                document.getElementById('sync-badge').textContent='Actif (30min)'; 
-                document.getElementById('sync-badge').style.background='var(--success)'; 
-                afficherTauxSimplifies();
-                dernierSyncTaux = Date.now();
-                
-                // Mettre à jour l'affichage de la dernière mise à jour
-                const lastUpdateSpan = document.getElementById('usd-mga-lastupdate');
-                if(lastUpdateSpan) {
-                    lastUpdateSpan.innerHTML = `Dernière mise à jour: ${new Date().toLocaleTimeString()} (automatique toutes les 30 min)`;
-                }
-            } catch(e){ 
-                console.error(e); 
-                document.getElementById('sync-badge').textContent='Erreur'; 
-                document.getElementById('sync-badge').style.background='var(--danger)'; 
-            } 
-        }
-        
-        function setTauxMode(mode) { 
-            donnees.tauxMode=mode; 
-            document.getElementById('mode-auto').classList.toggle('active',mode==='auto'); 
-            document.getElementById('mode-manual').classList.toggle('active',mode==='manual'); 
-            database.ref('donnees/tauxMode').set(mode); 
-            if(mode==='auto') syncBinance(); 
-        }
-        
-        function mettreAJourTauxUSD() { 
-            const v=parseFloat(document.getElementById('usd-mga-input').value); 
-            if(isNaN(v)||v<1000||v>10000){ alert('Taux valide 1000-10000'); return; } 
-            donnees.usdMGA=v; 
-            tauxUSD_MGA=v; 
-            document.getElementById('usd-mga-display').textContent=v.toLocaleString(); 
-            document.getElementById('usd-mga-lastupdate').innerHTML='Dernière mise à jour: '+new Date().toLocaleTimeString()+' (manuel)'; 
-            document.getElementById('usd-mga-input').value=''; 
-            database.ref('donnees/usdMGA').set(v); 
-            if(donnees.tauxMode==='manual'){ 
-                Object.keys(donnees.taux||{}).forEach(c=>{ 
-                    if(donnees.taux[c]&&donnees.taux[c].prixUSD) donnees.taux[c].prixMGA=Math.round(donnees.taux[c].prixUSD*v); 
-                }); 
-                database.ref('donnees/taux').set(donnees.taux); 
-                cacheTaux.set(donnees.taux);
-                afficherTauxSimplifies(); 
-            } 
-        }
-        
-        async function syncTauxUSD() { 
-            await getTauxMGA(); 
-            alert(`✅ Taux USD/MGA: ${tauxUSD_MGA.toLocaleString()} Ar`); 
-        }
-        
-        function afficherTauxSimplifies() { 
-            const liste=document.getElementById('taux-liste'); 
-            if(!liste) return; 
-            if(!donnees.taux) donnees.taux={}; 
-            const cryptos=donnees.cryptos||[]; 
-            if(cryptos.length===0){ liste.innerHTML='<div class="item-row">Aucune crypto</div>'; return; } 
-            liste.innerHTML=cryptos.map(crypto=>{ 
-                const taux=donnees.taux[crypto]||{prixUSD:crypto==='USDT'?1:0,prixMGA:crypto==='USDT'?donnees.usdMGA:0,variation:"0",couleur:"positive",source:'manual'}; 
-                const vc=taux.couleur==='positive'?'positive':'negative'; 
-                const vi=taux.couleur==='positive'?'arrow-up':'arrow-down'; 
-                let sa=crypto; 
-                if(crypto==='MATIC') sa='POL'; 
-                return `<div class="taux-card"><div class="taux-header"><span class="taux-symbole"><i class="fas fa-coins"></i> ${echapperHTML(sa)}</span><div class="item-actions"><button class="btn btn-edit" onclick="ouvrirModal('taux', null, '${echapperHTML(crypto)}')"><i class="fas fa-edit"></i></button></div></div><div class="taux-valeur-principale">${taux.prixMGA.toLocaleString()} Ar</div><div class="taux-details"><span><i class="fas fa-dollar-sign"></i> $${taux.prixUSD.toFixed(2)}</span><span class="taux-variation ${vc}"><i class="fas fa-${vi}"></i> ${taux.variation}%</span><span class="taux-source ${taux.source}">${taux.source==='binance'?'<i class="fab fa-binance"></i> Binance':'<i class="fas fa-pencil-alt"></i> Manuel'}</span></div><div style="font-size:0.7rem; color:var(--text-secondary); margin-top:10px; text-align:right;"><i class="far fa-clock"></i> ${taux.lastUpdate?new Date(taux.lastUpdate).toLocaleTimeString():''}</div></div>`; 
-            }).join(''); 
-        }
-        
-        function afficherNews(){ 
-            const liste=document.getElementById('news-liste'); 
-            if(!liste) return; 
-            if(!donnees.news||donnees.news.length===0){ liste.innerHTML='<div class="no-news"><i class="fas fa-newspaper"></i><p>Aucune actualité publiée</p></div>'; return; } 
-            const newsTriees=[...donnees.news].sort((a,b)=>new Date(b.date)-new Date(a.date)); 
-            liste.innerHTML=newsTriees.map(news=>{ 
-                const dateObj=new Date(news.date); 
-                const dateFormatee=dateObj.toLocaleDateString('fr-FR')+' à '+dateObj.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); 
-                const statut=news.statut!==false?'active':'archive'; 
-                return `<div class="news-item-admin"><div class="news-header-admin"><div class="news-titre-admin"><i class="fas ${news.important?'fa-exclamation-circle':'fa-newspaper'}" style="color: var(--accent);"></i> ${echapperHTML(news.titre)}</div><div class="item-actions"><button class="btn btn-edit" onclick="editerNews('${echapperHTML(news.id)}')"><i class="fas fa-edit"></i></button><button class="btn btn-delete" onclick="supprimerNews('${echapperHTML(news.id)}')"><i class="fas fa-trash"></i></button></div></div><div class="news-contenu-admin">${echapperHTML(news.contenu)}</div><div class="news-footer-admin"><div><span class="news-author"><i class="fas fa-user-shield"></i> ${echapperHTML(news.auteur||'Typh Exchange')}</span><span class="news-date-admin" style="margin-left: 10px;"><i class="far fa-calendar-alt"></i> ${echapperHTML(dateFormatee)}</span></div><div style="display: flex; gap: 10px;">${news.important?'<span class="news-important"><i class="fas fa-star"></i> IMPORTANT</span>':''}<span class="news-statut-badge ${statut==='active'?'news-statut-active':'news-statut-archive'}">${statut==='active'?'✓ Visible':'🗄️ Archivée'}</span></div></div></div>`; 
-            }).join(''); 
-        }
-        
-        function editerNews(id){ 
-            const n=donnees.news.find(n=>n.id===id); 
-            if(!n) return; 
-            document.getElementById('news-editing-id').value=id; 
-            document.getElementById('news-titre').value=n.titre; 
-            document.getElementById('news-contenu').value=n.contenu; 
-            document.getElementById('news-auteur').value=n.auteur||'Typh Exchange'; 
-            document.getElementById('news-important').checked=n.important||false; 
-            document.getElementById('news-statut').checked=n.statut!==false; 
-            document.getElementById('news-form-title').innerHTML='<i class="fas fa-edit"></i> Modifier l\'actualité'; 
-            document.getElementById('btn-annuler-news').style.display='block'; 
-        }
-        
-        function annulerEditionNews(){ 
-            document.getElementById('news-editing-id').value=''; 
-            document.getElementById('news-titre').value=''; 
-            document.getElementById('news-contenu').value=''; 
-            document.getElementById('news-auteur').value='Typh Exchange'; 
-            document.getElementById('news-important').checked=false; 
-            document.getElementById('news-statut').checked=true; 
-            document.getElementById('news-form-title').innerHTML='<i class="fas fa-plus-circle"></i> Ajouter une actualité'; 
-            document.getElementById('btn-annuler-news').style.display='none'; 
-        }
-        
-        function sauvegarderNews(){ 
-            const titre=document.getElementById('news-titre').value.trim(); 
-            const contenu=document.getElementById('news-contenu').value.trim(); 
-            const auteur=document.getElementById('news-auteur').value.trim()||'Typh Exchange'; 
-            const important=document.getElementById('news-important').checked; 
-            const actif=document.getElementById('news-statut').checked; 
-            if(!titre||!contenu){ alert('Veuillez remplir tous les champs'); return; } 
-            if(!donnees.news) donnees.news=[]; 
-            const id=document.getElementById('news-editing-id').value; 
-            if(id){ 
-                const idx=donnees.news.findIndex(n=>n.id===id); 
-                if(idx!==-1){ 
-                    donnees.news[idx]={...donnees.news[idx],titre,contenu,auteur,important,statut:actif,dateModification:new Date().toISOString()}; 
-                } 
-            } else { 
-                donnees.news.push({id:'NEWS-'+Date.now()+'-'+Math.random().toString(36).substr(2,9),titre,contenu,auteur,important,statut:actif,date:new Date().toISOString()}); 
-            } 
-            database.ref('donnees/news').set(donnees.news); 
-            annulerEditionNews(); 
-            afficherNews(); 
-            alert('✅ Actualité enregistrée avec succès'); 
-        }
-        
-        function supprimerNews(id){ 
-            if(!confirm('❌ Supprimer cette actualité ?')) return; 
-            donnees.news=donnees.news.filter(n=>n.id!==id); 
-            database.ref('donnees/news').set(donnees.news); 
-            afficherNews(); 
-            alert('✅ Actualité supprimée'); 
-        }
-        
-        // SURVEILLANCE TRANSACTIONS OPTIMISÉE - 60 secondes
-        function demarrerSurveillanceTransactions() { 
-            if (intervalNotification) clearInterval(intervalNotification); 
-            // Surveillance toutes les 60 secondes au lieu de 10
-            intervalNotification = setInterval(() => verifierNouvellesTransactions(), 60000); 
-            verifierNouvellesTransactions();
-        }
-        
-        // Le reste des fonctions (afficherPortefeuilles, operateurs, demandes, etc.) restent identiques
         function afficherPortefeuilles(){ const l=document.getElementById('portefeuilles-liste'); if(!l) return; l.innerHTML=(donnees.portefeuilles||[]).map((p,i)=>`<div class="item-row"><div class="item-info"><div class="item-nom"><i class="fas fa-wallet"></i> ${echapperHTML(p.nom)}</div><div class="item-reponse">${echapperHTML((p.reponse||'').substring(0,50))}...</div><div style="font-size:0.8rem;margin-top:5px;color:var(--warning);"><i class="fas fa-comment"></i> Message: ${echapperHTML(p.messageConfirmation||'Aucun')}</div><div style="font-size:0.8rem;margin-top:5px;color:var(--accent);"><i class="fas fa-network-wired"></i> Réseau: ${echapperHTML(p.reseau||'Non défini')}</div></div><div class="item-actions"><button class="btn btn-edit" onclick="ouvrirModal('portefeuille',${i})"><i class="fas fa-edit"></i></button><button class="btn btn-delete" onclick="supprimer('portefeuille',${i})"><i class="fas fa-trash"></i></button></div></div>`).join('')||'<div class="item-row">Aucun portefeuille</div>'; }
         function afficherOperateurs(){ const l=document.getElementById('operateurs-liste'); if(!l) return; l.innerHTML=(donnees.operateurs||[]).map((o,i)=>`<div class="item-row"><div class="item-info"><div class="item-nom"><i class="fas fa-sim-card"></i> ${echapperHTML(o.nom)}</div><div style="font-size:0.8rem;margin-top:5px;color:var(--warning);"><i class="fas fa-comment"></i> Message: ${echapperHTML(o.messageConfirmation||'Aucun')}</div></div><div class="item-actions"><button class="btn btn-edit" onclick="ouvrirModal('operateur',${i})"><i class="fas fa-edit"></i></button><button class="btn btn-delete" onclick="supprimer('operateur',${i})"><i class="fas fa-trash"></i></button></div></div>`).join('')||'<div class="item-row">Aucun opérateur</div>'; }
         function afficherReseaux(){ const l=document.getElementById('reseaux-liste'); if(!l) return; l.innerHTML=(donnees.reseaux||[]).map((r,i)=>`<div class="reseau-item"><div class="reseau-header"><span><i class="fas fa-network-wired"></i> <strong>${echapperHTML(r.nom)}</strong></span><div class="item-actions"><button class="btn btn-edit" onclick="ouvrirModal('reseau',${i})"><i class="fas fa-edit"></i></button><button class="btn btn-delete" onclick="supprimer('reseau',${i})"><i class="fas fa-trash"></i></button></div></div><div style="margin-top:8px;"><span style="color:var(--text-secondary);">Crypto: </span>${echapperHTML(r.crypto)}<br><span style="color:var(--text-secondary);">Frais réseau: </span>${r.fraisReseau||0}%</div></div>`).join('')||'<div class="item-row">Aucun réseau configuré</div>'; }
-        function afficherDemandes(){ const l=document.getElementById('demandes-liste'); if(!l) return; const demandes=donnees.demandes||[]; if(demandes.length===0){ l.innerHTML='<div class="item-row">Aucune demande</div>'; return; } l.innerHTML=demandes.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(d=>`<div class="request-item"><div class="request-header"><div><span><i class="fas ${d.type==='ACHAT'?'fa-arrow-down':'fa-arrow-up'}"></i> ${echapperHTML(d.type)}</span><span>${echapperHTML(d.statut)}</span></div><span style="color:var(--text-secondary);font-size:0.8rem;">${echapperHTML(new Date(d.date).toLocaleString())}</span></div><div style="margin:10px 0;"><div>Client: <strong>${echapperHTML(d.utilisateur)}</strong> (${echapperHTML(d.userID||'ID inconnu')})</div><div>Montant: ${echapperHTML(d.montant)} ${d.type==='ACHAT'?'Ar':d.crypto}</div><div style="color:var(--success);font-weight:600;">Vous recevez: ${d.type==='ACHAT'?(d.montantRecu?d.montantRecu.toFixed(4)+' '+d.crypto:'Calcul...'):(d.montantRecu?d.montantRecu.toLocaleString()+' Ar':'Calcul...')}</div>${d.txid?`<div style="font-size:0.8rem;">TXID: ${echapperHTML(d.txid.substring(0,20))}...</div>`:''}</div>${d.statut==='en_attente'?`<div style="display:flex;gap:10px;margin-top:15px;"><button class="btn btn-approuver" onclick="approuverDemande('${echapperHTML(d.id)}')">Approuver</button><button class="btn btn-rejeter" onclick="rejeterDemande('${echapperHTML(d.id)}')">Rejeter</button></div>`:''}</div>`).join(''); }
-        function approuverDemande(id){ if(!confirm('✅ Approuver cette demande ?')) return; const d=donnees.demandes?.find(d=>d.id===id); if(d){ d.statut='confirme'; d.dateModification=new Date().toISOString(); if(!d.historique) d.historique=[]; d.historique.push({date:new Date().toISOString(),action:'APPROUVEE_PAR_ADMIN',details:'Demande approuvée par admin'}); database.ref('donnees/demandes').set(donnees.demandes).then(()=>{ afficherDemandes(); afficherTransactions(); verifierNouvellesTransactions(); alert('Demande approuvée !'); }); } }
-        function rejeterDemande(id){ if(!confirm('❌ Rejeter cette demande ?')) return; const d=donnees.demandes?.find(d=>d.id===id); if(d){ d.statut='rejete'; d.dateModification=new Date().toISOString(); if(!d.historique) d.historique=[]; d.historique.push({date:new Date().toISOString(),action:'REJETEE_PAR_ADMIN',details:'Demande rejetée par admin'}); database.ref('donnees/demandes').set(donnees.demandes).then(()=>{ afficherDemandes(); afficherTransactions(); verifierNouvellesTransactions(); alert('Demande rejetée.'); }); } }
-        function afficherUtilisateurs() {
-            const liste = document.getElementById('utilisateurs-liste');
-            if(!liste) return;
-            let filtres = Object.values(utilisateurs);
-            if(rechercheUtilisateurs) filtres = filtres.filter(u => u.nom?.toLowerCase().includes(rechercheUtilisateurs) || u.email?.toLowerCase().includes(rechercheUtilisateurs));
-            if(filtres.length === 0){ liste.innerHTML='<div class="item-row">Aucun utilisateur</div>'; return; }
-            liste.innerHTML = filtres.map((u,i)=>`<div class="user-item"><div class="user-header"><span class="user-name"><i class="fas fa-user-circle"></i> ${echapperHTML(u.nom)}</span><span style="background:var(--accent);padding:4px 10px;border-radius:40px;font-size:0.8rem;">${echapperHTML(u.id||'ID inconnu')}</span></div><div class="user-email"><i class="fas fa-envelope"></i> ${echapperHTML(u.email||'Email non renseigné')}</div><div class="user-detail"><span><i class="fas fa-calendar"></i> ${echapperHTML(new Date(u.dateInscription).toLocaleDateString())}</span><span><i class="fas fa-phone"></i> ${Object.keys(u.numeros||{}).length} numéro(s)</span></div></div>`).join('');
-        }
-        
-        function mettreAJourStats() {
-            let numerosAttente = 0;
-            Object.values(utilisateurs).forEach(user => {
-                if(user.numeros) numerosAttente += Object.values(user.numeros).filter(n => n.statut === 'en_attente').length;
-            });
-            document.getElementById('stats-utilisateurs').textContent = Object.keys(utilisateurs).length;
-            document.getElementById('stats-numeros-attente').textContent = numerosAttente;
-            document.getElementById('stats-demandes').textContent = donnees.demandes?.length || 0;
-            document.getElementById('stats-transactions').textContent = donnees.demandes?.filter(d => d.statut === 'confirme').length || 0;
-            document.getElementById('stats-transactions-attente').textContent = donnees.demandes?.filter(d => d.statut === 'en_attente').length || 0;
-        }
-        
+        function afficherDemandes(){ const l=document.getElementById('demandes-liste'); if(!l) return; const demandes = donnees.demandes || []; const demandesArray = Array.isArray(demandes) ? demandes : Object.values(demandes); if(demandesArray.length===0){ l.innerHTML='<div class="item-row">Aucune demande</div>'; return; } l.innerHTML=demandesArray.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(d=>`<div class="request-item"><div class="request-header"><div><span><i class="fas ${d.type==='ACHAT'?'fa-arrow-down':'fa-arrow-up'}"></i> ${echapperHTML(d.type)}</span><span>${echapperHTML(d.statut)}</span></div><span style="color:var(--text-secondary);font-size:0.8rem;">${echapperHTML(new Date(d.date).toLocaleString())}</span></div><div style="margin:10px 0;"><div>Client: <strong>${echapperHTML(d.utilisateur)}</strong> (${echapperHTML(d.userID||'ID inconnu')})</div><div>Montant: ${echapperHTML(d.montant)} ${d.type==='ACHAT'?'Ar':d.crypto}</div><div style="color:var(--success);font-weight:600;">Vous recevez: ${d.type==='ACHAT'?(d.montantRecu?d.montantRecu.toFixed(4)+' '+d.crypto:'Calcul...'):(d.montantRecu?d.montantRecu.toLocaleString()+' Ar':'Calcul...')}</div>${d.txid?`<div style="font-size:0.8rem;">TXID: ${echapperHTML(d.txid.substring(0,20))}...</div>`:''}</div>${d.statut==='en_attente'?`<div style="display:flex;gap:10px;margin-top:15px;"><button class="btn btn-approuver" onclick="approuverDemande('${echapperHTML(d.id)}')">Approuver</button><button class="btn btn-rejeter" onclick="rejeterDemande('${echapperHTML(d.id)}')">Rejeter</button></div>`:''}</div>`).join(''); }
+        function approuverDemande(id){ if(!confirm('✅ Approuver cette demande ?')) return; const demandesArray = Array.isArray(donnees.demandes) ? donnees.demandes : Object.values(donnees.demandes); const d = demandesArray.find(d=>d.id===id); if(d){ d.statut='confirme'; d.dateModification=new Date().toISOString(); if(!d.historique) d.historique=[]; d.historique.push({date:new Date().toISOString(),action:'APPROUVEE_PAR_ADMIN',details:'Demande approuvée par admin'}); database.ref('donnees/demandes').set(demandesArray).then(()=>{ afficherDemandes(); afficherTransactions(); verifierNouvellesTransactions(); alert('Demande approuvée !'); }); } }
+        function rejeterDemande(id){ if(!confirm('❌ Rejeter cette demande ?')) return; const demandesArray = Array.isArray(donnees.demandes) ? donnees.demandes : Object.values(donnees.demandes); const d = demandesArray.find(d=>d.id===id); if(d){ d.statut='rejete'; d.dateModification=new Date().toISOString(); if(!d.historique) d.historique=[]; d.historique.push({date:new Date().toISOString(),action:'REJETEE_PAR_ADMIN',details:'Demande rejetée par admin'}); database.ref('donnees/demandes').set(demandesArray).then(()=>{ afficherDemandes(); afficherTransactions(); verifierNouvellesTransactions(); alert('Demande rejetée.'); }); } }
+        function afficherUtilisateurs() { const liste = document.getElementById('utilisateurs-liste'); if(!liste) return; let filtres = Object.values(utilisateurs); if(rechercheUtilisateurs) filtres = filtres.filter(u => u.nom?.toLowerCase().includes(rechercheUtilisateurs) || u.email?.toLowerCase().includes(rechercheUtilisateurs)); if(filtres.length === 0){ liste.innerHTML='<div class="item-row">Aucun utilisateur</div>'; return; } liste.innerHTML = filtres.map((u,i)=>`<div class="user-item"><div class="user-header"><span class="user-name"><i class="fas fa-user-circle"></i> ${echapperHTML(u.nom)}</span><span style="background:var(--accent);padding:4px 10px;border-radius:40px;font-size:0.8rem;">${echapperHTML(u.id||'ID inconnu')}</span></div><div class="user-email"><i class="fas fa-envelope"></i> ${echapperHTML(u.email||'Email non renseigné')}</div><div class="user-detail"><span><i class="fas fa-calendar"></i> ${echapperHTML(new Date(u.dateInscription).toLocaleDateString())}</span><span><i class="fas fa-phone"></i> ${Object.keys(u.numeros||{}).length} numéro(s)</span></div></div>`).join(''); }
+        function mettreAJourStats() { let numerosAttente = 0; Object.values(utilisateurs).forEach(user => { if(user.numeros) numerosAttente += Object.values(user.numeros).filter(n => n.statut === 'en_attente').length; }); document.getElementById('stats-utilisateurs').textContent = Object.keys(utilisateurs).length; document.getElementById('stats-numeros-attente').textContent = numerosAttente; document.getElementById('stats-demandes').textContent = donnees.demandes?.length || 0; document.getElementById('stats-transactions').textContent = donnees.demandes?.filter(d => d.statut === 'confirme').length || 0; document.getElementById('stats-transactions-attente').textContent = donnees.demandes?.filter(d => d.statut === 'en_attente').length || 0; }
         function filtrerUtilisateurs(){ rechercheUtilisateurs=document.getElementById('recherche-utilisateur')?.value.toLowerCase()||''; afficherUtilisateurs(); }
+        function afficherTout() { afficherPortefeuilles(); afficherOperateurs(); afficherReseaux(); afficherTauxSimplifies(); afficherNumeros(); afficherDemandes(); afficherUtilisateurs(); afficherNews(); afficherTransactions(); if(donnees.frais){ document.getElementById('frais-achat-display').textContent=donnees.frais.achat+'%'; document.getElementById('frais-vente-display').textContent=donnees.frais.vente+'%'; } document.getElementById('mode-auto').classList.toggle('active',donnees.tauxMode==='auto'); document.getElementById('mode-manual').classList.toggle('active',donnees.tauxMode==='manual'); mettreAJourAffichageLimites(); }
         
-        function afficherTout() { 
-            afficherPortefeuilles(); afficherOperateurs(); afficherReseaux(); afficherTauxSimplifies(); 
-            afficherNumeros(); afficherDemandes(); afficherUtilisateurs(); afficherNews(); afficherTransactions();
-            if(donnees.frais){ document.getElementById('frais-achat-display').textContent=donnees.frais.achat+'%'; document.getElementById('frais-vente-display').textContent=donnees.frais.vente+'%'; }
-            document.getElementById('mode-auto').classList.toggle('active',donnees.tauxMode==='auto'); 
-            document.getElementById('mode-manual').classList.toggle('active',donnees.tauxMode==='manual'); 
-            mettreAJourAffichageLimites(); 
-        }
-        
-        function ouvrirModal(type,index=-1,cryptoNom=null){ 
-            modalType=type; modalIndex=index; modalCryptoNom=cryptoNom; modalMode=index===-1?'ajout':'modification'; 
-            const modal=document.getElementById('modal-admin'); 
-            const titre=document.getElementById('modal-titre'); 
-            const champs=document.getElementById('modal-champs'); 
-            let html=''; 
-            switch(type){ 
-                case 'portefeuille': titre.innerHTML='<i class="fas fa-briefcase"></i> '+(modalMode==='ajout'?'Nouveau portefeuille':'Modifier portefeuille'); if(modalMode==='ajout') html=`<input type="text" id="modal-nom" placeholder="Nom du portefeuille"><textarea id="modal-reponse" placeholder="Description"></textarea><textarea id="modal-message" placeholder="Message de confirmation"></textarea><select id="modal-reseau"><option value="">Sélectionner un réseau</option>${(donnees.reseaux||[]).map(r=>`<option value="${echapperHTML(r.nom)}">${echapperHTML(r.nom)} (${echapperHTML(r.crypto)})</option>`).join('')}</select>`; else html=`<input type="text" id="modal-nom" value="${echapperHTML(donnees.portefeuilles[index].nom)}"><textarea id="modal-reponse">${echapperHTML(donnees.portefeuilles[index].reponse||'')}</textarea><textarea id="modal-message">${echapperHTML(donnees.portefeuilles[index].messageConfirmation||'')}</textarea><select id="modal-reseau"><option value="">Sélectionner un réseau</option>${(donnees.reseaux||[]).map(r=>`<option value="${echapperHTML(r.nom)}" ${donnees.portefeuilles[index].reseau===r.nom?'selected':''}>${echapperHTML(r.nom)} (${echapperHTML(r.crypto)})</option>`).join('')}</select>`; break;
-                case 'operateur': titre.innerHTML='<i class="fas fa-mobile-alt"></i> '+(modalMode==='ajout'?'Nouvel opérateur':'Modifier opérateur'); if(modalMode==='ajout') html=`<input type="text" id="modal-nom" placeholder="Nom"><textarea id="modal-message" placeholder="Message de confirmation"></textarea>`; else html=`<input type="text" id="modal-nom" value="${echapperHTML(donnees.operateurs[index].nom)}"><textarea id="modal-message">${echapperHTML(donnees.operateurs[index].messageConfirmation||'')}</textarea>`; break;
-                case 'reseau': titre.innerHTML='<i class="fas fa-network-wired"></i> '+(modalMode==='ajout'?'Nouveau réseau':'Modifier réseau'); if(modalMode==='ajout') html=`<input type="text" id="modal-nom" placeholder="Nom du réseau"><select id="modal-crypto">${(donnees.cryptos||[]).map(c=>`<option value="${echapperHTML(c)}">${echapperHTML(c)}</option>`).join('')}</select><input type="number" id="modal-frais-reseau" placeholder="Frais réseau (%)" step="0.1" min="0">`; else html=`<input type="text" id="modal-nom" value="${echapperHTML(donnees.reseaux[index].nom)}"><select id="modal-crypto">${(donnees.cryptos||[]).map(c=>`<option value="${echapperHTML(c)}" ${donnees.reseaux[index].crypto===c?'selected':''}>${echapperHTML(c)}</option>`).join('')}</select><input type="number" id="modal-frais-reseau" step="0.1" min="0" value="${donnees.reseaux[index].fraisReseau||0}">`; break;
-                case 'crypto': titre.innerHTML='<i class="fas fa-coins"></i> '+(modalMode==='ajout'?'Ajouter crypto':'Modifier crypto'); html=`<input type="text" id="modal-nom" placeholder="Nom (ex: USDT, BTC)" value="${modalMode==='modification'?echapperHTML(donnees.cryptos[index]):''}">`; break;
-                case 'taux': const crypto=cryptoNom||(modalMode==='modification'?Object.keys(donnees.taux)[index]:''); const taux=crypto&&donnees.taux[crypto]?donnees.taux[crypto]:{prixUSD:0,prixMGA:0,variation:"0",couleur:"positive"}; titre.innerHTML=`<i class="fas fa-chart-line"></i> Modifier taux ${echapperHTML(crypto)}`; html=`<input type="hidden" id="modal-crypto" value="${echapperHTML(crypto)}"><div style="margin-bottom:15px;color:var(--text-secondary);">Crypto: <strong>${echapperHTML(crypto)}</strong></div><div style="background:var(--bg-dark);padding:15px;border-radius:20px;margin-bottom:20px;"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span>Prix USD:</span><span style="font-weight:600;">$${taux.prixUSD.toFixed(2)}</span></div><div style="display:flex;justify-content:space-between;"><span>Prix MGA:</span><span style="font-weight:600;color:var(--warning);">${taux.prixMGA.toLocaleString()} Ar</span></div></div><input type="number" id="modal-prix-usd" placeholder="Prix USD" step="0.01" value="${taux.prixUSD||0}"><input type="number" id="modal-prix-mga" placeholder="Prix MGA" value="${taux.prixMGA||0}"><input type="text" id="modal-variation" placeholder="Variation %" value="${echapperHTML(taux.variation||'0')}"><select id="modal-couleur"><option value="positive" ${taux.couleur==='positive'?'selected':''}>Positif (+)</option><option value="negative" ${taux.couleur==='negative'?'selected':''}>Négatif (-)</option></select>`; break;
-            } 
-            if(html){ champs.innerHTML=html; modal.classList.add('active'); } 
-        }
-        
+        let modalType, modalIndex, modalMode, modalCryptoNom;
+        function ouvrirModal(type,index=-1,cryptoNom=null){ modalType=type; modalIndex=index; modalCryptoNom=cryptoNom; modalMode=index===-1?'ajout':'modification'; const modal=document.getElementById('modal-admin'); const titre=document.getElementById('modal-titre'); const champs=document.getElementById('modal-champs'); let html=''; switch(type){ case 'portefeuille': titre.innerHTML='<i class="fas fa-briefcase"></i> '+(modalMode==='ajout'?'Nouveau portefeuille':'Modifier portefeuille'); if(modalMode==='ajout') html=`<input type="text" id="modal-nom" placeholder="Nom du portefeuille"><textarea id="modal-reponse" placeholder="Description"></textarea><textarea id="modal-message" placeholder="Message de confirmation"></textarea><select id="modal-reseau"><option value="">Sélectionner un réseau</option>${(donnees.reseaux||[]).map(r=>`<option value="${echapperHTML(r.nom)}">${echapperHTML(r.nom)} (${echapperHTML(r.crypto)})</option>`).join('')}</select>`; else html=`<input type="text" id="modal-nom" value="${echapperHTML(donnees.portefeuilles[index].nom)}"><textarea id="modal-reponse">${echapperHTML(donnees.portefeuilles[index].reponse||'')}</textarea><textarea id="modal-message">${echapperHTML(donnees.portefeuilles[index].messageConfirmation||'')}</textarea><select id="modal-reseau"><option value="">Sélectionner un réseau</option>${(donnees.reseaux||[]).map(r=>`<option value="${echapperHTML(r.nom)}" ${donnees.portefeuilles[index].reseau===r.nom?'selected':''}>${echapperHTML(r.nom)} (${echapperHTML(r.crypto)})</option>`).join('')}</select>`; break; case 'operateur': titre.innerHTML='<i class="fas fa-mobile-alt"></i> '+(modalMode==='ajout'?'Nouvel opérateur':'Modifier opérateur'); if(modalMode==='ajout') html=`<input type="text" id="modal-nom" placeholder="Nom"><textarea id="modal-message" placeholder="Message de confirmation"></textarea>`; else html=`<input type="text" id="modal-nom" value="${echapperHTML(donnees.operateurs[index].nom)}"><textarea id="modal-message">${echapperHTML(donnees.operateurs[index].messageConfirmation||'')}</textarea>`; break; case 'reseau': titre.innerHTML='<i class="fas fa-network-wired"></i> '+(modalMode==='ajout'?'Nouveau réseau':'Modifier réseau'); if(modalMode==='ajout') html=`<input type="text" id="modal-nom" placeholder="Nom du réseau"><select id="modal-crypto">${(donnees.cryptos||[]).map(c=>`<option value="${echapperHTML(c)}">${echapperHTML(c)}</option>`).join('')}</select><input type="number" id="modal-frais-reseau" placeholder="Frais réseau (%)" step="0.1" min="0">`; else html=`<input type="text" id="modal-nom" value="${echapperHTML(donnees.reseaux[index].nom)}"><select id="modal-crypto">${(donnees.cryptos||[]).map(c=>`<option value="${echapperHTML(c)}" ${donnees.reseaux[index].crypto===c?'selected':''}>${echapperHTML(c)}</option>`).join('')}</select><input type="number" id="modal-frais-reseau" step="0.1" min="0" value="${donnees.reseaux[index].fraisReseau||0}">`; break; case 'crypto': titre.innerHTML='<i class="fas fa-coins"></i> '+(modalMode==='ajout'?'Ajouter crypto':'Modifier crypto'); html=`<input type="text" id="modal-nom" placeholder="Nom (ex: USDT, BTC)" value="${modalMode==='modification'?echapperHTML(donnees.cryptos[index]):''}">`; break; case 'taux': const crypto=cryptoNom||(modalMode==='modification'?Object.keys(donnees.taux)[index]:''); const taux=crypto&&donnees.taux[crypto]?donnees.taux[crypto]:{prixUSD:0,prixMGA:0,variation:"0",couleur:"positive"}; titre.innerHTML=`<i class="fas fa-chart-line"></i> Modifier taux ${echapperHTML(crypto)}`; html=`<input type="hidden" id="modal-crypto" value="${echapperHTML(crypto)}"><div style="margin-bottom:15px;color:var(--text-secondary);">Crypto: <strong>${echapperHTML(crypto)}</strong></div><div style="background:var(--bg-dark);padding:15px;border-radius:20px;margin-bottom:20px;"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span>Prix USD:</span><span style="font-weight:600;">$${taux.prixUSD.toFixed(2)}</span></div><div style="display:flex;justify-content:space-between;"><span>Prix MGA:</span><span style="font-weight:600;color:var(--warning);">${taux.prixMGA.toLocaleString()} Ar</span></div></div><input type="number" id="modal-prix-usd" placeholder="Prix USD" step="0.01" value="${taux.prixUSD||0}"><input type="number" id="modal-prix-mga" placeholder="Prix MGA" value="${taux.prixMGA||0}"><input type="text" id="modal-variation" placeholder="Variation %" value="${echapperHTML(taux.variation||'0')}"><select id="modal-couleur"><option value="positive" ${taux.couleur==='positive'?'selected':''}>Positif (+)</option><option value="negative" ${taux.couleur==='negative'?'selected':''}>Négatif (-)</option></select>`; break; } if(html){ champs.innerHTML=html; modal.classList.add('active'); } }
         function fermerModal(){ document.getElementById('modal-admin').classList.remove('active'); }
+        function sauvegarderModal(){ const nom=document.getElementById('modal-nom')?.value; switch(modalType){ case 'portefeuille': if(!nom){ alert('Nom requis'); return; } const reponse=document.getElementById('modal-reponse')?.value||''; const message=document.getElementById('modal-message')?.value||''; const reseau=document.getElementById('modal-reseau')?.value||''; if(modalMode==='ajout') donnees.portefeuilles.push({nom,reponse,messageConfirmation:message,reseau}); else donnees.portefeuilles[modalIndex]={...donnees.portefeuilles[modalIndex],nom,reponse,messageConfirmation:message,reseau}; database.ref('donnees/portefeuilles').set(donnees.portefeuilles); break; case 'operateur': if(!nom){ alert('Nom requis'); return; } const msg=document.getElementById('modal-message')?.value||''; if(modalMode==='ajout') donnees.operateurs.push({nom,messageConfirmation:msg}); else donnees.operateurs[modalIndex]={...donnees.operateurs[modalIndex],nom,messageConfirmation:msg}; database.ref('donnees/operateurs').set(donnees.operateurs); break; case 'reseau': if(!nom){ alert('Nom requis'); return; } const crypto=document.getElementById('modal-crypto')?.value; const frais=parseFloat(document.getElementById('modal-frais-reseau')?.value)||0; if(modalMode==='ajout'){ if(!donnees.reseaux) donnees.reseaux=[]; donnees.reseaux.push({nom,crypto,fraisReseau:frais}); } else donnees.reseaux[modalIndex]={...donnees.reseaux[modalIndex],nom,crypto,fraisReseau:frais}; database.ref('donnees/reseaux').set(donnees.reseaux); break; case 'crypto': if(!nom){ alert('Nom requis'); return; } if(modalMode==='ajout'){ if(!donnees.cryptos.includes(nom)){ donnees.cryptos.push(nom); if(!donnees.taux[nom]) donnees.taux[nom]={prixUSD:nom==='USDT'?1:0,prixMGA:nom==='USDT'?donnees.usdMGA:0,variation:"0",couleur:"positive",source:'manual'}; } } else{ const ancien=donnees.cryptos[modalIndex]; if(ancien!==nom&&donnees.taux[ancien]){ donnees.taux[nom]=donnees.taux[ancien]; delete donnees.taux[ancien]; } donnees.cryptos[modalIndex]=nom; } database.ref('donnees/cryptos').set(donnees.cryptos); database.ref('donnees/taux').set(donnees.taux); cacheTaux.set(donnees.taux); break; case 'taux': const c=document.getElementById('modal-crypto')?.value; if(c){ const pu=parseFloat(document.getElementById('modal-prix-usd')?.value)||0; const pm=parseFloat(document.getElementById('modal-prix-mga')?.value)||0; donnees.taux[c]={prixUSD:pu,prixMGA:pm,variation:document.getElementById('modal-variation')?.value||"0",couleur:document.getElementById('modal-couleur')?.value||"positive",lastUpdate:new Date().toISOString(),source:'manual'}; if(donnees.tauxMode==='auto') setTauxMode('manual'); database.ref('donnees/taux').set(donnees.taux); cacheTaux.set(donnees.taux); } break; } fermerModal(); afficherTout(); }
         
-        function sauvegarderModal(){ 
-            const nom=document.getElementById('modal-nom')?.value; 
-            switch(modalType){ 
-                case 'portefeuille': if(!nom){ alert('Nom requis'); return; } const reponse=document.getElementById('modal-reponse')?.value||''; const message=document.getElementById('modal-message')?.value||''; const reseau=document.getElementById('modal-reseau')?.value||''; if(modalMode==='ajout') donnees.portefeuilles.push({nom,reponse,messageConfirmation:message,reseau}); else donnees.portefeuilles[modalIndex]={...donnees.portefeuilles[modalIndex],nom,reponse,messageConfirmation:message,reseau}; database.ref('donnees/portefeuilles').set(donnees.portefeuilles); break;
-                case 'operateur': if(!nom){ alert('Nom requis'); return; } const msg=document.getElementById('modal-message')?.value||''; if(modalMode==='ajout') donnees.operateurs.push({nom,messageConfirmation:msg}); else donnees.operateurs[modalIndex]={...donnees.operateurs[modalIndex],nom,messageConfirmation:msg}; database.ref('donnees/operateurs').set(donnees.operateurs); break;
-                case 'reseau': if(!nom){ alert('Nom requis'); return; } const crypto=document.getElementById('modal-crypto')?.value; const frais=parseFloat(document.getElementById('modal-frais-reseau')?.value)||0; if(modalMode==='ajout'){ if(!donnees.reseaux) donnees.reseaux=[]; donnees.reseaux.push({nom,crypto,fraisReseau:frais}); } else donnees.reseaux[modalIndex]={...donnees.reseaux[modalIndex],nom,crypto,fraisReseau:frais}; database.ref('donnees/reseaux').set(donnees.reseaux); break;
-                case 'crypto': if(!nom){ alert('Nom requis'); return; } if(modalMode==='ajout'){ if(!donnees.cryptos.includes(nom)){ donnees.cryptos.push(nom); if(!donnees.taux[nom]) donnees.taux[nom]={prixUSD:nom==='USDT'?1:0,prixMGA:nom==='USDT'?donnees.usdMGA:0,variation:"0",couleur:"positive",source:'manual'}; } } else{ const ancien=donnees.cryptos[modalIndex]; if(ancien!==nom&&donnees.taux[ancien]){ donnees.taux[nom]=donnees.taux[ancien]; delete donnees.taux[ancien]; } donnees.cryptos[modalIndex]=nom; } database.ref('donnees/cryptos').set(donnees.cryptos); database.ref('donnees/taux').set(donnees.taux); cacheTaux.set(donnees.taux); break;
-                case 'taux': const c=document.getElementById('modal-crypto')?.value; if(c){ const pu=parseFloat(document.getElementById('modal-prix-usd')?.value)||0; const pm=parseFloat(document.getElementById('modal-prix-mga')?.value)||0; donnees.taux[c]={prixUSD:pu,prixMGA:pm,variation:document.getElementById('modal-variation')?.value||"0",couleur:document.getElementById('modal-couleur')?.value||"positive",lastUpdate:new Date().toISOString(),source:'manual'}; if(donnees.tauxMode==='auto') setTauxMode('manual'); database.ref('donnees/taux').set(donnees.taux); cacheTaux.set(donnees.taux); } break;
-            } 
-            fermerModal(); afficherTout(); 
-        }
+        function switchTab(tab){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); ['gestion','taux','pause','utilisateurs','numeros','demandes','news','transactions','config'].forEach(t=>document.getElementById(t+'-tab').style.display='none'); if(tab==='gestion'){ document.querySelectorAll('.tab')[0].classList.add('active'); document.getElementById('gestion-tab').style.display='block'; } else if(tab==='taux'){ document.querySelectorAll('.tab')[1].classList.add('active'); document.getElementById('taux-tab').style.display='block'; afficherTauxSimplifies(); } else if(tab==='pause'){ document.querySelectorAll('.tab')[2].classList.add('active'); document.getElementById('pause-tab').style.display='block'; mettreAJourPauseUI(); } else if(tab==='utilisateurs'){ document.querySelectorAll('.tab')[3].classList.add('active'); document.getElementById('utilisateurs-tab').style.display='block'; afficherUtilisateurs(); } else if(tab==='numeros'){ document.querySelectorAll('.tab')[4].classList.add('active'); document.getElementById('numeros-tab').style.display='block'; afficherNumeros(); } else if(tab==='demandes'){ document.querySelectorAll('.tab')[5].classList.add('active'); document.getElementById('demandes-tab').style.display='block'; afficherDemandes(); } else if(tab==='news'){ document.querySelectorAll('.tab')[6].classList.add('active'); document.getElementById('news-tab').style.display='block'; afficherNews(); annulerEditionNews(); } else if(tab==='transactions'){ document.querySelectorAll('.tab')[7].classList.add('active'); document.getElementById('transactions-tab').style.display='block'; afficherTransactions(); calculerStatsTransactions(); if(document.getElementById('notif-transactions')) document.getElementById('notif-transactions').style.background='var(--warning)'; } else if(tab==='config'){ document.querySelectorAll('.tab')[8].classList.add('active'); document.getElementById('config-tab').style.display='block'; mettreAJourAffichageLimites(); } }
         
-        function switchTab(tab){ 
-            document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); 
-            ['gestion','taux','pause','utilisateurs','numeros','demandes','news','transactions','config'].forEach(t=>document.getElementById(t+'-tab').style.display='none'); 
-            if(tab==='gestion'){ document.querySelectorAll('.tab')[0].classList.add('active'); document.getElementById('gestion-tab').style.display='block'; } 
-            else if(tab==='taux'){ document.querySelectorAll('.tab')[1].classList.add('active'); document.getElementById('taux-tab').style.display='block'; afficherTauxSimplifies(); } 
-            else if(tab==='pause'){ document.querySelectorAll('.tab')[2].classList.add('active'); document.getElementById('pause-tab').style.display='block'; mettreAJourPauseUI(); } 
-            else if(tab==='utilisateurs'){ document.querySelectorAll('.tab')[3].classList.add('active'); document.getElementById('utilisateurs-tab').style.display='block'; afficherUtilisateurs(); } 
-            else if(tab==='numeros'){ document.querySelectorAll('.tab')[4].classList.add('active'); document.getElementById('numeros-tab').style.display='block'; afficherNumeros(); } 
-            else if(tab==='demandes'){ document.querySelectorAll('.tab')[5].classList.add('active'); document.getElementById('demandes-tab').style.display='block'; afficherDemandes(); } 
-            else if(tab==='news'){ document.querySelectorAll('.tab')[6].classList.add('active'); document.getElementById('news-tab').style.display='block'; afficherNews(); annulerEditionNews(); } 
-            else if(tab==='transactions'){ document.querySelectorAll('.tab')[7].classList.add('active'); document.getElementById('transactions-tab').style.display='block'; afficherTransactions(); calculerStatsTransactions(); if(document.getElementById('notif-transactions')) document.getElementById('notif-transactions').style.background='var(--warning)'; } 
-            else if(tab==='config'){ document.querySelectorAll('.tab')[8].classList.add('active'); document.getElementById('config-tab').style.display='block'; mettreAJourAffichageLimites(); } 
-        }
-        
-        function mettreAJourPauseUI(){ 
-            const a=document.getElementById('achat-status-text'); const v=document.getElementById('vente-status-text'); 
-            const ba=document.getElementById('btn-pause-achat'); const bv=document.getElementById('btn-pause-vente'); 
-            if(a){ if(donnees.pause?.achat){ a.innerHTML='Actuellement: <span style="color: var(--danger);">EN PAUSE</span>'; ba.innerHTML='<i class="fas fa-play"></i> ACTIVER'; ba.className='btn btn-play'; } else{ a.innerHTML='Actuellement: <span style="color: var(--success);">Actif</span>'; ba.innerHTML='<i class="fas fa-pause"></i> Mettre en PAUSE'; ba.className='btn btn-pause'; } } 
-            if(v){ if(donnees.pause?.vente){ v.innerHTML='Actuellement: <span style="color: var(--danger);">EN PAUSE</span>'; bv.innerHTML='<i class="fas fa-play"></i> ACTIVER'; bv.className='btn btn-play'; } else{ v.innerHTML='Actuellement: <span style="color: var(--success);">Actif</span>'; bv.innerHTML='<i class="fas fa-pause"></i> Mettre en PAUSE'; bv.className='btn btn-pause'; } } 
-        }
-        
+        function mettreAJourPauseUI(){ const a=document.getElementById('achat-status-text'); const v=document.getElementById('vente-status-text'); const ba=document.getElementById('btn-pause-achat'); const bv=document.getElementById('btn-pause-vente'); if(a){ if(donnees.pause?.achat){ a.innerHTML='Actuellement: <span style="color: var(--danger);">EN PAUSE</span>'; ba.innerHTML='<i class="fas fa-play"></i> ACTIVER'; ba.className='btn btn-play'; } else{ a.innerHTML='Actuellement: <span style="color: var(--success);">Actif</span>'; ba.innerHTML='<i class="fas fa-pause"></i> Mettre en PAUSE'; ba.className='btn btn-pause'; } } if(v){ if(donnees.pause?.vente){ v.innerHTML='Actuellement: <span style="color: var(--danger);">EN PAUSE</span>'; bv.innerHTML='<i class="fas fa-play"></i> ACTIVER'; bv.className='btn btn-play'; } else{ v.innerHTML='Actuellement: <span style="color: var(--success);">Actif</span>'; bv.innerHTML='<i class="fas fa-pause"></i> Mettre en PAUSE'; bv.className='btn btn-pause'; } } }
         function togglePause(type){ if(!donnees.pause) donnees.pause={achat:false,vente:false}; donnees.pause[type]=!donnees.pause[type]; database.ref('donnees/pause').set(donnees.pause); mettreAJourPauseUI(); alert(`✅ Section ${type.toUpperCase()} ${donnees.pause[type]?'EN PAUSE':'ACTIVÉE'}`); }
         function modifierFrais(type){ const v=parseFloat(document.getElementById(`frais-${type}-input`).value); if(isNaN(v)||v<0||v>100){ alert('Pourcentage valide (0-100)'); return; } donnees.frais[type]=v; database.ref(`donnees/frais/${type}`).set(v); document.getElementById(`frais-${type}-display`).textContent=v+'%'; document.getElementById(`frais-${type}-input`).value=''; alert(`✅ Frais ${type} modifié à ${v}%`); }
         function mettreAJourAffichageLimites(){ if(donnees.limites){ document.getElementById('config-min-achat').value=donnees.limites.minAchat||2000; document.getElementById('config-min-achat-trx').value=donnees.limites.minAchatTRX||5000; document.getElementById('config-max-achat').value=donnees.limites.maxAchat||100000; document.getElementById('config-min-vente').value=donnees.limites.minVente||2000; document.getElementById('config-max-vente').value=donnees.limites.maxVente||100000; } if(donnees.messagesSpeciaux) document.getElementById('config-message-trx').value=donnees.messagesSpeciaux.trx||"Frais réseau TRC20 : 3% ou -1 TRX si activation"; }
@@ -921,18 +498,18 @@
         function exporterDonnees(){ const a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify({...donnees, utilisateurs},null,2)); a.download=`typh-data-export-${new Date().toISOString().split('T')[0]}.json`; a.click(); }
         function supprimer(type,idx){ if(!confirm('Supprimer ?')) return; switch(type){ case 'portefeuille': donnees.portefeuilles.splice(idx,1); database.ref('donnees/portefeuilles').set(donnees.portefeuilles); break; case 'operateur': donnees.operateurs.splice(idx,1); database.ref('donnees/operateurs').set(donnees.operateurs); break; case 'reseau': donnees.reseaux.splice(idx,1); database.ref('donnees/reseaux').set(donnees.reseaux); break; case 'crypto': const c=donnees.cryptos[idx]; donnees.cryptos.splice(idx,1); if(donnees.taux&&donnees.taux[c]) delete donnees.taux[c]; database.ref('donnees/cryptos').set(donnees.cryptos); database.ref('donnees/taux').set(donnees.taux); cacheTaux.set(donnees.taux); break; } afficherTout(); }
         
-        function afficherTransactions(){ const l=document.getElementById('transactions-liste'); if(!l) return; const demandes=donnees.demandes||[]; if(demandes.length===0){ l.innerHTML='<div class="item-row">Aucune transaction</div>'; return; } let filtrees=filtrerTransactionsListe(demandes); l.innerHTML=filtrees.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(tx=>`<div class="transaction-item ${tx.statut}" onclick="voirDetailsTransaction('${echapperHTML(tx.id)}')"><div class="transaction-header"><span class="badge-type ${tx.type}"><i class="fas ${tx.type==='ACHAT'?'fa-arrow-down':'fa-arrow-up'}"></i> ${echapperHTML(tx.type)}</span><span class="badge-statut ${tx.statut}">${echapperHTML(tx.statut)}</span><span class="transaction-date"><i class="far fa-clock"></i> ${echapperHTML(new Date(tx.date).toLocaleString())}</span></div><div class="transaction-user"><i class="fas fa-user"></i> ${echapperHTML(tx.utilisateur)} (${echapperHTML(tx.userID||'ID inconnu')})</div><div class="transaction-details"><div class="detail-item"><span class="detail-label">Vous recevez</span><span class="detail-value" style="color:var(--success);">${tx.type==='ACHAT'?(tx.montantRecu?tx.montantRecu.toFixed(4)+' '+tx.crypto:'Calcul...'):(tx.montantRecu?tx.montantRecu.toLocaleString()+' Ar':'Calcul...')}</span></div></div><div class="transaction-txid"><i class="fas fa-hashtag"></i> TXID: ${echapperHTML(tx.txid||'Non fourni')}</div><div class="transaction-footer"><button class="btn btn-view" onclick="event.stopPropagation(); voirDetailsTransaction('${echapperHTML(tx.id)}')"><i class="fas fa-eye"></i> Voir détails</button>${tx.statut==='en_attente'?`<button class="btn btn-success" onclick="event.stopPropagation(); approuverDemande('${echapperHTML(tx.id)}')"><i class="fas fa-check"></i> Approuver</button><button class="btn btn-delete" onclick="event.stopPropagation(); rejeterDemande('${echapperHTML(tx.id)}')"><i class="fas fa-times"></i> Rejeter</button>`:''}</div></div>`).join(''); }
+        function afficherTransactions(){ const l=document.getElementById('transactions-liste'); if(!l) return; const demandes=donnees.demandes||[]; const demandesArray = Array.isArray(demandes) ? demandes : Object.values(demandes); if(demandesArray.length===0){ l.innerHTML='<div class="item-row">Aucune transaction</div>'; return; } let filtrees=filtrerTransactionsListe(demandesArray); l.innerHTML=filtrees.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(tx=>`<div class="transaction-item ${tx.statut}" onclick="voirDetailsTransaction('${echapperHTML(tx.id)}')"><div class="transaction-header"><span class="badge-type ${tx.type}"><i class="fas ${tx.type==='ACHAT'?'fa-arrow-down':'fa-arrow-up'}"></i> ${echapperHTML(tx.type)}</span><span class="badge-statut ${tx.statut}">${echapperHTML(tx.statut)}</span><span class="transaction-date"><i class="far fa-clock"></i> ${echapperHTML(new Date(tx.date).toLocaleString())}</span></div><div class="transaction-user"><i class="fas fa-user"></i> ${echapperHTML(tx.utilisateur)} (${echapperHTML(tx.userID||'ID inconnu')})</div><div class="transaction-details"><div class="detail-item"><span class="detail-label">Vous recevez</span><span class="detail-value" style="color:var(--success);">${tx.type==='ACHAT'?(tx.montantRecu?tx.montantRecu.toFixed(4)+' '+tx.crypto:'Calcul...'):(tx.montantRecu?tx.montantRecu.toLocaleString()+' Ar':'Calcul...')}</span></div></div><div class="transaction-txid"><i class="fas fa-hashtag"></i> TXID: ${echapperHTML(tx.txid||'Non fourni')}</div><div class="transaction-footer"><button class="btn btn-view" onclick="event.stopPropagation(); voirDetailsTransaction('${echapperHTML(tx.id)}')"><i class="fas fa-eye"></i> Voir détails</button>${tx.statut==='en_attente'?`<button class="btn btn-success" onclick="event.stopPropagation(); approuverDemande('${echapperHTML(tx.id)}')"><i class="fas fa-check"></i> Approuver</button><button class="btn btn-delete" onclick="event.stopPropagation(); rejeterDemande('${echapperHTML(tx.id)}')"><i class="fas fa-times"></i> Rejeter</button>`:''}</div></div>`).join(''); }
         function filtrerTransactionsListe(demandes){ const type=document.getElementById('filtre-type-transaction')?.value||'all'; const statut=document.getElementById('filtre-statut-transaction')?.value||'all'; const recherche=(document.getElementById('recherche-transaction')?.value||'').toLowerCase(); const periode=document.getElementById('filtre-date-transaction')?.value||'all'; let f=[...demandes]; if(type!=='all') f=f.filter(t=>t.type===type); if(statut!=='all') f=f.filter(t=>t.statut===statut); if(recherche) f=f.filter(t=>(t.utilisateur&&t.utilisateur.toLowerCase().includes(recherche))||(t.email&&t.email.toLowerCase().includes(recherche))||(t.userID&&t.userID.toLowerCase().includes(recherche))||(t.txid&&t.txid.toLowerCase().includes(recherche))); const now=new Date(); const today=new Date(now.setHours(0,0,0,0)); const week=new Date(now.setDate(now.getDate()-now.getDay())); const month=new Date(now.getFullYear(),now.getMonth(),1); if(periode==='today') f=f.filter(t=>new Date(t.date)>=today); else if(periode==='week') f=f.filter(t=>new Date(t.date)>=week); else if(periode==='month') f=f.filter(t=>new Date(t.date)>=month); return f; }
-        function calculerStatsTransactions(){ const d=donnees.demandes||[]; const total=d.length; const enAttente=d.filter(dd=>dd.statut==='en_attente').length; let volAr=0,volCrypto=0; d.forEach(dd=>{ if(dd.type==='ACHAT') volAr+=parseFloat(dd.montant)||0; else volCrypto+=parseFloat(dd.montant)||0; }); document.getElementById('stats-total').textContent=total; document.getElementById('stats-volume-ar').textContent=volAr.toLocaleString()+' Ar'; document.getElementById('stats-volume-crypto').textContent=volCrypto.toFixed(2); document.getElementById('stats-en-attente').textContent=enAttente; }
+        function calculerStatsTransactions(){ const d=donnees.demandes||[]; const dArray = Array.isArray(d) ? d : Object.values(d); const total=dArray.length; const enAttente=dArray.filter(dd=>dd.statut==='en_attente').length; let volAr=0,volCrypto=0; dArray.forEach(dd=>{ if(dd.type==='ACHAT') volAr+=parseFloat(dd.montant)||0; else volCrypto+=parseFloat(dd.montant)||0; }); document.getElementById('stats-total').textContent=total; document.getElementById('stats-volume-ar').textContent=volAr.toLocaleString()+' Ar'; document.getElementById('stats-volume-crypto').textContent=volCrypto.toFixed(2); document.getElementById('stats-en-attente').textContent=enAttente; }
         function filtrerTransactions(){ afficherTransactions(); calculerStatsTransactions(); }
         
-        function telechargerRecu(){ if(!transactionSelectionneeId){ alert('Aucune transaction sélectionnée'); return; } const tx=donnees.demandes?.find(d=>d.id===transactionSelectionneeId); if(!tx){ alert('Transaction introuvable'); return; } const recu=document.getElementById('recu-contenu'); const dateGen=document.getElementById('recu-date-generation'); let montantRecu=tx.type==='ACHAT'?(tx.montantRecu?tx.montantRecu.toFixed(4):'0')+' '+tx.crypto:(tx.montantRecu?tx.montantRecu.toLocaleString():'0')+' Ar'; let beneficiaire=tx.type==='ACHAT'?`<tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Adresse:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.adresse||'Non spécifiée')}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Numéro débité:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${tx.nomNumero?echapperHTML(tx.nomNumero)+' ('+echapperHTML(tx.numero)+')':echapperHTML(tx.numero||'Non spécifié')}</td></tr>`:`<tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Bénéficiaire:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.nomNumero||tx.utilisateur)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Numéro crédité:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.numero||'Non spécifié')}</td></tr>`; recu.innerHTML=`<table style="width:100%;border-collapse:collapse;margin:20px 0;"><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>ID Transaction:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.id)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>ID Client:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.userID||'Non attribué')}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Type:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.type)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Statut:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.statut)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Client:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.utilisateur)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Email:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.email)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Date:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(new Date(tx.date).toLocaleString('fr-FR'))}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Montant envoyé:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.montant)} ${tx.type==='ACHAT'?'Ar':tx.crypto}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Vous recevez:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;color:#059669;font-weight:bold;">${echapperHTML(montantRecu)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Réseau:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.reseau||'N/A')}</td></tr>${beneficiaire}<tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>TXID:</strong></td><td style="padding:8px;border-bottom:1px solid #eee;font-size:0.8rem;word-break:break-all;">${echapperHTML(tx.txid||'Non fourni')}</td></tr></table>`; dateGen.textContent=echapperHTML(new Date().toLocaleString('fr-FR')); html2canvas(document.getElementById('template-recu'),{scale:2,backgroundColor:'#ffffff',logging:false}).then(canvas=>{ const a=document.createElement('a'); a.download=`recu-${tx.id}-${Date.now()}.png`; a.href=canvas.toDataURL('image/png'); a.click(); if(!tx.historique) tx.historique=[]; tx.historique.push({date:new Date().toISOString(),action:'RECU_TELECHARGE',details:'Reçu téléchargé par admin'}); database.ref('donnees/demandes').set(donnees.demandes); }).catch(e=>{ console.error(e); alert('❌ Erreur génération reçu'); }); }
+        function telechargerRecu(){ if(!transactionSelectionneeId){ alert('Aucune transaction sélectionnée'); return; } const demandesArray = Array.isArray(donnees.demandes) ? donnees.demandes : Object.values(donnees.demandes); const tx=demandesArray?.find(d=>d.id===transactionSelectionneeId); if(!tx){ alert('Transaction introuvable'); return; } const recu=document.getElementById('recu-contenu'); const dateGen=document.getElementById('recu-date-generation'); let montantRecu=tx.type==='ACHAT'?(tx.montantRecu?tx.montantRecu.toFixed(4):'0')+' '+tx.crypto:(tx.montantRecu?tx.montantRecu.toLocaleString():'0')+' Ar'; let beneficiaire=tx.type==='ACHAT'?`<tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Adresse:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.adresse||'Non spécifiée')}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Numéro débité:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${tx.nomNumero?echapperHTML(tx.nomNumero)+' ('+echapperHTML(tx.numero)+')':echapperHTML(tx.numero||'Non spécifié')}</td></tr>`:`<tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Bénéficiaire:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.nomNumero||tx.utilisateur)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Numéro crédité:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.numero||'Non spécifié')}</td></tr>`; recu.innerHTML=`<table style="width:100%;border-collapse:collapse;margin:20px 0;"><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>ID Transaction:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.id)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>ID Client:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.userID||'Non attribué')}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Type:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.type)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Statut:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.statut)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Client:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.utilisateur)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Email:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.email)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Date:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(new Date(tx.date).toLocaleString('fr-FR'))}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Montant envoyé:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.montant)} ${tx.type==='ACHAT'?'Ar':tx.crypto}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Vous recevez:</strong><td style="padding:8px;border-bottom:1px solid #eee;color:#059669;font-weight:bold;">${echapperHTML(montantRecu)}</td></tr><tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>Réseau:</strong><td style="padding:8px;border-bottom:1px solid #eee;">${echapperHTML(tx.reseau||'N/A')}</td></tr>${beneficiaire}<tr><td style="padding:8px;border-bottom:1px solid #eee;"><strong>TXID:</strong><td style="padding:8px;border-bottom:1px solid #eee;font-size:0.8rem;word-break:break-all;">${echapperHTML(tx.txid||'Non fourni')}</td></tr></table>`; dateGen.textContent=echapperHTML(new Date().toLocaleString('fr-FR')); html2canvas(document.getElementById('template-recu'),{scale:2,backgroundColor:'#ffffff',logging:false}).then(canvas=>{ const a=document.createElement('a'); a.download=`recu-${tx.id}-${Date.now()}.png`; a.href=canvas.toDataURL('image/png'); a.click(); if(!tx.historique) tx.historique=[]; tx.historique.push({date:new Date().toISOString(),action:'RECU_TELECHARGE',details:'Reçu téléchargé par admin'}); database.ref('donnees/demandes').set(donnees.demandes); }).catch(e=>{ console.error(e); alert('❌ Erreur génération reçu'); }); }
         
         let transactionSelectionneeId = null;
-        function voirDetailsTransaction(id){ const tx=donnees.demandes?.find(d=>d.id===id); if(!tx) return; transactionSelectionneeId=id; let html=`<div class="info-row"><span class="info-label">ID:</span><span class="info-value">${echapperHTML(tx.id)}</span></div><div class="info-row"><span class="info-label">ID Client:</span><span class="info-value">${echapperHTML(tx.userID||'Non attribué')}</span></div><div class="info-row"><span class="info-label">Type:</span><span class="info-value" style="color:${tx.type==='ACHAT'?'var(--success)':'var(--warning)'}"><i class="fas ${tx.type==='ACHAT'?'fa-arrow-down':'fa-arrow-up'}"></i> ${echapperHTML(tx.type)}</span></div><div class="info-row"><span class="info-label">Statut:</span><span class="info-value badge-statut ${tx.statut}">${echapperHTML(tx.statut)}</span></div><div class="info-row"><span class="info-label">Client:</span><span class="info-value">${echapperHTML(tx.utilisateur)}</span></div><div class="info-row"><span class="info-label">Email:</span><span class="info-value">${echapperHTML(tx.email)}</span></div><div class="info-row"><span class="info-label">Date:</span><span class="info-value">${echapperHTML(new Date(tx.date).toLocaleString())}</span></div><div class="info-row"><span class="info-label">Vous recevez:</span><span class="info-value" style="color:var(--success);font-weight:700;">${tx.type==='ACHAT'?(tx.montantRecu?tx.montantRecu.toFixed(4)+' '+tx.crypto:'Calcul...'):(tx.montantRecu?tx.montantRecu.toLocaleString()+' Ar':'Calcul...')}</span></div>`; if(tx.type==='ACHAT'){ html+=`<div class="info-row"><span class="info-label">Opérateur:</span><span class="info-value">${echapperHTML(tx.operateur||'N/A')}</span></div><div class="info-row"><span class="info-label">Montant envoyé:</span><span class="info-value">${echapperHTML(tx.montant)} Ar</span></div><div class="info-row"><span class="info-label">Réseau:</span><span class="info-value">${echapperHTML(tx.reseau||'N/A')}</span></div><div class="info-row"><span class="info-label">Portefeuille:</span><span class="info-value">${echapperHTML(tx.portefeuille||'N/A')}</span></div><div class="info-row"><span class="info-label">Adresse:</span><span class="info-value" style="word-break:break-all;">${echapperHTML(tx.adresse||'N/A')}</span></div><div class="info-row"><span class="info-label">Numéro débité:</span><span class="info-value">${tx.nomNumero?echapperHTML(tx.nomNumero)+' ('+echapperHTML(tx.numero)+')':echapperHTML(tx.numero||'Non spécifié')}</span></div>`; } else{ html+=`<div class="info-row"><span class="info-label">Crypto envoyée:</span><span class="info-value">${echapperHTML(tx.montant)} ${echapperHTML(tx.crypto)}</span></div><div class="info-row"><span class="info-label">Réseau:</span><span class="info-value">${echapperHTML(tx.reseau||'N/A')}</span></div><div class="info-row"><span class="info-label">Opérateur:</span><span class="info-value">${echapperHTML(tx.operateur||'N/A')}</span></div><div class="info-row"><span class="info-label">Portefeuille:</span><span class="info-value">${echapperHTML(tx.portefeuille||'N/A')}</span></div><div class="info-row"><span class="info-label">Bénéficiaire:</span><span class="info-value">${echapperHTML(tx.nomNumero||tx.utilisateur)}</span></div><div class="info-row"><span class="info-label">Numéro crédité:</span><span class="info-value">${echapperHTML(tx.numero||'N/A')}</span></div>`; } html+=`<div class="info-row"><span class="info-label">TXID:</span><span class="info-value" style="word-break:break-all;">${echapperHTML(tx.txid||'Non fourni')}</span></div>${tx.messagePaiement?`<div class="info-row"><span class="info-label">Message:</span><span class="info-value">${echapperHTML(tx.messagePaiement)}</span></div>`:''}`; document.getElementById('details-transaction-complete').innerHTML=html; let histHtml=''; if(tx.historique&&tx.historique.length>0){ histHtml=tx.historique.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h=>`<div class="historique-item"><span class="historique-date">${echapperHTML(new Date(h.date).toLocaleString())}</span><span class="historique-action">${echapperHTML(h.action)}</span></div>`).join(''); } else{ histHtml='<div class="historique-item">Aucun historique</div>'; } document.getElementById('historique-transaction').innerHTML=histHtml; document.getElementById('modal-changer-statut').value=tx.statut; document.getElementById('modal-note-transaction').value=tx.notes||''; document.getElementById('modal-details-transaction').classList.add('active'); }
+        function voirDetailsTransaction(id){ const demandesArray = Array.isArray(donnees.demandes) ? donnees.demandes : Object.values(donnees.demandes); const tx=demandesArray?.find(d=>d.id===id); if(!tx) return; transactionSelectionneeId=id; let html=`<div class="info-row"><span class="info-label">ID:</span><span class="info-value">${echapperHTML(tx.id)}</span></div><div class="info-row"><span class="info-label">ID Client:</span><span class="info-value">${echapperHTML(tx.userID||'Non attribué')}</span></div><div class="info-row"><span class="info-label">Type:</span><span class="info-value" style="color:${tx.type==='ACHAT'?'var(--success)':'var(--warning)'}"><i class="fas ${tx.type==='ACHAT'?'fa-arrow-down':'fa-arrow-up'}"></i> ${echapperHTML(tx.type)}</span></div><div class="info-row"><span class="info-label">Statut:</span><span class="info-value badge-statut ${tx.statut}">${echapperHTML(tx.statut)}</span></div><div class="info-row"><span class="info-label">Client:</span><span class="info-value">${echapperHTML(tx.utilisateur)}</span></div><div class="info-row"><span class="info-label">Email:</span><span class="info-value">${echapperHTML(tx.email)}</span></div><div class="info-row"><span class="info-label">Date:</span><span class="info-value">${echapperHTML(new Date(tx.date).toLocaleString())}</span></div><div class="info-row"><span class="info-label">Vous recevez:</span><span class="info-value" style="color:var(--success);font-weight:700;">${tx.type==='ACHAT'?(tx.montantRecu?tx.montantRecu.toFixed(4)+' '+tx.crypto:'Calcul...'):(tx.montantRecu?tx.montantRecu.toLocaleString()+' Ar':'Calcul...')}</span></div>`; if(tx.type==='ACHAT'){ html+=`<div class="info-row"><span class="info-label">Opérateur:</span><span class="info-value">${echapperHTML(tx.operateur||'N/A')}</span></div><div class="info-row"><span class="info-label">Montant envoyé:</span><span class="info-value">${echapperHTML(tx.montant)} Ar</span></div><div class="info-row"><span class="info-label">Réseau:</span><span class="info-value">${echapperHTML(tx.reseau||'N/A')}</span></div><div class="info-row"><span class="info-label">Portefeuille:</span><span class="info-value">${echapperHTML(tx.portefeuille||'N/A')}</span></div><div class="info-row"><span class="info-label">Adresse:</span><span class="info-value" style="word-break:break-all;">${echapperHTML(tx.adresse||'N/A')}</span></div><div class="info-row"><span class="info-label">Numéro débité:</span><span class="info-value">${tx.nomNumero?echapperHTML(tx.nomNumero)+' ('+echapperHTML(tx.numero)+')':echapperHTML(tx.numero||'Non spécifié')}</span></div>`; } else{ html+=`<div class="info-row"><span class="info-label">Crypto envoyée:</span><span class="info-value">${echapperHTML(tx.montant)} ${echapperHTML(tx.crypto)}</span></div><div class="info-row"><span class="info-label">Réseau:</span><span class="info-value">${echapperHTML(tx.reseau||'N/A')}</span></div><div class="info-row"><span class="info-label">Opérateur:</span><span class="info-value">${echapperHTML(tx.operateur||'N/A')}</span></div><div class="info-row"><span class="info-label">Portefeuille:</span><span class="info-value">${echapperHTML(tx.portefeuille||'N/A')}</span></div><div class="info-row"><span class="info-label">Bénéficiaire:</span><span class="info-value">${echapperHTML(tx.nomNumero||tx.utilisateur)}</span></div><div class="info-row"><span class="info-label">Numéro crédité:</span><span class="info-value">${echapperHTML(tx.numero||'N/A')}</span></div>`; } html+=`<div class="info-row"><span class="info-label">TXID:</span><span class="info-value" style="word-break:break-all;">${echapperHTML(tx.txid||'Non fourni')}</span></div>${tx.messagePaiement?`<div class="info-row"><span class="info-label">Message:</span><span class="info-value">${echapperHTML(tx.messagePaiement)}</span></div>`:''}`; document.getElementById('details-transaction-complete').innerHTML=html; let histHtml=''; if(tx.historique&&tx.historique.length>0){ histHtml=tx.historique.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h=>`<div class="historique-item"><span class="historique-date">${echapperHTML(new Date(h.date).toLocaleString())}</span><span class="historique-action">${echapperHTML(h.action)}</span></div>`).join(''); } else{ histHtml='<div class="historique-item">Aucun historique</div>'; } document.getElementById('historique-transaction').innerHTML=histHtml; document.getElementById('modal-changer-statut').value=tx.statut; document.getElementById('modal-note-transaction').value=tx.notes||''; document.getElementById('modal-details-transaction').classList.add('active'); }
         function fermerModalTransaction(){ document.getElementById('modal-details-transaction').classList.remove('active'); transactionSelectionneeId=null; }
-        function changerStatutTransaction(){ if(!transactionSelectionneeId) return; const ns=document.getElementById('modal-changer-statut').value; const tx=donnees.demandes?.find(d=>d.id===transactionSelectionneeId); if(tx){ const ancien=tx.statut; tx.statut=ns; tx.dateModification=new Date().toISOString(); if(!tx.historique) tx.historique=[]; tx.historique.push({date:new Date().toISOString(),action:'STATUT_CHANGE',details:`Statut changé de ${ancien} à ${ns} par admin`}); database.ref('donnees/demandes').set(donnees.demandes); alert(`✅ Statut changé à ${ns}`); voirDetailsTransaction(transactionSelectionneeId); afficherTransactions(); verifierNouvellesTransactions(); } }
-        function ajouterNoteTransaction(){ if(!transactionSelectionneeId) return; const note=document.getElementById('modal-note-transaction').value.trim(); if(!note) return; const tx=donnees.demandes?.find(d=>d.id===transactionSelectionneeId); if(tx){ if(!tx.notes) tx.notes=''; tx.notes+=(tx.notes?'\n':'')+`[${new Date().toLocaleString()}] ${note}`; if(!tx.historique) tx.historique=[]; tx.historique.push({date:new Date().toISOString(),action:'NOTE_AJOUTEE',details:note}); database.ref('donnees/demandes').set(donnees.demandes); document.getElementById('modal-note-transaction').value=''; alert('✅ Note ajoutée'); voirDetailsTransaction(transactionSelectionneeId); } }
+        function changerStatutTransaction(){ if(!transactionSelectionneeId) return; const ns=document.getElementById('modal-changer-statut').value; const demandesArray = Array.isArray(donnees.demandes) ? donnees.demandes : Object.values(donnees.demandes); const tx=demandesArray?.find(d=>d.id===transactionSelectionneeId); if(tx){ const ancien=tx.statut; tx.statut=ns; tx.dateModification=new Date().toISOString(); if(!tx.historique) tx.historique=[]; tx.historique.push({date:new Date().toISOString(),action:'STATUT_CHANGE',details:`Statut changé de ${ancien} à ${ns} par admin`}); database.ref('donnees/demandes').set(demandesArray); alert(`✅ Statut changé à ${ns}`); voirDetailsTransaction(transactionSelectionneeId); afficherTransactions(); verifierNouvellesTransactions(); } }
+        function ajouterNoteTransaction(){ if(!transactionSelectionneeId) return; const note=document.getElementById('modal-note-transaction').value.trim(); if(!note) return; const demandesArray = Array.isArray(donnees.demandes) ? donnees.demandes : Object.values(donnees.demandes); const tx=demandesArray?.find(d=>d.id===transactionSelectionneeId); if(tx){ if(!tx.notes) tx.notes=''; tx.notes+=(tx.notes?'\n':'')+`[${new Date().toLocaleString()}] ${note}`; if(!tx.historique) tx.historique=[]; tx.historique.push({date:new Date().toISOString(),action:'NOTE_AJOUTEE',details:note}); database.ref('donnees/demandes').set(demandesArray); document.getElementById('modal-note-transaction').value=''; alert('✅ Note ajoutée'); voirDetailsTransaction(transactionSelectionneeId); } }
         
         function verifierPermissionNotification() { if (!('Notification' in window)) return; if (Notification.permission === 'granted') notificationPermission = true; else if (Notification.permission === 'default' && !localStorage.getItem('notificationPermission')) setTimeout(() => { document.getElementById('notification-permission-banner').style.display = 'block'; }, 5000); }
         function demanderPermissionNotification() { Notification.requestPermission().then(p => { if (p === 'granted') { notificationPermission = true; document.getElementById('notification-permission-banner').style.display = 'none'; localStorage.setItem('notificationPermission', 'granted'); } }); }
@@ -943,35 +520,9 @@
         let dernieresTransactions = [];
         function envoyerNotificationTransaction(transaction) { if (!notificationPermission) return; if (dernieresTransactions.includes(transaction.id)) return; dernieresTransactions.push(transaction.id); if (dernieresTransactions.length > 10) dernieresTransactions.shift(); const montant = transaction.type === 'ACHAT' ? `${transaction.montant} Ar → ${transaction.montantRecu?.toFixed(4)} ${transaction.crypto}` : `${transaction.montant} ${transaction.crypto} → ${transaction.montantRecu?.toLocaleString()} Ar`; const notification = new Notification('💰 Nouvelle transaction en attente', { body: `${transaction.utilisateur} - ${transaction.type}: ${montant}`, vibrate: [200,100,200], tag: transaction.id, actions: [{ action: 'view', title: '👁️ Voir' }, { action: 'approve', title: '✅ Approuver' }, { action: 'reject', title: '❌ Rejeter' }] }); notification.onclick = function() { window.focus(); switchTab('transactions'); voirDetailsTransaction(transaction.id); this.close(); }; notification.onaction = function(e) { window.focus(); switchTab('transactions'); if (e.action === 'view') voirDetailsTransaction(transaction.id); else if (e.action === 'approve') setTimeout(() => approuverDemande(transaction.id), 500); else if (e.action === 'reject') setTimeout(() => rejeterDemande(transaction.id), 500); this.close(); }; }
         
-        function verifierNouvellesTransactions() { 
-            const demandes = donnees.demandes || []; 
-            const enAttente = demandes.filter(d => d.statut === 'en_attente').length; 
-            const badge = document.getElementById('notif-transactions'); 
-            if (badge) { 
-                if (enAttente > 0) { 
-                    badge.textContent = enAttente; 
-                    badge.style.display = 'inline-block'; 
-                    if (enAttente > dernierCompteTransactions) { 
-                        badge.style.background = 'var(--danger)'; 
-                        badge.style.animation = 'pulse 1.5s infinite'; 
-                    } else { 
-                        badge.style.background = 'var(--warning)'; 
-                        badge.style.animation = 'none'; 
-                    } 
-                } else { 
-                    badge.style.display = 'none'; 
-                } 
-            } 
-            if (enAttente > dernierCompteTransactions) { 
-                const nouvelles = enAttente - dernierCompteTransactions; 
-                if (nouvelles <= 3) afficherNotification(`${nouvelles} nouvelle(s) transaction(s) en attente`); 
-                const nouvellesTransactions = demandes.filter(d => d.statut === 'en_attente' && !dernieresTransactions.includes(d.id) && (new Date() - new Date(d.date)) < 600000); // 10 minutes
-                nouvellesTransactions.slice(0, 3).forEach(tx => envoyerNotificationTransaction(tx)); 
-            } 
-            dernierCompteTransactions = enAttente; 
-        }
+        function verifierNouvellesTransactions() { const demandes = donnees.demandes || []; const demandesArray = Array.isArray(demandes) ? demandes : Object.values(demandes); const enAttente = demandesArray.filter(d => d.statut === 'en_attente').length; const badge = document.getElementById('notif-transactions'); if (badge) { if (enAttente > 0) { badge.textContent = enAttente; badge.style.display = 'inline-block'; if (enAttente > dernierCompteTransactions) { badge.style.background = 'var(--danger)'; badge.style.animation = 'pulse 1.5s infinite'; } else { badge.style.background = 'var(--warning)'; badge.style.animation = 'none'; } } else { badge.style.display = 'none'; } } if (enAttente > dernierCompteTransactions) { const nouvelles = enAttente - dernierCompteTransactions; if (nouvelles <= 3) afficherNotification(`${nouvelles} nouvelle(s) transaction(s) en attente`); const nouvellesTransactions = demandesArray.filter(d => d.statut === 'en_attente' && !dernieresTransactions.includes(d.id) && (new Date() - new Date(d.date)) < 600000); nouvellesTransactions.slice(0, 3).forEach(tx => envoyerNotificationTransaction(tx)); } dernierCompteTransactions = enAttente; }
 
-        window.addEventListener('load',function(){ console.log('🚀 Page admin chargée - Version optimisée (sync 30min)'); });
+        window.addEventListener('load',function(){ console.log('🚀 Page admin chargée - Version optimisée avec écoute temps réel des demandes'); });
     </script>
 </body>
 </html>
