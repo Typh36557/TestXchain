@@ -9,6 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
+        /* ===== STYLES IDENTIQUES À L'ORIGINAL ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-dark: #0A0F1F;
@@ -263,75 +264,16 @@
         let typeTransactionEnCours = null;
         let dernierSyncTaux = null;
         
-        // Cache pour les taux
         const cacheTaux = {
-            donnees: null,
-            timestamp: 0,
-            duree: 30 * 60 * 1000, // 30 minutes
-            
-            get() {
-                if(this.donnees && (Date.now() - this.timestamp) < this.duree) {
-                    console.log('📦 Utilisation du cache des taux');
-                    return this.donnees;
-                }
-                return null;
-            },
-            
-            set(donnees) {
-                this.donnees = donnees;
-                this.timestamp = Date.now();
-                try {
-                    localStorage.setItem('tauxCache', JSON.stringify({
-                        data: donnees,
-                        timestamp: this.timestamp
-                    }));
-                } catch(e) {}
-            },
-            
-            chargerLocal() {
-                try {
-                    const cache = localStorage.getItem('tauxCache');
-                    if(cache) {
-                        const { data, timestamp } = JSON.parse(cache);
-                        const age = (Date.now() - timestamp) / 60000;
-                        if(age < 60) { // Cache valide jusqu'à 60 minutes
-                            this.donnees = data;
-                            this.timestamp = timestamp;
-                            return true;
-                        }
-                    }
-                } catch(e) {}
-                return false;
-            }
+            donnees: null, timestamp: 0, duree: 30 * 60 * 1000,
+            get() { if(this.donnees && (Date.now() - this.timestamp) < this.duree) return this.donnees; return null; },
+            set(donnees) { this.donnees = donnees; this.timestamp = Date.now(); try { localStorage.setItem('tauxCache', JSON.stringify({ data: donnees, timestamp: this.timestamp })); } catch(e) {} },
+            chargerLocal() { try { const cache = localStorage.getItem('tauxCache'); if(cache) { const { data, timestamp } = JSON.parse(cache); if((Date.now() - timestamp) < 3600000) { this.donnees = data; this.timestamp = timestamp; return true; } } } catch(e) {} return false; }
         };
         
-        // Rate limiter
-        class RateLimiter {
-            constructor(limite = 15, fenetre = 60000) {
-                this.limite = limite;
-                this.fenetre = fenetre;
-                this.requetes = [];
-            }
-            
-            peutExecuter() {
-                const maintenant = Date.now();
-                this.requetes = this.requetes.filter(t => t > maintenant - this.fenetre);
-                
-                if(this.requetes.length >= this.limite) {
-                    console.warn('⚠️ Limite de requêtes atteinte');
-                    return false;
-                }
-                
-                this.requetes.push(maintenant);
-                return true;
-            }
-        }
-        
+        class RateLimiter { constructor(limite = 15, fenetre = 60000) { this.limite = limite; this.fenetre = fenetre; this.requetes = []; } peutExecuter() { const maintenant = Date.now(); this.requetes = this.requetes.filter(t => t > maintenant - this.fenetre); if(this.requetes.length >= this.limite) return false; this.requetes.push(maintenant); return true; } }
         const rateLimiter = new RateLimiter(15, 60000);
-        
-        // Debounce pour sauvegardes
         let timeoutSauvegarde = null;
-        
         const pairesBinance = { 'USDT':'USDTUSDT','BTC':'BTCUSDT','ETH':'ETHUSDT','BNB':'BNBUSDT','LTC':'LTCUSDT','SOL':'SOLUSDT','TRX':'TRXUSDT','DOGE':'DOGEUSDT','MATIC':'MATICUSDT','SUI':'SUIUSDT','XRP':'XRPUSDT','TON':'TONUSDT','POL':'POLUSDT','USDC':'USDCUSDT' };
 
         function echapperHTML(t) { if(!t) return ''; return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
@@ -368,9 +310,7 @@
 
         function sauvegarderDonnees() {
             if(enCoursDeMiseAJour) return;
-            
             if(timeoutSauvegarde) clearTimeout(timeoutSauvegarde);
-            
             timeoutSauvegarde = setTimeout(() => {
                 enCoursDeMiseAJour = true;
                 const dataToSave = {
@@ -412,7 +352,6 @@
         }
 
         function chargerDonnees() {
-            // Charger cache des taux
             if(cacheTaux.chargerLocal() && cacheTaux.donnees) {
                 donnees.taux = cacheTaux.donnees;
                 console.log('📦 Taux chargés depuis le cache local');
@@ -459,20 +398,14 @@
             }).catch(e => { console.error(e); donnees = obtenirDonneesParDefaut(); mettreAJourAffichage(); });
         }
 
-        // SYNC BINANCE OPTIMISÉE - 30 MINUTES
         async function demarrerSyncBinance() {
             if(binanceInterval) clearInterval(binanceInterval);
-            
             if(cacheTaux.chargerLocal() && cacheTaux.donnees) {
                 donnees.taux = cacheTaux.donnees;
                 afficherTauxSimplifies();
             }
-            
             await syncBinance();
-            // Synchronisation toutes les 30 MINUTES
             binanceInterval = setInterval(syncBinance, 1800000);
-            
-            // Afficher l'âge des taux
             afficherAgeTaux();
             setInterval(afficherAgeTaux, 60000);
         }
@@ -517,7 +450,6 @@
                 console.log('🛑 Sync Binance ignorée - limite de requêtes atteinte');
                 return;
             }
-            
             try{ 
                 const tauxMGA=await getTauxMGA(); 
                 const r=await fetch('https://api.binance.com/api/v3/ticker/price'); 
@@ -536,13 +468,11 @@
                     } 
                 }); 
                 await database.ref().update(updates); 
-                
                 const snap=await database.ref('donnees/taux').once('value');
                 if(snap.val()) {
                     donnees.taux=snap.val();
                     cacheTaux.set(donnees.taux);
                 }
-                
                 afficherTauxSimplifies();
                 localStorage.setItem('derniereSyncTaux', Date.now().toString());
                 afficherAgeTaux();
@@ -589,9 +519,6 @@
         
         function fermerModalNews(){ document.getElementById('modal-news-detail').classList.remove('active'); }
 
-        // Le reste des fonctions (mettreAJourProfil, mettreAJourAffichage, etc.) restent identiques
-        // Pour des raisons de longueur, je conserve les fonctions existantes inchangées
-        
         function mettreAJourProfil(){ 
             const p=document.getElementById('profil-infos'); 
             if(!p) return; 
@@ -754,7 +681,6 @@
             verifierLimitesVente(); 
         }
 
-        // Fonctions d'authentification et autres (connexion, inscription, etc.)
         async function connexion(){
             const e = document.getElementById('email-connexion').value.trim();
             const p = document.getElementById('password-connexion').value.trim();
@@ -801,7 +727,6 @@
         function showLandingPage(){ document.getElementById('landing-page').style.display='block'; document.querySelectorAll('.platform-section').forEach(s=>s.classList.remove('active')); document.getElementById('bottom-nav').classList.remove('visible'); }
         function showPlatform(){ document.getElementById('landing-page').style.display='none'; document.getElementById('bottom-nav').classList.add('visible'); switchPlatformSection('accueil'); }
 
-        // Fonctions pour les numéros
         async function ajouterNumero() {
             if(!utilisateurCourant || !monUid){
                 showAuthModal();
@@ -907,7 +832,6 @@
             return Object.values(numeros).some(num => num.statut === 'approuve');
         }
 
-        // Gestion de session
         let sessionUtilisateur = localStorage.getItem('typhSession');
         if(sessionUtilisateur){ try{ const s=JSON.parse(sessionUtilisateur); monUid = s.uid; }catch(e){} }
 
@@ -947,7 +871,6 @@
             }
         });
 
-        // Fonctions pour les transactions
         function preparerConfirmation(type) {
             if(!sessionValide || !utilisateurCourant){
                 alert('Veuillez vous connecter');

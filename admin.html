@@ -175,6 +175,8 @@
         .info-message { background: var(--primary); padding: 12px; border-radius: 16px; margin: 10px 0; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
         .btn-manual-sync { background: var(--binance); color: var(--bg-dark); margin-top: 10px; }
         @media (min-width: 768px) { .container { max-width: 600px; margin: 0 auto; } .nav-menu { max-width: 600px; } }
+        .login-info { font-size: 0.8rem; color: var(--text-secondary); margin-top: 15px; }
+        .login-warning { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); border-radius: 12px; padding: 12px; margin-top: 15px; font-size: 0.8rem; color: var(--danger); }
     </style>
 </head>
 <body>
@@ -182,11 +184,14 @@
         <div class="login-card">
             <div class="logo" style="font-size: 2rem; margin-bottom: 20px;">Typh X-chain</div>
             <h3 class="login-title">🔐 Administration</h3>
-            <input type="email" id="admin-email" class="login-input" placeholder="Email" value="sarobidytyph4@gmail.com">
+            <input type="email" id="admin-email" class="login-input" placeholder="Email">
             <input type="password" id="admin-password" class="login-input" placeholder="Mot de passe">
-            <div class="login-error" id="admin-error"><i class="fas fa-exclamation-triangle"></i> Email ou mot de passe incorrect</div>
+            <div class="login-error" id="admin-error"><i class="fas fa-exclamation-triangle"></i> Accès non autorisé</div>
+            <div class="login-warning" id="admin-warning" style="display: none;">
+                <i class="fas fa-shield-alt"></i> Seul le compte administrateur officiel peut accéder
+            </div>
             <button class="login-btn" onclick="loginAdmin()"><i class="fas fa-sign-in-alt"></i> Se connecter avec Firebase</button>
-            <p class="login-info"><i class="fas fa-shield-alt"></i> Connexion sécurisée</p>
+            <p class="login-info"><i class="fas fa-shield-alt"></i> Connexion sécurisée - Vérification admin</p>
         </div>
     </div>
 
@@ -295,6 +300,10 @@
         let dernierCompteTransactions = 0, intervalNotification = null, toastTimer = null, notificationPermission = false;
         let dernierSyncTaux = null;
         
+        // ADMIN UID - À MODIFIER AVEC VOTRE UID FIREBASE
+        // Pour trouver votre UID : Console Firebase > Authentication > Users > Copier l'UID
+        const ADMIN_UID = "U1qMR6E5x3hMwl9BtsT53zIeRJl2"; // ⚠️ REMPLACEZ PAR VOTRE UID FIREBASE
+        
         const cacheTaux = {
             donnees: null, timestamp: 0, duree: 30 * 60 * 1000,
             get() { if(this.donnees && (Date.now() - this.timestamp) < this.duree) return this.donnees; return null; },
@@ -400,32 +409,84 @@
         let intervalUtilisateurs = null;
         function demarrerRafraichissementUtilisateurs() { if(intervalUtilisateurs) clearInterval(intervalUtilisateurs); intervalUtilisateurs = setInterval(rafraichirUtilisateurs, 120000); rafraichirUtilisateurs(); }
 
-        auth.onAuthStateChanged((user) => {
-            if (user && user.email === 'sarobidytyph4@gmail.com') {
-                document.getElementById('login-page').style.display = 'none';
-                document.getElementById('admin-interface').style.display = 'block';
-                chargerDonnees();
-                demarrerSyncBinance();
-                demarrerSurveillanceTransactions();
-                verifierPermissionNotification();
-                demarrerRafraichissementUtilisateurs();
-                demarrerEcouteDemandes();
-            } else if (document.getElementById('admin-interface').style.display === 'block') {
-                document.getElementById('login-page').style.display = 'flex';
-                document.getElementById('admin-interface').style.display = 'none';
-                if(intervalUtilisateurs) clearInterval(intervalUtilisateurs);
+        // 🔐 FONCTION DE VÉRIFICATION ADMIN SÉCURISÉE
+        async function estAdmin(user) {
+            if (!user) return false;
+            
+            // Méthode 1: Vérifier par UID (recommandé)
+            if (ADMIN_UID !== "VOTRE_UID_ADMIN_ICI" && user.uid === ADMIN_UID) {
+                console.log('✅ Admin vérifié par UID');
+                return true;
             }
-        });
+            
+            // Méthode 2: Vérifier par custom claim (si configuré dans Firebase)
+            try {
+                const token = await user.getIdTokenResult();
+                if (token.claims.admin === true) {
+                    console.log('✅ Admin vérifié par custom claim');
+                    return true;
+                }
+            } catch(e) {
+                console.warn('Erreur vérification custom claim:', e);
+            }
+            
+            console.warn('❌ Accès admin refusé pour:', user.email);
+            return false;
+        }
 
+        // 🔐 FONCTION DE CONNEXION ADMIN SÉCURISÉE
         async function loginAdmin() {
-            const email = document.getElementById('admin-email').value, password = document.getElementById('admin-password').value;
-            document.getElementById('admin-error').style.display = 'none';
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const errorDiv = document.getElementById('admin-error');
+            const warningDiv = document.getElementById('admin-warning');
+            
+            errorDiv.style.display = 'none';
+            warningDiv.style.display = 'none';
+            
+            if (!email || !password) {
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Email et mot de passe requis';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                if (userCredential.user.email !== 'sarobidytyph4@gmail.com') { await auth.signOut(); throw new Error('Email non autorisé'); }
-            } catch (error) { document.getElementById('admin-error').style.display = 'block'; document.getElementById('admin-error').innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + error.message; }
+                const user = userCredential.user;
+                
+                // Vérification admin sécurisée
+                const isAdminUser = await estAdmin(user);
+                
+                if (isAdminUser) {
+                    console.log('✅ Accès admin autorisé');
+                    document.getElementById('login-page').style.display = 'none';
+                    document.getElementById('admin-interface').style.display = 'block';
+                    chargerDonnees();
+                    demarrerSyncBinance();
+                    demarrerSurveillanceTransactions();
+                    verifierPermissionNotification();
+                    demarrerRafraichissementUtilisateurs();
+                    demarrerEcouteDemandes();
+                } else {
+                    console.warn('❌ Tentative d\'accès admin non autorisé:', email);
+                    await auth.signOut();
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Accès non autorisé. Ce compte n\'est pas administrateur.';
+                    errorDiv.style.display = 'block';
+                    warningDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erreur connexion:', error);
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + error.message;
+                errorDiv.style.display = 'block';
+            }
         }
-        function logoutAdmin() { auth.signOut(); if(intervalUtilisateurs) clearInterval(intervalUtilisateurs); }
+        
+        function logoutAdmin() { 
+            auth.signOut(); 
+            if(intervalUtilisateurs) clearInterval(intervalUtilisateurs);
+            document.getElementById('login-page').style.display = 'flex';
+            document.getElementById('admin-interface').style.display = 'none';
+        }
         
         function approuverNumero(uid, numeroId) { if(!confirm('✅ Approuver ce numéro ?')) return; database.ref(`donnees/utilisateurs/${uid}/numeros/${numeroId}/statut`).set('approuve').then(() => { alert('✅ Numéro approuvé !'); rafraichirUtilisateurs(); }).catch(err => console.error(err)); }
         function rejeterNumero(uid, numeroId) { if(!confirm('❌ Rejeter ce numéro ?')) return; database.ref(`donnees/utilisateurs/${uid}/numeros/${numeroId}/statut`).set('rejete').then(() => { alert('Numéro rejeté'); rafraichirUtilisateurs(); }).catch(err => console.error(err)); }
@@ -522,7 +583,37 @@
         
         function verifierNouvellesTransactions() { const demandes = donnees.demandes || []; const demandesArray = Array.isArray(demandes) ? demandes : Object.values(demandes); const enAttente = demandesArray.filter(d => d.statut === 'en_attente').length; const badge = document.getElementById('notif-transactions'); if (badge) { if (enAttente > 0) { badge.textContent = enAttente; badge.style.display = 'inline-block'; if (enAttente > dernierCompteTransactions) { badge.style.background = 'var(--danger)'; badge.style.animation = 'pulse 1.5s infinite'; } else { badge.style.background = 'var(--warning)'; badge.style.animation = 'none'; } } else { badge.style.display = 'none'; } } if (enAttente > dernierCompteTransactions) { const nouvelles = enAttente - dernierCompteTransactions; if (nouvelles <= 3) afficherNotification(`${nouvelles} nouvelle(s) transaction(s) en attente`); const nouvellesTransactions = demandesArray.filter(d => d.statut === 'en_attente' && !dernieresTransactions.includes(d.id) && (new Date() - new Date(d.date)) < 600000); nouvellesTransactions.slice(0, 3).forEach(tx => envoyerNotificationTransaction(tx)); } dernierCompteTransactions = enAttente; }
 
-        window.addEventListener('load',function(){ console.log('🚀 Page admin chargée - Version optimisée avec écoute temps réel des demandes'); });
+        // 🔐 VÉRIFICATION INITIALE DE SESSION
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const isAdminUser = await estAdmin(user);
+                if (isAdminUser) {
+                    console.log('✅ Session admin restaurée');
+                    document.getElementById('login-page').style.display = 'none';
+                    document.getElementById('admin-interface').style.display = 'block';
+                    chargerDonnees();
+                    demarrerSyncBinance();
+                    demarrerSurveillanceTransactions();
+                    verifierPermissionNotification();
+                    demarrerRafraichissementUtilisateurs();
+                    demarrerEcouteDemandes();
+                } else {
+                    console.warn('❌ Session non admin détectée');
+                    await auth.signOut();
+                    document.getElementById('login-page').style.display = 'flex';
+                    document.getElementById('admin-interface').style.display = 'none';
+                    document.getElementById('admin-error').style.display = 'block';
+                    document.getElementById('admin-error').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Session non autorisée. Veuillez vous reconnecter.';
+                    if(intervalUtilisateurs) clearInterval(intervalUtilisateurs);
+                }
+            } else {
+                document.getElementById('login-page').style.display = 'flex';
+                document.getElementById('admin-interface').style.display = 'none';
+                if(intervalUtilisateurs) clearInterval(intervalUtilisateurs);
+            }
+        });
+
+        window.addEventListener('load',function(){ console.log('🚀 Page admin chargée - Version sécurisée avec vérification UID'); });
     </script>
 </body>
 </html>
