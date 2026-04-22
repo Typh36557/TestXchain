@@ -1,4 +1,4 @@
-        if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').then(reg => {
                     console.log('Service Worker registered');
@@ -41,7 +41,7 @@
         setInterval(verifierMiseAJour, 10 * 60 * 1000);
 
         const firebaseConfig = {
-            apiKey: "AIzaSyAC6xQXWg_5EplLDPQu_7RuuQ0NrCUSQ2g",
+            apiKey: "AIzaSyAXxYGXAcQhuCssE7c40mxoy5bHx-FACOA",
             authDomain: "typhxchain.firebaseapp.com",
             databaseURL: "https://typhxchain-default-rtdb.firebaseio.com",
             projectId: "typhxchain",
@@ -50,12 +50,28 @@
             appId: "1:1036771874416:web:aeca9ac347f6bbcc9886b5",
             measurementId: "G-DHMY4MSP9Y"
         };
+        
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const auth = firebase.auth();
         const functionsClient = firebase.app().functions('us-central1');
         const authPersistence = firebase.auth.Auth.Persistence;
         let pendingReferralUid = '';
+
+        // ==================== ACTIVATION APP CHECK (reCAPTCHA v3) ====================
+        if (typeof firebase !== 'undefined' && firebase.appCheck) {
+            try {
+                const appCheck = firebase.appCheck();
+                appCheck.activate(
+                    "6LfOLcQsAAAAAFDWFvD9RtKw-6hdpYXl1zXKcMG6",
+                    true
+                );
+                console.log('✅ App Check activé avec reCAPTCHA v3');
+            } catch(e) {
+                console.warn('App Check déjà activé ou erreur:', e);
+            }
+        }
+        // ============================================================================
 
         function nettoyerSessionsLegacy() {
             localStorage.removeItem('typhSession');
