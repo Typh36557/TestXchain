@@ -42,13 +42,12 @@ if ('serviceWorker' in navigator) {
 
         const firebaseConfig = {
             apiKey: "AIzaSyAXxYGXAcQhuCssE7c40mxoy5bHx-FACOA",
-            authDomain: "typhxchain.firebaseapp.com",
-            databaseURL: "https://typhxchain-default-rtdb.firebaseio.com",
-            projectId: "typhxchain",
-            storageBucket: "typhxchain.firebasestorage.app",
+            authDomain: "x-chain-2.firebaseapp.com",
+            databaseURL: "https://x-chain-2-default-rtdb.firebaseio.com",
+            projectId: "x-chain-2",
+            storageBucket: "x-chain-2.firebasestorage.app",
             messagingSenderId: "1036771874416",
-            appId: "1:1036771874416:web:aeca9ac347f6bbcc9886b5",
-            measurementId: "G-DHMY4MSP9Y"
+            appId: "1:1036771874416:web:aeca9ac347f6bbcc9886b5"
         };
         
         firebase.initializeApp(firebaseConfig);
