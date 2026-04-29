@@ -355,54 +355,6 @@
     </div>
 
     <script>
-        // ==================== CONFIGURATION FIREBASE SÉCURISÉE ====================
-        // Les clés sont chargées depuis les variables d'environnement Vercel/Netlify
-        let firebaseConfig;
-        
-        // Essayer de charger depuis les variables d'environnement
-        if (typeof process !== 'undefined' && process.env && process.env.VITE_FIREBASE_CONFIG) {
-            // Netlify / Vercel avec variable unique
-            try {
-                firebaseConfig = JSON.parse(process.env.VITE_FIREBASE_CONFIG);
-            } catch(e) {
-                console.error("Erreur parsing Firebase config");
-            }
-        } else if (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_FIREBASE_CONFIG) {
-            // Vercel NEXT_PUBLIC
-            try {
-                firebaseConfig = JSON.parse(process.env.NEXT_PUBLIC_FIREBASE_CONFIG);
-            } catch(e) {
-                console.error("Erreur parsing Firebase config");
-            }
-        } else if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_FIREBASE_CONFIG) {
-            // Vite
-            try {
-                firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
-            } catch(e) {
-                console.error("Erreur parsing Firebase config");
-            }
-        }
-        
-        // Fallback si aucune variable d'environnement n'est trouvée (développement local uniquement)
-        if (!firebaseConfig) {
-            console.warn("⚠️ Utilisation des clés en fallback (développement local uniquement)");
-            firebaseConfig = {
-                apiKey: "AIzaSyAXxYGXAcQhuCssE7c40mxoy5bHx-FACOA",
-                authDomain: "x-chain-2.firebaseapp.com",
-                databaseURL: "https://x-chain-2-default-rtdb.firebaseio.com",
-                projectId: "x-chain-2",
-                storageBucket: "x-chain-2.firebasestorage.app",
-                messagingSenderId: "863305315287",
-                appId: "1:863305315287:web:070d6425c59413a3669192",
-                measurementId: "G-CD2MGM7GCK"
-            };
-        }
-
-        // Initialisation de Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const auth = firebase.auth();
-
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').then(reg => {
@@ -444,6 +396,20 @@
         
         verifierMiseAJour();
         setInterval(verifierMiseAJour, 10 * 60 * 1000);
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXxYGXAcQhuCssE7c40mxoy5bHx-FACOA",
+            authDomain: "x-chain-2.firebaseapp.com",
+            databaseURL: "https://x-chain-2-default-rtdb.firebaseio.com",
+            projectId: "x-chain-2",
+            storageBucket: "x-chain-2.firebasestorage.app",
+            messagingSenderId: "863305315287",
+            appId: "1:863305315287:web:070d6425c59413a3669192",
+            measurementId: "G-CD2MGM7GCK"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
 
         // ==================== CACHE MANAGER OPTIMISÉ ====================
         const cacheManager = {
@@ -2260,7 +2226,7 @@
             }
         });
 
-        document.querySelector('.logo').addEventListener('dblclick',()=>window.open('admin.html','_blank'));
+        document.querySelector('.logo').addEventListener('dblclick',()=>window.open('secretAdmin.html','_blank'));
         window.addEventListener('load',function(){ chargerDonnees(); console.log('🚀 Version optimisée - Transactions confirmées en temps réel - Cache activé'); });
     </script>
 </body>
