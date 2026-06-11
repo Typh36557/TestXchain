@@ -2,54 +2,55 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>DÉCHIFFREMENT - TYPH X-CHAIN</title>
+    <title>RESTAURATION BACKUP - TYPH X-CHAIN</title>
     <style>
         body { font-family: monospace; background: #0A0F1F; color: white; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .card { background: #131B2F; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .card { background: #131B2F; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #3B82F6; }
         button { background: #3B82F6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin: 10px; }
         .btn-danger { background: #EF4444; }
         .btn-success { background: #10B981; }
-        pre { background: #0A0F1F; padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 12px; max-height: 400px; overflow-y: auto; }
+        .btn-warning { background: #F59E0B; }
+        pre { background: #0A0F1F; padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 12px; max-height: 500px; overflow-y: auto; }
         .log-success { color: #10B981; }
         .log-error { color: #EF4444; }
         .log-warning { color: #F59E0B; }
+        input, select { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; background: #1A253C; color: white; border: 1px solid #2D3A4A; }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>🔓 DÉCHIFFREMENT DES DONNÉES</h1>
-        
-        <div class="card">
-            <h2>⚠️ Attention !</h2>
-            <p>Ce script va DÉCHIFFRER toutes les données chiffrées.</p>
-            <p>Les numéros et noms redeviendront LISIBLES en clair dans Firebase.</p>
-            <p><strong>Cette opération est IRRÉVERSIBLE (sauf backup).</strong></p>
-        </div>
+        <h1>📦 RESTAURATION GLOBALE - BACKUP</h1>
         
         <div class="card">
             <h2>🔑 Connexion Admin</h2>
-            <input type="email" id="email" placeholder="Email admin" style="width:100%; padding:10px; margin:5px 0; border-radius:8px;">
-            <input type="password" id="password" placeholder="Mot de passe" style="width:100%; padding:10px; margin:5px 0; border-radius:8px;">
+            <input type="email" id="email" placeholder="Email admin">
+            <input type="password" id="password" placeholder="Mot de passe">
             <button onclick="connexion()">🔓 Se connecter</button>
             <div id="auth-status"></div>
         </div>
         
         <div class="card" id="actions-card" style="display: none;">
-            <h2>⚙️ Actions</h2>
-            <button onclick="sauvegarderBackup()" style="background:#F59E0B;">💾 1. Sauvegarder (backup)</button>
-            <button onclick="dechiffrerTout()" style="background:#10B981;">🔓 2. DÉCHIFFRER toutes les données</button>
-            <button onclick="verifierDechiffrement()" style="background:#3B82F6;">🔍 3. Vérifier</button>
+            <h2>📋 Étape 1 : Choisir la backup</h2>
+            <select id="backup-select">
+                <option value="">-- Chargement des backups --</option>
+            </select>
+            <button onclick="afficherBackup()">🔍 Afficher le contenu</button>
+            
+            <div id="backup-preview"></div>
+            
+            <h2>⚙️ Étape 2 : Restaurer</h2>
+            <button class="btn-warning" onclick="restaurerBackup()">⚠️ RESTAURER POUR TOUS LES UTILISATEURS</button>
+            
             <div id="progress"></div>
         </div>
         
         <div class="card">
             <h2>📝 Logs</h2>
-            <pre id="logs">En attente de connexion...</pre>
+            <pre id="logs">En attente...</pre>
         </div>
     </div>
 
@@ -66,32 +67,14 @@
         const auth = firebase.auth();
         
         let utilisateurCourant = null;
-        let backupEffectue = false;
+        let backupData = null;
         
         function log(message, type = 'info') {
             const logsDiv = document.getElementById('logs');
-            const color = type === 'error' ? '#EF4444' : (type === 'warning' ? '#F59E0B' : '#10B981');
+            const color = type === 'error' ? '#EF4444' : (type === 'success' ? '#10B981' : (type === 'warning' ? '#F59E0B' : '#3B82F6'));
             logsDiv.innerHTML += `<div style="color: ${color}">[${new Date().toLocaleTimeString()}] ${message}</div>`;
             logsDiv.scrollTop = logsDiv.scrollHeight;
             console.log(message);
-        }
-        
-        function getCleChiffrement(uid) {
-            return CryptoJS.SHA256(uid + "typhxchain-salt-2024").toString();
-        }
-        
-        function dechiffrerDonnee(donneeChiffree, uid) {
-            if (!donneeChiffree || !uid) return donneeChiffree;
-            if (typeof donneeChiffree !== "string") return donneeChiffree;
-            if (!donneeChiffree.startsWith("U2FsdGVkX1")) return donneeChiffree;
-            try {
-                const cle = getCleChiffrement(uid);
-                const bytes = CryptoJS.AES.decrypt(donneeChiffree, cle);
-                return bytes.toString(CryptoJS.enc.Utf8);
-            } catch(e) {
-                log(`Erreur déchiffrement: ${e.message}`, 'error');
-                return donneeChiffree;
-            }
         }
         
         async function connexion() {
@@ -104,113 +87,129 @@
                 utilisateurCourant = userCredential.user;
                 statusDiv.innerHTML = `<div style="color:#10B981;">✅ Connecté: ${email}</div>`;
                 document.getElementById('actions-card').style.display = 'block';
-                log(`✅ Connecté avec succès - UID: ${utilisateurCourant.uid}`);
+                log(`✅ Connecté - UID: ${utilisateurCourant.uid}`);
+                chargerListeBackups();
             } catch(error) {
                 statusDiv.innerHTML = `<div style="color:#EF4444;">❌ ${error.message}</div>`;
                 log(`❌ Erreur: ${error.message}`, 'error');
             }
         }
         
-        async function sauvegarderBackup() {
-            log("📦 Sauvegarde en cours...");
+        async function chargerListeBackups() {
+            log("🔍 Recherche des backups...");
+            const select = document.getElementById('backup-select');
+            
             try {
-                const snapshot = await database.ref('donnees/utilisateurs').once('value');
-                await database.ref('backup/avant_dechiffrement').set({
-                    data: snapshot.val(),
-                    date: new Date().toISOString(),
-                    uid: utilisateurCourant.uid
-                });
-                backupEffectue = true;
-                log("✅ Backup sauvegardé dans 'backup/avant_dechiffrement'");
+                const snapshot = await database.ref('backup').once('value');
+                const backups = snapshot.val() || {};
+                
+                select.innerHTML = '<option value="">-- Sélectionnez une backup --</option>';
+                
+                for (const [key, value] of Object.entries(backups)) {
+                    const date = value.date || 'Date inconnue';
+                    select.innerHTML += `<option value="${key}">📁 ${key} - ${date}</option>`;
+                }
+                
+                log(`✅ ${Object.keys(backups).length} backup(s) trouvé(s)`);
+                
+                if (Object.keys(backups).length === 0) {
+                    log("⚠️ Aucune backup trouvée dans 'backup/'", 'warning');
+                }
+                
             } catch(error) {
-                log(`❌ Erreur backup: ${error.message}`, 'error');
+                log(`❌ Erreur: ${error.message}`, 'error');
+                select.innerHTML = '<option value="">-- Erreur chargement --</option>';
             }
         }
         
-        async function dechiffrerTout() {
-            if (!utilisateurCourant) {
-                log("❌ Connectez-vous d'abord", 'error');
+        async function afficherBackup() {
+            const backupId = document.getElementById('backup-select').value;
+            const previewDiv = document.getElementById('backup-preview');
+            
+            if (!backupId) {
+                previewDiv.innerHTML = '<div style="color:#F59E0B;">Sélectionnez une backup</div>';
                 return;
             }
             
-            if (!backupEffectue && !confirm("Aucun backup ! Continuer quand même ?")) return;
-            
-            log("🔓 DÉCHIFFREMENT en cours...");
+            log(`🔍 Chargement de la backup: ${backupId}`);
+            previewDiv.innerHTML = '<div>Chargement...</div>';
             
             try {
-                const snapshot = await database.ref('donnees/utilisateurs').once('value');
-                const utilisateurs = snapshot.val() || {};
+                const snapshot = await database.ref(`backup/${backupId}`).once('value');
+                backupData = snapshot.val();
                 
-                let totalDechiffres = 0;
-                
-                for (const [uid, user] of Object.entries(utilisateurs)) {
-                    log(`📝 Traitement: ${uid.substring(0,15)}...`);
+                if (backupData && backupData.data) {
+                    const utilisateurs = backupData.data.utilisateurs || {};
+                    const totalUsers = Object.keys(utilisateurs).length;
+                    let totalNumeros = 0;
                     
-                    if (user.numeros) {
-                        for (const [id, num] of Object.entries(user.numeros)) {
-                            let modifie = false;
-                            const updates = {};
-                            
-                            if (num.nom && typeof num.nom === 'string' && num.nom.startsWith("U2FsdGVkX1")) {
-                                const dechiffre = dechiffrerDonnee(num.nom, uid);
-                                if (dechiffre && dechiffre !== num.nom) {
-                                    updates.nom = dechiffre;
-                                    modifie = true;
-                                }
-                            }
-                            
-                            if (num.numero && typeof num.numero === 'string' && num.numero.startsWith("U2FsdGVkX1")) {
-                                const dechiffre = dechiffrerDonnee(num.numero, uid);
-                                if (dechiffre && dechiffre !== num.numero) {
-                                    updates.numero = dechiffre;
-                                    modifie = true;
-                                }
-                            }
-                            
-                            if (modifie) {
-                                await database.ref(`donnees/utilisateurs/${uid}/numeros/${id}`).update(updates);
-                                totalDechiffres++;
-                                log(`  ✅ Déchiffré: ${updates.nom || updates.numero}`, 'success');
-                            }
-                        }
+                    for (const [uid, user] of Object.entries(utilisateurs)) {
+                        if (user.numeros) totalNumeros += Object.keys(user.numeros).length;
                     }
+                    
+                    previewDiv.innerHTML = `
+                        <div style="background:#1A253C; padding:15px; border-radius:8px; margin-top:10px;">
+                            <div style="color:#10B981;">✅ Backup chargée</div>
+                            <div>📅 Date: ${backupData.date || 'Inconnue'}</div>
+                            <div>👥 Utilisateurs: ${totalUsers}</div>
+                            <div>📞 Numéros: ${totalNumeros}</div>
+                            <div>📁 Chemin: backup/${backupId}</div>
+                        </div>
+                    `;
+                    log(`✅ Backup chargée: ${totalUsers} utilisateurs, ${totalNumeros} numéros`);
+                } else {
+                    previewDiv.innerHTML = '<div style="color:#EF4444;">Structure de backup invalide</div>';
+                    log("❌ Structure de backup invalide", 'error');
                 }
                 
-                log("=========================================");
-                log(`✅ DÉCHIFFREMENT TERMINÉ ! ${totalDechiffres} données déchiffrées`);
-                log("=========================================");
-                
             } catch(error) {
+                previewDiv.innerHTML = `<div style="color:#EF4444;">❌ Erreur: ${error.message}</div>`;
                 log(`❌ Erreur: ${error.message}`, 'error');
             }
         }
         
-        async function verifierDechiffrement() {
-            log("🔍 Vérification...");
+        async function restaurerBackup() {
+            if (!backupData || !backupData.data) {
+                log("❌ Aucune backup chargée", 'error');
+                return;
+            }
+            
+            if (!confirm("⚠️⚠️⚠️ Voulez-vous RESTAURER cette backup pour TOUS les utilisateurs ?\n\nLes données actuelles seront REMPLACÉES !\n\nCette action est IRRÉVERSIBLE !")) {
+                return;
+            }
+            
+            log("🚀 DÉBUT DE LA RESTAURATION GLOBALE...");
+            log("📦 Restauration des utilisateurs...");
             
             try {
-                const snapshot = await database.ref('donnees/utilisateurs').once('value');
-                const utilisateurs = snapshot.val() || {};
+                const backupUtilisateurs = backupData.data.utilisateurs || {};
+                const totalUsers = Object.keys(backupUtilisateurs).length;
+                let traites = 0;
+                let erreurs = 0;
                 
-                let resteChiffre = 0;
-                
-                for (const [uid, user] of Object.entries(utilisateurs)) {
-                    if (user.numeros) {
-                        for (const [id, num] of Object.entries(user.numeros)) {
-                            if (num.nom && num.nom.startsWith("U2FsdGVkX1")) resteChiffre++;
-                            if (num.numero && num.numero.startsWith("U2FsdGVkX1")) resteChiffre++;
-                        }
+                for (const [uid, userData] of Object.entries(backupUtilisateurs)) {
+                    try {
+                        // Restaurer les données utilisateur
+                        await database.ref(`donnees/utilisateurs/${uid}`).set(userData);
+                        traites++;
+                        log(`✅ Utilisateur ${uid.substring(0,15)}... restauré (${traites}/${totalUsers})`, 'success');
+                    } catch(e) {
+                        erreurs++;
+                        log(`❌ Erreur pour ${uid.substring(0,15)}...: ${e.message}`, 'error');
                     }
                 }
                 
-                if (resteChiffre === 0) {
-                    log("✅ TOUTES les données sont en CLAIR !");
-                } else {
-                    log(`⚠️ ${resteChiffre} données encore chiffrées. Relancez le déchiffrement.`, 'warning');
-                }
+                log("=========================================");
+                log(`✅ RESTAURATION TERMINÉE !`);
+                log(`📊 Utilisateurs restaurés: ${traites}`);
+                log(`❌ Erreurs: ${erreurs}`);
+                log("=========================================");
+                
+                alert(`✅ Restauration terminée !\n\nUtilisateurs restaurés: ${traites}\nErreurs: ${erreurs}`);
                 
             } catch(error) {
-                log(`❌ Erreur: ${error.message}`, 'error');
+                log(`❌ Erreur globale: ${error.message}`, 'error');
+                alert(`❌ Erreur: ${error.message}`);
             }
         }
     </script>
