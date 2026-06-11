@@ -2,101 +2,58 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Migration des données - TYPH X-CHAIN</title>
+    <title>DÉCHIFFREMENT - TYPH X-CHAIN</title>
     <style>
-        body {
-            font-family: monospace;
-            background: #0A0F1F;
-            color: #FFFFFF;
-            padding: 20px;
-        }
+        body { font-family: monospace; background: #0A0F1F; color: white; padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; }
-        .card {
-            background: #131B2F;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #3B82F6;
-        }
-        button {
-            background: #3B82F6;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 10px;
-        }
-        button:hover { opacity: 0.9; }
+        .card { background: #131B2F; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        button { background: #3B82F6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin: 10px; }
         .btn-danger { background: #EF4444; }
         .btn-success { background: #10B981; }
-        pre {
-            background: #0A0F1F;
-            padding: 10px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-size: 12px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .log { color: #10B981; }
-        .error { color: #EF4444; }
-        .warning { color: #F59E0B; }
+        pre { background: #0A0F1F; padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 12px; max-height: 400px; overflow-y: auto; }
+        .log-success { color: #10B981; }
+        .log-error { color: #EF4444; }
+        .log-warning { color: #F59E0B; }
     </style>
-    
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    
-    <!-- CryptoJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>🔐 Migration des données - TYPH X-CHAIN</h1>
+        <h1>🔓 DÉCHIFFREMENT DES DONNÉES</h1>
         
         <div class="card">
             <h2>⚠️ Attention !</h2>
-            <p>Cette opération va CHIFFRER toutes les données sensibles de votre base de données.</p>
-            <p>Elle est <strong>IRRÉVERSIBLE</strong> sans backup.</p>
-            <p>Assurez-vous d'avoir une sauvegarde avant de continuer.</p>
+            <p>Ce script va DÉCHIFFRER toutes les données chiffrées.</p>
+            <p>Les numéros et noms redeviendront LISIBLES en clair dans Firebase.</p>
+            <p><strong>Cette opération est IRRÉVERSIBLE (sauf backup).</strong></p>
         </div>
         
         <div class="card">
-            <h2>📋 Étapes à suivre :</h2>
-            <ol>
-                <li>✅ Se connecter avec le compte ADMIN</li>
-                <li>📦 Sauvegarder les données</li>
-                <li>🔐 Exécuter la migration (chiffrement)</li>
-                <li>✔️ Vérifier le résultat</li>
-            </ol>
-        </div>
-        
-        <div class="card">
-            <h2>🔑 Connexion</h2>
-            <input type="email" id="email" placeholder="Email admin" style="width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px;">
-            <input type="password" id="password" placeholder="Mot de passe" style="width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px;">
+            <h2>🔑 Connexion Admin</h2>
+            <input type="email" id="email" placeholder="Email admin" style="width:100%; padding:10px; margin:5px 0; border-radius:8px;">
+            <input type="password" id="password" placeholder="Mot de passe" style="width:100%; padding:10px; margin:5px 0; border-radius:8px;">
             <button onclick="connexion()">🔓 Se connecter</button>
             <div id="auth-status"></div>
         </div>
         
         <div class="card" id="actions-card" style="display: none;">
             <h2>⚙️ Actions</h2>
-            <button onclick="sauvegarderBackup()" style="background: #F59E0B;">💾 1. Sauvegarder les données</button>
-            <button onclick="migrerToutesDonnees()" style="background: #10B981;">🔐 2. Lancer la migration (chiffrement)</button>
-            <button onclick="verifierChiffrement()" style="background: #3B82F6;">🔍 3. Vérifier le chiffrement</button>
+            <button onclick="sauvegarderBackup()" style="background:#F59E0B;">💾 1. Sauvegarder (backup)</button>
+            <button onclick="dechiffrerTout()" style="background:#10B981;">🔓 2. DÉCHIFFRER toutes les données</button>
+            <button onclick="verifierDechiffrement()" style="background:#3B82F6;">🔍 3. Vérifier</button>
             <div id="progress"></div>
         </div>
         
         <div class="card">
             <h2>📝 Logs</h2>
-            <pre id="logs">En attente...</pre>
+            <pre id="logs">En attente de connexion...</pre>
         </div>
     </div>
 
     <script>
-        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAC6xQXWg_5EplLDPQu_7RuuQ0NrCUSQ2g",
             authDomain: "typhxchain.firebaseapp.com",
@@ -111,8 +68,7 @@
         let utilisateurCourant = null;
         let backupEffectue = false;
         
-        // Fonction pour logger
-        function log(message, type = 'log') {
+        function log(message, type = 'info') {
             const logsDiv = document.getElementById('logs');
             const color = type === 'error' ? '#EF4444' : (type === 'warning' ? '#F59E0B' : '#10B981');
             logsDiv.innerHTML += `<div style="color: ${color}">[${new Date().toLocaleTimeString()}] ${message}</div>`;
@@ -120,210 +76,141 @@
             console.log(message);
         }
         
-        // Fonctions de chiffrement (identiques à celles de index.html)
         function getCleChiffrement(uid) {
             return CryptoJS.SHA256(uid + "typhxchain-salt-2024").toString();
         }
         
-        function chiffrerDonnee(donnee, uid) {
-            if (!donnee || !uid || donnee === "") return donnee;
-            if (typeof donnee !== "string") return donnee;
-            // Si déjà chiffré, ne pas rechiffrer
-            if (donnee.startsWith("U2FsdGVkX1")) return donnee;
+        function dechiffrerDonnee(donneeChiffree, uid) {
+            if (!donneeChiffree || !uid) return donneeChiffree;
+            if (typeof donneeChiffree !== "string") return donneeChiffree;
+            if (!donneeChiffree.startsWith("U2FsdGVkX1")) return donneeChiffree;
             try {
                 const cle = getCleChiffrement(uid);
-                return CryptoJS.AES.encrypt(donnee, cle).toString();
+                const bytes = CryptoJS.AES.decrypt(donneeChiffree, cle);
+                return bytes.toString(CryptoJS.enc.Utf8);
             } catch(e) {
-                log(`Erreur chiffrement: ${e.message}`, 'error');
-                return donnee;
+                log(`Erreur déchiffrement: ${e.message}`, 'error');
+                return donneeChiffree;
             }
         }
         
-        // Connexion
         async function connexion() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const statusDiv = document.getElementById('auth-status');
             
-            if (!email || !password) {
-                statusDiv.innerHTML = '<div style="color:#EF4444;">❌ Email et mot de passe requis</div>';
-                return;
-            }
-            
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 utilisateurCourant = userCredential.user;
-                statusDiv.innerHTML = `<div style="color:#10B981;">✅ Connecté en tant que: ${email}</div>`;
+                statusDiv.innerHTML = `<div style="color:#10B981;">✅ Connecté: ${email}</div>`;
                 document.getElementById('actions-card').style.display = 'block';
                 log(`✅ Connecté avec succès - UID: ${utilisateurCourant.uid}`);
-                
-                // Vérifier si c'est un admin (optionnel)
-                if (utilisateurCourant.uid !== "VOTRE_UID_ADMIN") {
-                    log("⚠️ Attention: Vous n'êtes pas connecté avec le compte admin principal", 'warning');
-                }
-                
             } catch(error) {
-                statusDiv.innerHTML = `<div style="color:#EF4444;">❌ Erreur: ${error.message}</div>`;
-                log(`❌ Erreur connexion: ${error.message}`, 'error');
+                statusDiv.innerHTML = `<div style="color:#EF4444;">❌ ${error.message}</div>`;
+                log(`❌ Erreur: ${error.message}`, 'error');
             }
         }
         
-        // 1. Sauvegarder les données
         async function sauvegarderBackup() {
-            if (!utilisateurCourant) {
-                log("❌ Connectez-vous d'abord", 'error');
-                return;
-            }
-            
-            log("📦 Début de la sauvegarde...");
-            
+            log("📦 Sauvegarde en cours...");
             try {
-                const snapshot = await database.ref('donnees').once('value');
-                const toutesDonnees = snapshot.val();
-                
-                // Sauvegarder dans un endroit sûr
-                await database.ref('backup/avant_chiffrement').set({
-                    data: toutesDonnees,
+                const snapshot = await database.ref('donnees/utilisateurs').once('value');
+                await database.ref('backup/avant_dechiffrement').set({
+                    data: snapshot.val(),
                     date: new Date().toISOString(),
-                    utilisateur: utilisateurCourant.email,
                     uid: utilisateurCourant.uid
                 });
-                
                 backupEffectue = true;
-                log("✅ Sauvegarde effectuée avec succès dans 'backup/avant_chiffrement'");
-                log(`📊 ${Object.keys(toutesDonnees?.utilisateurs || {}).length} utilisateurs sauvegardés`);
-                
+                log("✅ Backup sauvegardé dans 'backup/avant_dechiffrement'");
             } catch(error) {
-                log(`❌ Erreur sauvegarde: ${error.message}`, 'error');
+                log(`❌ Erreur backup: ${error.message}`, 'error');
             }
         }
         
-        // 2. Migrer toutes les données
-        async function migrerToutesDonnees() {
+        async function dechiffrerTout() {
             if (!utilisateurCourant) {
                 log("❌ Connectez-vous d'abord", 'error');
                 return;
             }
             
-            if (!backupEffectue) {
-                log("⚠️ Faites d'abord une sauvegarde !", 'warning');
-                if (!confirm("Aucune sauvegarde détectée. Continuer quand même ?")) return;
-            }
+            if (!backupEffectue && !confirm("Aucun backup ! Continuer quand même ?")) return;
             
-            log("🔐 Début de la migration (chiffrement)...");
+            log("🔓 DÉCHIFFREMENT en cours...");
             
             try {
                 const snapshot = await database.ref('donnees/utilisateurs').once('value');
                 const utilisateurs = snapshot.val() || {};
                 
-                let totalNumeros = 0;
-                let totalAdresses = 0;
-                let numerosMigres = 0;
-                let adressesMigrees = 0;
+                let totalDechiffres = 0;
                 
                 for (const [uid, user] of Object.entries(utilisateurs)) {
-                    log(`📝 Traitement de l'utilisateur: ${uid.substring(0, 15)}...`);
+                    log(`📝 Traitement: ${uid.substring(0,15)}...`);
                     
-                    // Migrer les numéros
                     if (user.numeros) {
                         for (const [id, num] of Object.entries(user.numeros)) {
-                            totalNumeros++;
                             let modifie = false;
                             const updates = {};
                             
-                            if (num.nom && typeof num.nom === 'string' && !num.nom.startsWith("U2FsdGVkX1")) {
-                                updates.nom = chiffrerDonnee(num.nom, uid);
-                                modifie = true;
+                            if (num.nom && typeof num.nom === 'string' && num.nom.startsWith("U2FsdGVkX1")) {
+                                const dechiffre = dechiffrerDonnee(num.nom, uid);
+                                if (dechiffre && dechiffre !== num.nom) {
+                                    updates.nom = dechiffre;
+                                    modifie = true;
+                                }
                             }
                             
-                            if (num.numero && typeof num.numero === 'string' && !num.numero.startsWith("U2FsdGVkX1")) {
-                                updates.numero = chiffrerDonnee(num.numero, uid);
-                                modifie = true;
+                            if (num.numero && typeof num.numero === 'string' && num.numero.startsWith("U2FsdGVkX1")) {
+                                const dechiffre = dechiffrerDonnee(num.numero, uid);
+                                if (dechiffre && dechiffre !== num.numero) {
+                                    updates.numero = dechiffre;
+                                    modifie = true;
+                                }
                             }
                             
                             if (modifie) {
                                 await database.ref(`donnees/utilisateurs/${uid}/numeros/${id}`).update(updates);
-                                numerosMigres++;
-                                log(`  ✅ Numéro migré: ${num.nom || '?'} → chiffré`);
-                            }
-                        }
-                    }
-                    
-                    // Migrer les adresses liées
-                    if (user.adressesLiees) {
-                        for (const [id, addr] of Object.entries(user.adressesLiees)) {
-                            totalAdresses++;
-                            let modifie = false;
-                            const updates = {};
-                            
-                            if (addr.label && typeof addr.label === 'string' && !addr.label.startsWith("U2FsdGVkX1")) {
-                                updates.label = chiffrerDonnee(addr.label, uid);
-                                modifie = true;
-                            }
-                            
-                            if (addr.adresse && typeof addr.adresse === 'string' && !addr.adresse.startsWith("U2FsdGVkX1")) {
-                                updates.adresse = chiffrerDonnee(addr.adresse, uid);
-                                modifie = true;
-                            }
-                            
-                            if (modifie) {
-                                await database.ref(`donnees/utilisateurs/${uid}/adressesLiees/${id}`).update(updates);
-                                adressesMigrees++;
-                                log(`  ✅ Adresse migrée: ${addr.label || '?'} → chiffré`);
+                                totalDechiffres++;
+                                log(`  ✅ Déchiffré: ${updates.nom || updates.numero}`, 'success');
                             }
                         }
                     }
                 }
                 
                 log("=========================================");
-                log(`✅ MIGRATION TERMINÉE !`);
-                log(`📊 Total numéros: ${totalNumeros} | Migrés: ${numerosMigres}`);
-                log(`📊 Total adresses: ${totalAdresses} | Migrées: ${adressesMigrees}`);
+                log(`✅ DÉCHIFFREMENT TERMINÉ ! ${totalDechiffres} données déchiffrées`);
                 log("=========================================");
                 
             } catch(error) {
-                log(`❌ Erreur migration: ${error.message}`, 'error');
+                log(`❌ Erreur: ${error.message}`, 'error');
             }
         }
         
-        // 3. Vérifier le chiffrement
-        async function verifierChiffrement() {
-            if (!utilisateurCourant) {
-                log("❌ Connectez-vous d'abord", 'error');
-                return;
-            }
-            
-            log("🔍 Vérification du chiffrement...");
+        async function verifierDechiffrement() {
+            log("🔍 Vérification...");
             
             try {
                 const snapshot = await database.ref('donnees/utilisateurs').once('value');
                 const utilisateurs = snapshot.val() || {};
                 
-                let nonChiffres = 0;
+                let resteChiffre = 0;
                 
                 for (const [uid, user] of Object.entries(utilisateurs)) {
                     if (user.numeros) {
                         for (const [id, num] of Object.entries(user.numeros)) {
-                            if (num.nom && typeof num.nom === 'string' && !num.nom.startsWith("U2FsdGVkX1")) {
-                                log(`⚠️ Donnée non chiffrée trouvée: ${uid.substring(0,10)}... nom: ${num.nom}`, 'warning');
-                                nonChiffres++;
-                            }
-                            if (num.numero && typeof num.numero === 'string' && !num.numero.startsWith("U2FsdGVkX1")) {
-                                log(`⚠️ Donnée non chiffrée trouvée: ${uid.substring(0,10)}... numero: ${num.numero}`, 'warning');
-                                nonChiffres++;
-                            }
+                            if (num.nom && num.nom.startsWith("U2FsdGVkX1")) resteChiffre++;
+                            if (num.numero && num.numero.startsWith("U2FsdGVkX1")) resteChiffre++;
                         }
                     }
                 }
                 
-                if (nonChiffres === 0) {
-                    log("✅ TOUTES les données sont correctement chiffrées !");
+                if (resteChiffre === 0) {
+                    log("✅ TOUTES les données sont en CLAIR !");
                 } else {
-                    log(`⚠️ ${nonChiffres} données non chiffrées trouvées. Relancez la migration.`, 'warning');
+                    log(`⚠️ ${resteChiffre} données encore chiffrées. Relancez le déchiffrement.`, 'warning');
                 }
                 
             } catch(error) {
-                log(`❌ Erreur vérification: ${error.message}`, 'error');
+                log(`❌ Erreur: ${error.message}`, 'error');
             }
         }
     </script>
