@@ -311,37 +311,6 @@
             return nettoye.substring(0, 2) + '** ** ** **';
         }
         
-        // État des affichages pour le bouton 👀
-        let etatsVision = {};
-        
-        function toggleVisionNumeros(idUnique, nomClair, numeroClair) {
-            const nomElement = document.getElementById(`${idUnique}-nom`);
-            const numeroElement = document.getElementById(`${idUnique}-numero`);
-            
-            if (!etatsVision[idUnique]) {
-                etatsVision[idUnique] = false;
-            }
-            
-            if (etatsVision[idUnique]) {
-                // Passer en mode masqué
-                nomElement.innerHTML = `${echapperHTML(masquerNom(nomClair))} <button class="btn-toggle-vision" onclick="toggleVisionNumeros('${idUnique}', '${echapperHTML(nomClair)}', '${echapperHTML(numeroClair)}')"><i class="fas fa-eye"></i></button>`;
-                numeroElement.textContent = masquerNumero(numeroClair);
-                etatsVision[idUnique] = false;
-            } else {
-                // Passer en mode visible (en clair)
-                nomElement.innerHTML = `${echapperHTML(nomClair)} <button class="btn-toggle-vision" onclick="toggleVisionNumeros('${idUnique}', '${echapperHTML(nomClair)}', '${echapperHTML(numeroClair)}')"><i class="fas fa-eye-slash"></i></button>`;
-                numeroElement.textContent = numeroClair;
-                etatsVision[idUnique] = true;
-                
-                // Masquer automatiquement après 15 secondes
-                setTimeout(() => {
-                    if (etatsVision[idUnique] === true) {
-                        toggleVisionNumeros(idUnique, nomClair, numeroClair);
-                    }
-                }, 15000);
-            }
-        }
-        
         // Cache pour les taux
         const cacheTaux = {
             donnees: null,
@@ -910,6 +879,47 @@
             }
         }
 
+        function toggleVisionNumero(uniqueId, nomClair, numeroClair) {
+            const nomMasqueSpan = document.getElementById(`nom-masque-${uniqueId}`);
+            const nomClairSpan = document.getElementById(`nom-clair-${uniqueId}`);
+            const numMasqueSpan = document.getElementById(`num-masque-${uniqueId}`);
+            const numClairSpan = document.getElementById(`num-clair-${uniqueId}`);
+            const container = document.getElementById(`container-${uniqueId}`);
+            const bouton = container?.querySelector('.btn-toggle-vision');
+            
+            if (!nomMasqueSpan || !nomClairSpan) {
+                console.error('Éléments non trouvés pour', uniqueId);
+                return;
+            }
+            
+            if (nomMasqueSpan.style.display !== 'none') {
+                // Afficher en clair
+                nomMasqueSpan.style.display = 'none';
+                nomClairSpan.style.display = 'inline';
+                numMasqueSpan.style.display = 'none';
+                numClairSpan.style.display = 'inline';
+                if (bouton) bouton.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                
+                // Masquer automatiquement après 15 secondes
+                setTimeout(() => {
+                    if (nomMasqueSpan.style.display === 'none') {
+                        nomMasqueSpan.style.display = 'inline';
+                        nomClairSpan.style.display = 'none';
+                        numMasqueSpan.style.display = 'inline';
+                        numClairSpan.style.display = 'none';
+                        if (bouton) bouton.innerHTML = '<i class="fas fa-eye"></i>';
+                    }
+                }, 15000);
+            } else {
+                // Remasquer immédiatement
+                nomMasqueSpan.style.display = 'inline';
+                nomClairSpan.style.display = 'none';
+                numMasqueSpan.style.display = 'inline';
+                numClairSpan.style.display = 'none';
+                if (bouton) bouton.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        }
+
         function mettreAJourNumerosUtilisateur() {
             const liste = document.getElementById('liste-numeros-utilisateur');
             if(!liste) return;
@@ -919,28 +929,38 @@
                 return;
             }
             
-            liste.innerHTML = Object.entries(numeros).map(([id, num]) => {
+            let html = '';
+            let index = 0;
+            
+            for (const [id, num] of Object.entries(numeros)) {
                 const nomDechiffre = dechiffrerDonnee(num.nom, monUid);
                 const numeroDechiffre = dechiffrerDonnee(num.numero, monUid);
                 const nomMasque = masquerNom(nomDechiffre);
                 const numeroMasque = masquerNumero(numeroDechiffre);
-                const idUnique = `numero-${id}`;
+                const uniqueId = `item_${Date.now()}_${index}_${id}`;
+                index++;
                 
-                return `
-                    <div class="numero-item">
+                html += `
+                    <div class="numero-item" id="container-${uniqueId}">
                         <div class="numero-info">
                             <div class="numero-nom">
-                                <span id="${idUnique}-nom">${echapperHTML(nomMasque)}</span>
-                                <button class="btn-toggle-vision" onclick="toggleVisionNumeros('${idUnique}', '${echapperHTML(nomDechiffre)}', '${echapperHTML(numeroDechiffre)}')">
+                                <span id="nom-masque-${uniqueId}">${echapperHTML(nomMasque)}</span>
+                                <span id="nom-clair-${uniqueId}" style="display:none;">${echapperHTML(nomDechiffre)}</span>
+                                <button class="btn-toggle-vision" onclick="toggleVisionNumero('${uniqueId}', '${echapperHTML(nomDechiffre)}', '${echapperHTML(numeroDechiffre)}')">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
-                            <div class="numero-value" id="${idUnique}-numero">${echapperHTML(numeroMasque)}</div>
+                            <div class="numero-value">
+                                <span id="num-masque-${uniqueId}">${echapperHTML(numeroMasque)}</span>
+                                <span id="num-clair-${uniqueId}" style="display:none;">${echapperHTML(numeroDechiffre)}</span>
+                            </div>
                         </div>
                         <div class="numero-status status-${echapperHTML(num.statut)}">${num.statut === 'en_attente' ? 'En attente' : (num.statut === 'approuve' ? 'Approuvé' : 'Rejeté')}</div>
                     </div>
                 `;
-            }).join('');
+            }
+            
+            liste.innerHTML = html;
         }
 
         function mettreAJourListeNumerosVente() {
@@ -1600,7 +1620,7 @@
         }
 
         document.querySelector('.logo').addEventListener('dblclick',()=>window.open('admin.html','_blank'));
-        window.addEventListener('load',function(){ chargerDonnees(); console.log('🚀 Page index chargée - Version optimisée (sync 30min) - Avec chiffrement et bouton 👀'); });
+        window.addEventListener('load',function(){ chargerDonnees(); console.log('🚀 Page index chargée - Version avec chiffrement et bouton 👀 corrigé'); });
     </script>
 </body>
 </html>
