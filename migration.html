@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>IMPORT BACKUP - TYPH X-CHAIN</title>
+    <title>RESTAURATION COMPLÈTE - TYPH X-CHAIN</title>
     <style>
         body { font-family: monospace; background: #0A0F1F; color: white; padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; }
@@ -15,6 +15,7 @@
         .log-success { color: #10B981; }
         .log-error { color: #EF4444; }
         .log-warning { color: #F59E0B; }
+        .log-info { color: #3B82F6; }
         input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; background: #1A253C; color: white; border: 1px solid #2D3A4A; }
         .file-input {
             background: #1A253C;
@@ -26,6 +27,7 @@
             margin: 20px 0;
         }
         .file-input:hover { border-color: #10B981; background: #1A253C; }
+        .stats { background: #0A0F1F; padding: 15px; border-radius: 12px; margin: 10px 0; }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -33,7 +35,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>📤 IMPORT BACKUP - TYPH X-CHAIN</h1>
+        <h1>📦 RESTAURATION COMPLÈTE - TYPH X-CHAIN</h1>
         
         <div class="card">
             <h2>🔑 Connexion Admin</h2>
@@ -44,17 +46,19 @@
         </div>
         
         <div class="card" id="actions-card" style="display: none;">
-            <h2>📂 Étape 1 : Importer le fichier backup.json</h2>
+            <h2>📂 Importer le fichier backup.json</h2>
             
             <div class="file-input" onclick="document.getElementById('file-input').click()">
-                📁 Cliquez ou glissez votre fichier backup.json ici
+                📁 Cliquez pour sélectionner votre fichier backup.json
                 <input type="file" id="file-input" accept=".json" style="display: none;" onchange="importerFichier(event)">
             </div>
             
             <div id="backup-preview"></div>
             
-            <h2>⚙️ Étape 2 : Restaurer</h2>
-            <button class="btn-warning" id="btn-restaurer" onclick="restaurerBackup()" disabled>⚠️ RESTAURER POUR TOUS LES UTILISATEURS</button>
+            <div id="restore-section" style="display: none;">
+                <h2>⚙️ Restaurer</h2>
+                <button class="btn-warning" onclick="restaurerComplet()">⚠️ RESTAURATION COMPLÈTE (Utilisateurs + Numéros + Adresses)</button>
+            </div>
             
             <div id="progress"></div>
         </div>
@@ -79,7 +83,6 @@
         
         let utilisateurCourant = null;
         let backupData = null;
-        let backupFileName = null;
         
         function log(message, type = 'info') {
             const logsDiv = document.getElementById('logs');
@@ -110,128 +113,145 @@
             const file = event.target.files[0];
             if (!file) return;
             
-            backupFileName = file.name;
-            log(`📁 Fichier sélectionné: ${backupFileName}`);
+            log(`📁 Fichier: ${file.name}`);
             
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const contenu = JSON.parse(e.target.result);
-                    backupData = contenu;
-                    afficherApercuBackup(contenu);
+                    backupData = JSON.parse(e.target.result);
+                    analyserEtAfficherBackup(backupData);
+                    document.getElementById('restore-section').style.display = 'block';
                     log(`✅ Fichier importé avec succès`, 'success');
-                    document.getElementById('btn-restaurer').disabled = false;
                 } catch(error) {
-                    log(`❌ Erreur de lecture JSON: ${error.message}`, 'error');
+                    log(`❌ Erreur JSON: ${error.message}`, 'error');
                     document.getElementById('backup-preview').innerHTML = `<div style="color:#EF4444;">❌ Fichier JSON invalide</div>`;
-                    document.getElementById('btn-restaurer').disabled = true;
                 }
             };
             reader.readAsText(file);
         }
         
-        function afficherApercuBackup(data) {
+        function analyserEtAfficherBackup(data) {
             const previewDiv = document.getElementById('backup-preview');
             
-            let utilisateurs = {};
-            let totalNumeros = 0;
-            let totalUsers = 0;
+            let stats = {
+                totalUsers: 0,
+                totalNumeros: 0,
+                totalAdresses: 0,
+                structure: "inconnue"
+            };
             
-            // Détection de la structure
+            // Extraire les utilisateurs (quelle que soit la structure)
+            let utilisateurs = null;
+            
             if (data.data && data.data.utilisateurs) {
                 utilisateurs = data.data.utilisateurs;
-                totalUsers = Object.keys(utilisateurs).length;
-                for (const [uid, user] of Object.entries(utilisateurs)) {
-                    if (user.numeros) totalNumeros += Object.keys(user.numeros).length;
-                }
-                
-                previewDiv.innerHTML = `
-                    <div style="background:#1A253C; padding:15px; border-radius:8px; margin-top:10px;">
-                        <div style="color:#10B981;">✅ Fichier valide</div>
-                        <div>📁 Fichier: ${backupFileName}</div>
-                        <div>📅 Date backup: ${data.date || 'Non spécifiée'}</div>
-                        <div>👥 Utilisateurs: ${totalUsers}</div>
-                        <div>📞 Numéros: ${totalNumeros}</div>
-                        <div>📊 Structure: backup complète</div>
-                    </div>
-                `;
-                
+                stats.structure = "backup/data/utilisateurs";
             } else if (data.utilisateurs) {
                 utilisateurs = data.utilisateurs;
-                totalUsers = Object.keys(utilisateurs).length;
+                stats.structure = "backup/utilisateurs";
+            } else if (data.donnees && data.donnees.utilisateurs) {
+                utilisateurs = data.donnees.utilisateurs;
+                stats.structure = "backup/donnees/utilisateurs";
+            }
+            
+            if (utilisateurs) {
+                stats.totalUsers = Object.keys(utilisateurs).length;
+                
                 for (const [uid, user] of Object.entries(utilisateurs)) {
-                    if (user.numeros) totalNumeros += Object.keys(user.numeros).length;
+                    if (user.numeros) stats.totalNumeros += Object.keys(user.numeros).length;
+                    if (user.adressesLiees) stats.totalAdresses += Object.keys(user.adressesLiees).length;
                 }
                 
                 previewDiv.innerHTML = `
-                    <div style="background:#1A253C; padding:15px; border-radius:8px; margin-top:10px;">
-                        <div style="color:#10B981;">✅ Fichier valide</div>
-                        <div>📁 Fichier: ${backupFileName}</div>
-                        <div>👥 Utilisateurs: ${totalUsers}</div>
-                        <div>📞 Numéros: ${totalNumeros}</div>
-                        <div>📊 Structure: utilisateurs</div>
+                    <div class="stats">
+                        <div style="color:#10B981;">✅ Backup valide</div>
+                        <div>📁 Structure: ${stats.structure}</div>
+                        <div>👥 Utilisateurs: ${stats.totalUsers}</div>
+                        <div>📞 Numéros: ${stats.totalNumeros}</div>
+                        <div>🔗 Adresses crypto: ${stats.totalAdresses}</div>
                     </div>
                 `;
-                
             } else {
-                previewDiv.innerHTML = `<div style="color:#EF4444;">❌ Structure de fichier non reconnue</div>`;
-                document.getElementById('btn-restaurer').disabled = true;
+                previewDiv.innerHTML = `<div class="stats" style="color:#EF4444;">❌ Structure non reconnue. La backup ne contient pas de données utilisateurs.</div>`;
+                document.getElementById('restore-section').style.display = 'none';
             }
+            
+            // Sauvegarder les utilisateurs extraits
+            window.utilisateursBackup = utilisateurs;
         }
         
-        async function restaurerBackup() {
-            if (!backupData) {
-                log("❌ Aucun fichier backup chargé", 'error');
+        async function restaurerComplet() {
+            if (!window.utilisateursBackup) {
+                log("❌ Aucune backup chargée", 'error');
                 return;
             }
             
-            if (!confirm("⚠️⚠️⚠️ Voulez-vous RESTAURER cette backup pour TOUS les utilisateurs ?\n\nLes données actuelles seront REMPLACÉES !\n\nCette action est IRRÉVERSIBLE !")) {
+            const totalUsers = Object.keys(window.utilisateursBackup).length;
+            
+            if (!confirm(`⚠️⚠️⚠️ RESTAURATION COMPLÈTE\n\nUtilisateurs: ${totalUsers}\nNuméros: ${Object.values(window.utilisateursBackup).reduce((s,u) => s + (u.numeros ? Object.keys(u.numeros).length : 0), 0)}\nAdresses: ${Object.values(window.utilisateursBackup).reduce((s,u) => s + (u.adressesLiees ? Object.keys(u.adressesLiees).length : 0), 0)}\n\nContinuer ?`)) {
                 return;
             }
             
-            log("🚀 DÉBUT DE LA RESTAURATION GLOBALE...");
+            log("🚀 DÉBUT DE LA RESTAURATION COMPLÈTE...");
             
-            try {
-                // Extraire les utilisateurs selon la structure
-                let utilisateurs = {};
-                if (backupData.data && backupData.data.utilisateurs) {
-                    utilisateurs = backupData.data.utilisateurs;
-                } else if (backupData.utilisateurs) {
-                    utilisateurs = backupData.utilisateurs;
-                } else {
-                    throw new Error("Structure de backup non reconnue");
-                }
-                
-                const totalUsers = Object.keys(utilisateurs).length;
-                let traites = 0;
-                let erreurs = 0;
-                
-                log(`📦 ${totalUsers} utilisateur(s) à restaurer...`);
-                
-                for (const [uid, userData] of Object.entries(utilisateurs)) {
-                    try {
-                        // Restaurer les données utilisateur
-                        await database.ref(`donnees/utilisateurs/${uid}`).set(userData);
-                        traites++;
-                        log(`✅ Utilisateur ${uid.substring(0,15)}... restauré (${traites}/${totalUsers})`, 'success');
-                    } catch(e) {
-                        erreurs++;
-                        log(`❌ Erreur pour ${uid.substring(0,15)}...: ${e.message}`, 'error');
+            let traites = 0;
+            let erreurs = 0;
+            let numerosRestores = 0;
+            let adressesRestores = 0;
+            
+            for (const [uid, userData] of Object.entries(window.utilisateursBackup)) {
+                try {
+                    // Restaurer les informations de base
+                    const baseInfo = {
+                        id: userData.id,
+                        nom: userData.nom,
+                        email: userData.email,
+                        dateInscription: userData.dateInscription,
+                        codePIN: userData.codePIN || { actif: false },
+                        toursGratuits: userData.toursGratuits || 0,
+                        filleulsCount: userData.filleulsCount || 0,
+                        parrainId: userData.parrainId || '',
+                        bonusParrainageDonne: userData.bonusParrainageDonne || false
+                    };
+                    
+                    await database.ref(`donnees/utilisateurs/${uid}`).update(baseInfo);
+                    
+                    // Restaurer les numéros UN PAR UN
+                    if (userData.numeros) {
+                        for (const [numId, numData] of Object.entries(userData.numeros)) {
+                            await database.ref(`donnees/utilisateurs/${uid}/numeros/${numId}`).set(numData);
+                            numerosRestores++;
+                            log(`📞 Numéro restauré: ${numData.nom || '?'} -> ${uid.substring(0,10)}...`, 'info');
+                        }
                     }
+                    
+                    // Restaurer les adresses UN PAR UN
+                    if (userData.adressesLiees) {
+                        for (const [addrId, addrData] of Object.entries(userData.adressesLiees)) {
+                            await database.ref(`donnees/utilisateurs/${uid}/adressesLiees/${addrId}`).set(addrData);
+                            adressesRestores++;
+                            log(`🔗 Adresse restaurée: ${addrData.label || '?'} -> ${uid.substring(0,10)}...`, 'info');
+                        }
+                    }
+                    
+                    traites++;
+                    log(`✅ Utilisateur ${uid.substring(0,15)}... restauré (${traites}/${totalUsers})`, 'success');
+                    
+                } catch(e) {
+                    erreurs++;
+                    log(`❌ Erreur pour ${uid.substring(0,15)}...: ${e.message}`, 'error');
                 }
-                
-                log("=========================================");
-                log(`✅ RESTAURATION TERMINÉE !`);
-                log(`📊 Utilisateurs restaurés: ${traites}`);
-                log(`❌ Erreurs: ${erreurs}`);
-                log("=========================================");
-                
-                alert(`✅ Restauration terminée !\n\nUtilisateurs restaurés: ${traites}\nErreurs: ${erreurs}`);
-                
-            } catch(error) {
-                log(`❌ Erreur globale: ${error.message}`, 'error');
-                alert(`❌ Erreur: ${error.message}`);
             }
+            
+            log("=========================================");
+            log(`✅ RESTAURATION TERMINÉE !`);
+            log(`📊 Utilisateurs restaurés: ${traites}/${totalUsers}`);
+            log(`📞 Numéros restaurés: ${numerosRestores}`);
+            log(`🔗 Adresses restaurées: ${adressesRestores}`);
+            log(`❌ Erreurs: ${erreurs}`);
+            log("=========================================");
+            
+            alert(`✅ Restauration terminée !\n\n👥 Utilisateurs: ${traites}\n📞 Numéros: ${numerosRestores}\n🔗 Adresses: ${adressesRestores}\n❌ Erreurs: ${erreurs}`);
         }
     </script>
 </body>
