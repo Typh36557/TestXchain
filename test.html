@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST - Chiffrement TYPH X-CHAIN</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: monospace;
+            background: #0A0F1F;
+            color: #fff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #131B2F;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #3B82F6;
+        }
+        h1, h2 {
+            color: #3B82F6;
+            margin-bottom: 15px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #1A253C;
+            border: 1px solid #2D3A4A;
+            border-radius: 10px;
+            color: #fff;
+            font-family: monospace;
+        }
+        button {
+            background: #3B82F6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #2563EB; }
+        .success { color: #10B981; }
+        .error { color: #EF4444; }
+        .info { color: #F59E0B; }
+        .result-box {
+            background: #0A0F1F;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-ok { background: #10B981; color: white; }
+        .status-error { background: #EF4444; color: white; }
+        .status-warning { background: #F59E0B; color: black; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #2D3A4A;
+        }
+        .numero-item {
+            background: #1A253C;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 TEST CHIFFREMENT TYPH X-CHAIN</h1>
+        
+        <!-- Section Authentification -->
+        <div class="card" id="auth-section">
+            <h2>📱 1. Connexion à votre compte</h2>
+            <input type="email" id="test-email" placeholder="Email" value="">
+            <input type="password" id="test-password" placeholder="Mot de passe">
+            <button onclick="seConnecter()">Se connecter</button>
+            <button onclick="seDeconnecter()">Se déconnecter</button>
+            <div id="auth-status" class="result-box"></div>
+        </div>
+
+        <!-- Section Test Chiffrement -->
+        <div class="card" id="test-section" style="display:none;">
+            <h2>🔒 2. Test Chiffrement / Déchiffrement</h2>
+            
+            <div class="result-box">
+                <strong>UID utilisateur :</strong> <span id="user-uid"></span>
+            </div>
+            
+            <h3>Test 1 : Chiffrer une donnée</h3>
+            <input type="text" id="claire-input" placeholder="Texte en clair (ex: Jean Dupont)">
+            <button onclick="testerChiffrement()">Chiffrer</button>
+            <div id="chiffre-result" class="result-box"></div>
+            
+            <h3>Test 2 : Déchiffrer une donnée</h3>
+            <textarea id="chiffre-input" rows="2" placeholder="Donnée chiffrée (commence par U2FsdGVkX1...)"></textarea>
+            <button onclick="testerDechiffrement()">Déchiffrer</button>
+            <div id="dechiffre-result" class="result-box"></div>
+            
+            <h3>Test 3 : Masquage de nom</h3>
+            <input type="text" id="nom-masque-input" placeholder="Nom complet">
+            <button onclick="testerMasquageNom()">Masquer</button>
+            <div id="masque-nom-result" class="result-box"></div>
+            
+            <h3>Test 4 : Masquage de numéro</h3>
+            <input type="text" id="numero-masque-input" placeholder="Numéro (ex: 0341234567)">
+            <button onclick="testerMasquageNumero()">Masquer</button>
+            <div id="masque-numero-result" class="result-box"></div>
+        </div>
+
+        <!-- Section Lecture Base de Données -->
+        <div class="card" id="database-section" style="display:none;">
+            <h2>📂 3. Lecture de vos données Firebase</h2>
+            <button onclick="lireNumeros()">📞 Lire mes numéros</button>
+            <button onclick="lireTousNumeros()">🔓 Lire et déchiffrer mes numéros</button>
+            <button onclick="ajouterNumeroTest()">➕ Ajouter un numéro de test</button>
+            <button onclick="supprimerNumeroTest()">🗑️ Supprimer les numéros de test</button>
+            
+            <div id="numeros-result" class="result-box"></div>
+        </div>
+
+        <!-- Section Résultat Final -->
+        <div class="card" id="result-section" style="display:none;">
+            <h2>✅ 4. Résultat des tests</h2>
+            <div id="final-result" class="result-box"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC6xQXWg_5EplLDPQu_7RuuQ0NrCUSQ2g",
+            authDomain: "typhxchain.firebaseapp.com",
+            databaseURL: "https://typhxchain-default-rtdb.firebaseio.com",
+            projectId: "typhxchain",
+            storageBucket: "typhxchain.firebasestorage.app",
+            messagingSenderId: "1036771874416",
+            appId: "1:1036771874416:web:aeca9ac347f6bbcc9886b5"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+        
+        let utilisateurCourant = null;
+        let monUid = null;
+        
+        // ========== FONCTIONS DE CHIFFREMENT ==========
+        function getCleChiffrement(uid) {
+            return CryptoJS.SHA256(uid + "typh_xchain_secret_2026").toString();
+        }
+        
+        function chiffrerDonnee(donnee, uid) {
+            if (!donnee || !uid) return donnee;
+            try {
+                const cle = getCleChiffrement(uid);
+                return CryptoJS.AES.encrypt(donnee.toString(), cle).toString();
+            } catch(e) {
+                console.error('Erreur chiffrement:', e);
+                return donnee;
+            }
+        }
+        
+        function dechiffrerDonnee(donneeChiffree, uid) {
+            if (!donneeChiffree || !uid) return donneeChiffree;
+            try {
+                const cle = getCleChiffrement(uid);
+                const bytes = CryptoJS.AES.decrypt(donneeChiffree, cle);
+                const dechiffre = bytes.toString(CryptoJS.enc.Utf8);
+                if (!dechiffre) return donneeChiffree;
+                return dechiffre;
+            } catch(e) {
+                console.error('Erreur déchiffrement:', e);
+                return donneeChiffree;
+            }
+        }
+        
+        function masquerNom(nom) {
+            if (!nom) return '';
+            const parties = nom.split(' ');
+            return parties.map(partie => {
+                if (partie.length <= 2) return partie[0] + '*';
+                return partie[0] + '*'.repeat(Math.min(partie.length - 2, 6)) + partie[partie.length - 1];
+            }).join(' ');
+        }
+        
+        function masquerNumero(numero) {
+            if (!numero) return '';
+            const nettoye = numero.toString().replace(/\s/g, '');
+            if (nettoye.length !== 10) return numero;
+            return nettoye.substring(0, 2) + '** ** ** **';
+        }
+        
+        // ========== AUTHENTIFICATION ==========
+        async function seConnecter() {
+            const email = document.getElementById('test-email').value.trim();
+            const password = document.getElementById('test-password').value.trim();
+            
+            if (!email || !password) {
+                document.getElementById('auth-status').innerHTML = '<span class="error">❌ Entrez email et mot de passe</span>';
+                return;
+            }
+            
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                utilisateurCourant = userCredential.user;
+                monUid = utilisateurCourant.uid;
+                
+                document.getElementById('auth-status').innerHTML = `
+                    <span class="success">✅ Connecté !</span><br>
+                    Email: ${email}<br>
+                    UID: ${monUid}
+                `;
+                
+                document.getElementById('test-section').style.display = 'block';
+                document.getElementById('database-section').style.display = 'block';
+                document.getElementById('result-section').style.display = 'block';
+                document.getElementById('user-uid').textContent = monUid;
+                
+            } catch(error) {
+                document.getElementById('auth-status').innerHTML = `<span class="error">❌ Erreur: ${error.message}</span>`;
+            }
+        }
+        
+        async function seDeconnecter() {
+            await auth.signOut();
+            utilisateurCourant = null;
+            monUid = null;
+            document.getElementById('auth-status').innerHTML = '<span class="info">🔓 Déconnecté</span>';
+            document.getElementById('test-section').style.display = 'none';
+            document.getElementById('database-section').style.display = 'none';
+            document.getElementById('result-section').style.display = 'none';
+        }
+        
+        // ========== TESTS ==========
+        function testerChiffrement() {
+            const texte = document.getElementById('claire-input').value;
+            if (!texte) {
+                document.getElementById('chiffre-result').innerHTML = '<span class="error">❌ Entrez un texte</span>';
+                return;
+            }
+            if (!monUid) {
+                document.getElementById('chiffre-result').innerHTML = '<span class="error">❌ Connectez-vous d\'abord</span>';
+                return;
+            }
+            
+            const chiffre = chiffrerDonnee(texte, monUid);
+            document.getElementById('chiffre-result').innerHTML = `
+                <strong>Texte clair :</strong> ${texte}<br>
+                <strong>Texte chiffré :</strong> <span style="word-break:break-all;">${chiffre}</span><br>
+                <span class="success">✅ Longueur: ${chiffre.length} caractères</span>
+            `;
+        }
+        
+        function testerDechiffrement() {
+            const chiffre = document.getElementById('chiffre-input').value;
+            if (!chiffre) {
+                document.getElementById('dechiffre-result').innerHTML = '<span class="error">❌ Entrez une donnée chiffrée</span>';
+                return;
+            }
+            if (!monUid) {
+                document.getElementById('dechiffre-result').innerHTML = '<span class="error">❌ Connectez-vous d\'abord</span>';
+                return;
+            }
+            
+            const dechiffre = dechiffrerDonnee(chiffre, monUid);
+            document.getElementById('dechiffre-result').innerHTML = `
+                <strong>Donnée chiffrée :</strong> ${chiffre.substring(0, 50)}...<br>
+                <strong>Donnée déchiffrée :</strong> ${dechiffre}<br>
+                ${dechiffre !== chiffre ? '<span class="success">✅ Déchiffrement réussi !</span>' : '<span class="error">❌ Échec du déchiffrement</span>'}
+            `;
+        }
+        
+        function testerMasquageNom() {
+            const nom = document.getElementById('nom-masque-input').value;
+            if (!nom) {
+                document.getElementById('masque-nom-result').innerHTML = '<span class="error">❌ Entrez un nom</span>';
+                return;
+            }
+            const masque = masquerNom(nom);
+            document.getElementById('masque-nom-result').innerHTML = `
+                <strong>Nom original :</strong> ${nom}<br>
+                <strong>Nom masqué :</strong> ${masque}
+            `;
+        }
+        
+        function testerMasquageNumero() {
+            const numero = document.getElementById('numero-masque-input').value;
+            if (!numero) {
+                document.getElementById('masque-numero-result').innerHTML = '<span class="error">❌ Entrez un numéro</span>';
+                return;
+            }
+            const masque = masquerNumero(numero);
+            document.getElementById('masque-numero-result').innerHTML = `
+                <strong>Numéro original :</strong> ${numero}<br>
+                <strong>Numéro masqué :</strong> ${masque}
+            `;
+        }
+        
+        // ========== LECTURE FIREBASE ==========
+        async function lireNumeros() {
+            if (!monUid) {
+                document.getElementById('numeros-result').innerHTML = '<span class="error">❌ Connectez-vous d\'abord</span>';
+                return;
+            }
+            
+            const snapshot = await database.ref(`donnees/utilisateurs/${monUid}/numeros`).once('value');
+            const numeros = snapshot.val() || {};
+            
+            let html = `<strong>📞 Vos numéros (${Object.keys(numeros).length}):</strong><br><br>`;
+            
+            if (Object.keys(numeros).length === 0) {
+                html += '<span class="info">Aucun numéro enregistré</span>';
+            } else {
+                for (const [id, num] of Object.entries(numeros)) {
+                    html += `
+                        <div class="numero-item">
+                            <strong>ID:</strong> ${id}<br>
+                            <strong>Nom (chiffré):</strong> ${num.nom.substring(0, 50)}...<br>
+                            <strong>Numéro (chiffré):</strong> ${num.numero.substring(0, 50)}...<br>
+                            <strong>Statut:</strong> ${num.statut}<br>
+                            <strong>Date:</strong> ${num.dateAjout}
+                        </div>
+                    `;
+                }
+            }
+            
+            document.getElementById('numeros-result').innerHTML = html;
+        }
+        
+        async function lireTousNumeros() {
+            if (!monUid) {
+                document.getElementById('numeros-result').innerHTML = '<span class="error">❌ Connectez-vous d\'abord</span>';
+                return;
+            }
+            
+            const snapshot = await database.ref(`donnees/utilisateurs/${monUid}/numeros`).once('value');
+            const numeros = snapshot.val() || {};
+            
+            let html = `<strong>🔓 Vos numéros déchiffrés:</strong><br><br>`;
+            let reussi = 0;
+            let echec = 0;
+            
+            if (Object.keys(numeros).length === 0) {
+                html += '<span class="info">Aucun numéro enregistré</span>';
+            } else {
+                for (const [id, num] of Object.entries(numeros)) {
+                    const nomClair = dechiffrerDonnee(num.nom, monUid);
+                    const numeroClair = dechiffrerDonnee(num.numero, monUid);
+                    
+                    const nomOk = nomClair && nomClair !== num.nom;
+                    const numeroOk = numeroClair && numeroClair !== num.numero;
+                    
+                    if (nomOk && numeroOk) reussi++;
+                    else echec++;
+                    
+                    html += `
+                        <div class="numero-item">
+                            <strong>ID:</strong> ${id}<br>
+                            <strong>Nom:</strong> ${nomClair} ${nomOk ? '<span class="success">✅</span>' : '<span class="error">❌</span>'}<br>
+                            <strong>Numéro:</strong> ${numeroClair} ${numeroOk ? '<span class="success">✅</span>' : '<span class="error">❌</span>'}<br>
+                            <strong>Statut:</strong> ${num.statut}
+                        </div>
+                    `;
+                }
+            }
+            
+            html += `<br><span class="success">✅ Déchiffrés avec succès: ${reussi}</span><br>`;
+            if (echec > 0) html += `<span class="error">❌ Échecs: ${echec} (données probablement en clair)</span>`;
+            
+            document.getElementById('numeros-result').innerHTML = html;
+            
+            // Résultat final
+            document.getElementById('final-result').innerHTML = `
+                <strong>📊 RÉSULTAT DU TEST:</strong><br><br>
+                ${reussi > 0 ? '<span class="success">✅ Le chiffrement/déchiffrement fonctionne parfaitement !</span><br>' : ''}
+                ${echec > 0 ? '<span class="error">⚠️ Des données sont encore en clair. Utilisez "Ajouter un numéro de test" pour créer des données chiffrées.</span>' : ''}
+                <br><br>
+                <strong>💡 Conclusion:</strong><br>
+                - Si vous voyez vos numéros en clair → ✅ Le déchiffrement fonctionne<br>
+                - Si vous voyez des données étranges → Les anciens numéros sont en clair, il faut les migrer
+            `;
+        }
+        
+        async function ajouterNumeroTest() {
+            if (!monUid) {
+                alert('Connectez-vous d\'abord');
+                return;
+            }
+            
+            const nomTest = "TEST_" + new Date().toLocaleTimeString();
+            const numeroTest = "034" + Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
+            
+            const nomChiffre = chiffrerDonnee(nomTest, monUid);
+            const numeroChiffre = chiffrerDonnee(numeroTest, monUid);
+            
+            const idNumero = Date.now().toString();
+            const nouveauNumero = {
+                nom: nomChiffre,
+                numero: numeroChiffre,
+                statut: 'approuve',
+                dateAjout: new Date().toISOString()
+            };
+            
+            try {
+                await database.ref(`donnees/utilisateurs/${monUid}/numeros/${idNumero}`).set(nouveauNumero);
+                alert(`✅ Numéro de test ajouté !\nNom: ${nomTest}\nNuméro: ${numeroTest}`);
+                lireTousNumeros();
+            } catch(error) {
+                alert('❌ Erreur: ' + error.message);
+            }
+        }
+        
+        async function supprimerNumeroTest() {
+            if (!monUid) {
+                alert('Connectez-vous d\'abord');
+                return;
+            }
+            
+            const snapshot = await database.ref(`donnees/utilisateurs/${monUid}/numeros`).once('value');
+            const numeros = snapshot.val() || {};
+            
+            let supprimes = 0;
+            for (const [id, num] of Object.entries(numeros)) {
+                const nomClair = dechiffrerDonnee(num.nom, monUid);
+                if (nomClair && nomClair.startsWith('TEST_')) {
+                    await database.ref(`donnees/utilisateurs/${monUid}/numeros/${id}`).remove();
+                    supprimes++;
+                }
+            }
+            
+            alert(`🗑️ ${supprimes} numéro(s) de test supprimé(s)`);
+            lireTousNumeros();
+        }
+        
+        // Vérifier si déjà connecté
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                utilisateurCourant = user;
+                monUid = user.uid;
+                document.getElementById('test-email').value = user.email || '';
+                document.getElementById('auth-status').innerHTML = `
+                    <span class="success">✅ Déjà connecté !</span><br>
+                    Email: ${user.email}<br>
+                    UID: ${monUid}
+                `;
+                document.getElementById('test-section').style.display = 'block';
+                document.getElementById('database-section').style.display = 'block';
+                document.getElementById('result-section').style.display = 'block';
+                document.getElementById('user-uid').textContent = monUid;
+            }
+        });
+    </script>
+</body>
+</html>
