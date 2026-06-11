@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>RESTAURATION BACKUP - TYPH X-CHAIN</title>
+    <title>IMPORT BACKUP - TYPH X-CHAIN</title>
     <style>
         body { font-family: monospace; background: #0A0F1F; color: white; padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; }
@@ -15,7 +15,17 @@
         .log-success { color: #10B981; }
         .log-error { color: #EF4444; }
         .log-warning { color: #F59E0B; }
-        input, select { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; background: #1A253C; color: white; border: 1px solid #2D3A4A; }
+        input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; background: #1A253C; color: white; border: 1px solid #2D3A4A; }
+        .file-input {
+            background: #1A253C;
+            border: 2px dashed #3B82F6;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        .file-input:hover { border-color: #10B981; background: #1A253C; }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -23,7 +33,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>📦 RESTAURATION GLOBALE - BACKUP</h1>
+        <h1>📤 IMPORT BACKUP - TYPH X-CHAIN</h1>
         
         <div class="card">
             <h2>🔑 Connexion Admin</h2>
@@ -34,16 +44,17 @@
         </div>
         
         <div class="card" id="actions-card" style="display: none;">
-            <h2>📋 Étape 1 : Choisir la backup</h2>
-            <select id="backup-select">
-                <option value="">-- Chargement des backups --</option>
-            </select>
-            <button onclick="afficherBackup()">🔍 Afficher le contenu</button>
+            <h2>📂 Étape 1 : Importer le fichier backup.json</h2>
+            
+            <div class="file-input" onclick="document.getElementById('file-input').click()">
+                📁 Cliquez ou glissez votre fichier backup.json ici
+                <input type="file" id="file-input" accept=".json" style="display: none;" onchange="importerFichier(event)">
+            </div>
             
             <div id="backup-preview"></div>
             
             <h2>⚙️ Étape 2 : Restaurer</h2>
-            <button class="btn-warning" onclick="restaurerBackup()">⚠️ RESTAURER POUR TOUS LES UTILISATEURS</button>
+            <button class="btn-warning" id="btn-restaurer" onclick="restaurerBackup()" disabled>⚠️ RESTAURER POUR TOUS LES UTILISATEURS</button>
             
             <div id="progress"></div>
         </div>
@@ -68,6 +79,7 @@
         
         let utilisateurCourant = null;
         let backupData = null;
+        let backupFileName = null;
         
         function log(message, type = 'info') {
             const logsDiv = document.getElementById('logs');
@@ -88,89 +100,88 @@
                 statusDiv.innerHTML = `<div style="color:#10B981;">✅ Connecté: ${email}</div>`;
                 document.getElementById('actions-card').style.display = 'block';
                 log(`✅ Connecté - UID: ${utilisateurCourant.uid}`);
-                chargerListeBackups();
             } catch(error) {
                 statusDiv.innerHTML = `<div style="color:#EF4444;">❌ ${error.message}</div>`;
                 log(`❌ Erreur: ${error.message}`, 'error');
             }
         }
         
-        async function chargerListeBackups() {
-            log("🔍 Recherche des backups...");
-            const select = document.getElementById('backup-select');
+        function importerFichier(event) {
+            const file = event.target.files[0];
+            if (!file) return;
             
-            try {
-                const snapshot = await database.ref('backup').once('value');
-                const backups = snapshot.val() || {};
-                
-                select.innerHTML = '<option value="">-- Sélectionnez une backup --</option>';
-                
-                for (const [key, value] of Object.entries(backups)) {
-                    const date = value.date || 'Date inconnue';
-                    select.innerHTML += `<option value="${key}">📁 ${key} - ${date}</option>`;
+            backupFileName = file.name;
+            log(`📁 Fichier sélectionné: ${backupFileName}`);
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const contenu = JSON.parse(e.target.result);
+                    backupData = contenu;
+                    afficherApercuBackup(contenu);
+                    log(`✅ Fichier importé avec succès`, 'success');
+                    document.getElementById('btn-restaurer').disabled = false;
+                } catch(error) {
+                    log(`❌ Erreur de lecture JSON: ${error.message}`, 'error');
+                    document.getElementById('backup-preview').innerHTML = `<div style="color:#EF4444;">❌ Fichier JSON invalide</div>`;
+                    document.getElementById('btn-restaurer').disabled = true;
                 }
-                
-                log(`✅ ${Object.keys(backups).length} backup(s) trouvé(s)`);
-                
-                if (Object.keys(backups).length === 0) {
-                    log("⚠️ Aucune backup trouvée dans 'backup/'", 'warning');
-                }
-                
-            } catch(error) {
-                log(`❌ Erreur: ${error.message}`, 'error');
-                select.innerHTML = '<option value="">-- Erreur chargement --</option>';
-            }
+            };
+            reader.readAsText(file);
         }
         
-        async function afficherBackup() {
-            const backupId = document.getElementById('backup-select').value;
+        function afficherApercuBackup(data) {
             const previewDiv = document.getElementById('backup-preview');
             
-            if (!backupId) {
-                previewDiv.innerHTML = '<div style="color:#F59E0B;">Sélectionnez une backup</div>';
-                return;
-            }
+            let utilisateurs = {};
+            let totalNumeros = 0;
+            let totalUsers = 0;
             
-            log(`🔍 Chargement de la backup: ${backupId}`);
-            previewDiv.innerHTML = '<div>Chargement...</div>';
-            
-            try {
-                const snapshot = await database.ref(`backup/${backupId}`).once('value');
-                backupData = snapshot.val();
-                
-                if (backupData && backupData.data) {
-                    const utilisateurs = backupData.data.utilisateurs || {};
-                    const totalUsers = Object.keys(utilisateurs).length;
-                    let totalNumeros = 0;
-                    
-                    for (const [uid, user] of Object.entries(utilisateurs)) {
-                        if (user.numeros) totalNumeros += Object.keys(user.numeros).length;
-                    }
-                    
-                    previewDiv.innerHTML = `
-                        <div style="background:#1A253C; padding:15px; border-radius:8px; margin-top:10px;">
-                            <div style="color:#10B981;">✅ Backup chargée</div>
-                            <div>📅 Date: ${backupData.date || 'Inconnue'}</div>
-                            <div>👥 Utilisateurs: ${totalUsers}</div>
-                            <div>📞 Numéros: ${totalNumeros}</div>
-                            <div>📁 Chemin: backup/${backupId}</div>
-                        </div>
-                    `;
-                    log(`✅ Backup chargée: ${totalUsers} utilisateurs, ${totalNumeros} numéros`);
-                } else {
-                    previewDiv.innerHTML = '<div style="color:#EF4444;">Structure de backup invalide</div>';
-                    log("❌ Structure de backup invalide", 'error');
+            // Détection de la structure
+            if (data.data && data.data.utilisateurs) {
+                utilisateurs = data.data.utilisateurs;
+                totalUsers = Object.keys(utilisateurs).length;
+                for (const [uid, user] of Object.entries(utilisateurs)) {
+                    if (user.numeros) totalNumeros += Object.keys(user.numeros).length;
                 }
                 
-            } catch(error) {
-                previewDiv.innerHTML = `<div style="color:#EF4444;">❌ Erreur: ${error.message}</div>`;
-                log(`❌ Erreur: ${error.message}`, 'error');
+                previewDiv.innerHTML = `
+                    <div style="background:#1A253C; padding:15px; border-radius:8px; margin-top:10px;">
+                        <div style="color:#10B981;">✅ Fichier valide</div>
+                        <div>📁 Fichier: ${backupFileName}</div>
+                        <div>📅 Date backup: ${data.date || 'Non spécifiée'}</div>
+                        <div>👥 Utilisateurs: ${totalUsers}</div>
+                        <div>📞 Numéros: ${totalNumeros}</div>
+                        <div>📊 Structure: backup complète</div>
+                    </div>
+                `;
+                
+            } else if (data.utilisateurs) {
+                utilisateurs = data.utilisateurs;
+                totalUsers = Object.keys(utilisateurs).length;
+                for (const [uid, user] of Object.entries(utilisateurs)) {
+                    if (user.numeros) totalNumeros += Object.keys(user.numeros).length;
+                }
+                
+                previewDiv.innerHTML = `
+                    <div style="background:#1A253C; padding:15px; border-radius:8px; margin-top:10px;">
+                        <div style="color:#10B981;">✅ Fichier valide</div>
+                        <div>📁 Fichier: ${backupFileName}</div>
+                        <div>👥 Utilisateurs: ${totalUsers}</div>
+                        <div>📞 Numéros: ${totalNumeros}</div>
+                        <div>📊 Structure: utilisateurs</div>
+                    </div>
+                `;
+                
+            } else {
+                previewDiv.innerHTML = `<div style="color:#EF4444;">❌ Structure de fichier non reconnue</div>`;
+                document.getElementById('btn-restaurer').disabled = true;
             }
         }
         
         async function restaurerBackup() {
-            if (!backupData || !backupData.data) {
-                log("❌ Aucune backup chargée", 'error');
+            if (!backupData) {
+                log("❌ Aucun fichier backup chargé", 'error');
                 return;
             }
             
@@ -179,15 +190,25 @@
             }
             
             log("🚀 DÉBUT DE LA RESTAURATION GLOBALE...");
-            log("📦 Restauration des utilisateurs...");
             
             try {
-                const backupUtilisateurs = backupData.data.utilisateurs || {};
-                const totalUsers = Object.keys(backupUtilisateurs).length;
+                // Extraire les utilisateurs selon la structure
+                let utilisateurs = {};
+                if (backupData.data && backupData.data.utilisateurs) {
+                    utilisateurs = backupData.data.utilisateurs;
+                } else if (backupData.utilisateurs) {
+                    utilisateurs = backupData.utilisateurs;
+                } else {
+                    throw new Error("Structure de backup non reconnue");
+                }
+                
+                const totalUsers = Object.keys(utilisateurs).length;
                 let traites = 0;
                 let erreurs = 0;
                 
-                for (const [uid, userData] of Object.entries(backupUtilisateurs)) {
+                log(`📦 ${totalUsers} utilisateur(s) à restaurer...`);
+                
+                for (const [uid, userData] of Object.entries(utilisateurs)) {
                     try {
                         // Restaurer les données utilisateur
                         await database.ref(`donnees/utilisateurs/${uid}`).set(userData);
