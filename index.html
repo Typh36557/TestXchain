@@ -685,8 +685,8 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
             timestamp: 0,
             duree: 30 * 60 * 1000,
             get() { if(this.donnees && (Date.now() - this.timestamp) < this.duree) return this.donnees; return null; },
-            set(donnees) { this.donnees = donnees; this.timestamp = Date.now(); try { localStorage.setItem('tauxCache', JSON.stringify({ data: donnees, timestamp: this.timestamp })); } catch(e) {} },
-            chargerLocal() { try { const cache = localStorage.getItem('tauxCache'); if(cache) { const { data, timestamp } = JSON.parse(cache); if((Date.now() - timestamp) < 3600000) { this.donnees = data; this.timestamp = timestamp; return true; } } } catch(e) {} return false; }
+            set(donnees) { this.donnees = donnees; this.timestamp = Date.now(); try { sessionStorage.setItem('tauxCache', JSON.stringify({ data: donnees, timestamp: this.timestamp })); } catch(e) {} },
+            chargerLocal() { try { const cache = sessionStorage.getItem('tauxCache'); if(cache) { const { data, timestamp } = JSON.parse(cache); if((Date.now() - timestamp) < 3600000) { this.donnees = data; this.timestamp = timestamp; return true; } } } catch(e) {} return false; }
         };
         
         class RateLimiter { constructor(limite = 15, fenetre = 60000) { this.limite = limite; this.fenetre = fenetre; this.requetes = []; } peutExecuter() { const maintenant = Date.now(); this.requetes = this.requetes.filter(t => t > maintenant - this.fenetre); if(this.requetes.length >= this.limite) return false; this.requetes.push(maintenant); return true; } }
@@ -920,7 +920,7 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
         }
         
         function afficherAgeTaux() {
-            const derniereMaj = localStorage.getItem('derniereSyncTaux');
+            const derniereMaj = sessionStorage.getItem('derniereSyncTaux');
             const element = document.getElementById('taux-last-update');
             if(derniereMaj && element) {
                 const age = Math.floor((Date.now() - parseInt(derniereMaj)) / 60000);
@@ -970,7 +970,7 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                     cacheTaux.set(donnees.taux);
                 }
                 afficherTauxSimplifies();
-                localStorage.setItem('derniereSyncTaux', Date.now().toString());
+                sessionStorage.setItem('derniereSyncTaux', Date.now().toString());
                 afficherAgeTaux();
             } catch(e){ console.error(e); } 
         }
@@ -1590,7 +1590,6 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                     adressesUtilisateur = {};
                     toursGratuits = 0;
                     filleulsCount = 0;
-                    localStorage.removeItem('typhSession');
                     sessionStorage.removeItem('typhSession');
                     showLandingPage();
                     mettreAJourAffichage();
@@ -1858,7 +1857,7 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
             return Object.values(numeros).some(num => num.statut === 'approuve');
         }
 
-        let sessionUtilisateur = localStorage.getItem('typhSession');
+        let sessionUtilisateur = sessionStorage.getItem('typhSession');
         if(sessionUtilisateur){ try{ const s=JSON.parse(sessionUtilisateur); monUid = s.uid; }catch(e){} }
 
         auth.onAuthStateChanged(async(fbUser)=>{
@@ -1901,8 +1900,8 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                 }
                 sessionValide = true;
                 const sessionData = { email: fbUser.email, nom: utilisateurCourant.nom, uid: monUid };
-                if(document.getElementById('check-rester-connecte')?.checked) localStorage.setItem('typhSession', JSON.stringify(sessionData));
-                else sessionStorage.setItem('typhSession', JSON.stringify(sessionData));
+                // Stocker UNIQUEMENT en sessionStorage (pas de "rester connecté")
+sessionStorage.setItem('typhSession', JSON.stringify(sessionData));
                 mettreAJourAffichage();
                 demarrerEcouteNumeros();
                 demarrerEcouteAdresses();
