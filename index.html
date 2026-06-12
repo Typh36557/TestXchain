@@ -18,6 +18,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -219,6 +220,7 @@
         .roue-lots { display: none; }
         .user-badge-bottom { background: rgba(59,130,246,0.1); padding: 10px 20px; border-radius: 40px; font-size: 0.9rem; font-weight: 500; color: var(--text-primary); border: 1px solid rgba(59,130,246,0.3); display: inline-flex; align-items: center; gap: 10px; cursor: pointer; transition: var(--transition); margin-bottom: 15px; }
         .user-badge-bottom:hover { background: rgba(59,130,246,0.2); border-color: var(--accent); }
+        .turnstile-container { display: flex; justify-content: center; margin: 15px 0; min-height: 70px; }
         @media (max-width: 768px) { .hero-title { font-size: 2rem; } .rates-grid { grid-template-columns: repeat(2, 1fr); } .pin-digit { width: 45px; height: 45px; font-size: 1.3rem; } .modal-content { padding: 20px; } }
     </style>
 </head>
@@ -304,6 +306,8 @@
                 </p>
             </div>
         </div>
+        <div id="turnstile-container" class="turnstile-container"></div>
+        <div class="error-message" id="erreur-turnstile"><i class="fas fa-exclamation-triangle"></i> <span id="erreur-turnstile-texte">Veuillez vérifier que vous n'êtes pas un robot</span></div>
         <div class="error-message" id="erreur-auth"><i class="fas fa-exclamation-triangle"></i> <span id="erreur-texte"></span></div>
         <button class="btn btn-success" onclick="authentifier()" id="btn-auth"><i class="fas fa-check"></i> Se connecter</button>
     </div></div>
@@ -398,6 +402,10 @@
         let urlParrainage = '';
         let monUid = null;
         
+        // Variables Turnstile
+        let turnstileWidgetId = null;
+        let turnstileToken = null;
+        
         const pairesBinance = { 'USDT':'USDTUSDT','BTC':'BTCUSDT','ETH':'ETHUSDT','BNB':'BNBUSDT','LTC':'LTCUSDT','SOL':'SOLUSDT','TRX':'TRXUSDT','DOGE':'DOGEUSDT','MATIC':'POLUSDT','SUI':'SUIUSDT','XRP':'XRPUSDT','TON':'TONUSDT','POL':'POLUSDT','USDC':'USDCUSDT' };
         
         let lotsRoue = [];
@@ -441,6 +449,55 @@
         function genererIDStable(e,n) { const h=btoa(e+n).replace(/[^a-zA-Z0-9]/g,'').substring(0,8); return `TX-${h}-${Date.now().toString(36)}`; }
         async function hasherPIN(pin){ const salt=crypto.getRandomValues(new Uint8Array(16)); const saltHex=Array.from(salt).map(b=>b.toString(16).padStart(2,'0')).join(''); const data=new TextEncoder().encode(pin+saltHex); const hash=await crypto.subtle.digest('SHA-256',data); const hashHex=Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join(''); return {hash:hashHex,salt:saltHex}; }
         function getMinimumAchat(c){ return c==='TRX'?(donnees.limites?.minAchatTRX||5000):(donnees.limites?.minAchat||2000); }
+
+        // ==================== FONCTIONS TURNSTILE ====================
+        function initialiserTurnstile() {
+            const container = document.getElementById('turnstile-container');
+            if (!container) return;
+            
+            if (turnstileWidgetId !== null && typeof turnstile !== 'undefined') {
+                try { turnstile.reset(turnstileWidgetId); } catch(e) {}
+                turnstileWidgetId = null;
+            }
+            
+            if (typeof turnstile !== 'undefined') {
+                turnstileWidgetId = turnstile.render('turnstile-container', {
+                    sitekey: '0x4AAAAAADjL2e-71suBiWAD',
+                    callback: function(token) {
+                        turnstileToken = token;
+                        document.getElementById('erreur-turnstile').classList.remove('show');
+                        console.log('✅ Turnstile vérifié avec succès');
+                    },
+                    'expired-callback': function() {
+                        turnstileToken = null;
+                        console.log('⏰ Turnstile expiré');
+                    },
+                    'error-callback': function() {
+                        turnstileToken = null;
+                        console.log('❌ Erreur Turnstile');
+                    }
+                });
+            } else {
+                console.log('⏳ Turnstile chargement en cours...');
+                setTimeout(initialiserTurnstile, 500);
+            }
+        }
+
+        function resetTurnstile() {
+            if (turnstileWidgetId !== null && typeof turnstile !== 'undefined') {
+                try { turnstile.reset(turnstileWidgetId); } catch(e) {}
+            }
+            turnstileToken = null;
+        }
+
+        function verifierTurnstile() {
+            if (!turnstileToken) {
+                document.getElementById('erreur-turnstile').classList.add('show');
+                return false;
+            }
+            return true;
+        }
+        // ==================== FIN FONCTIONS TURNSTILE ====================
 
         function obtenirDonneesParDefaut() {
             return {
@@ -1327,16 +1384,24 @@
         }
 
         async function connexion(){
+            if(!verifierTurnstile()) return;
+            
             const e = document.getElementById('email-connexion').value.trim();
             const p = document.getElementById('password-connexion').value.trim();
             if(!e||!p){ afficherErreur('Email et mot de passe requis'); return; }
             try{
                 await auth.signInWithEmailAndPassword(e,p);
                 hideAuthModal();
-            } catch(error){ afficherErreur(error.message); }
+            } catch(error){ 
+                afficherErreur(error.message);
+                resetTurnstile();
+                initialiserTurnstile();
+            }
         }
 
         async function inscription(){
+            if(!verifierTurnstile()) return;
+            
             const n = document.getElementById('nom-inscription').value.trim();
             const e = document.getElementById('email-inscription').value.trim();
             const p = document.getElementById('password-inscription').value.trim();
@@ -1363,7 +1428,11 @@
                 
                 hideAuthModal();
                 alert('Inscription réussie ! ' + (parrainValide ? 'Code parrain enregistré.' : '') + '\n\nAjoutez vos numéros dans votre profil pour commencer à échanger.');
-            } catch(error){ afficherErreur(error.message); }
+            } catch(error){ 
+                afficherErreur(error.message);
+                resetTurnstile();
+                initialiserTurnstile();
+            }
         }
 
         function deconnexion(){
@@ -1405,9 +1474,39 @@
             }
             document.getElementById('modal-auth').classList.add('active'); 
             switchAuthMode('inscription');
+            setTimeout(() => { initialiserTurnstile(); }, 100);
         }
-        function hideAuthModal(){ document.getElementById('modal-auth').classList.remove('active'); document.getElementById('erreur-auth').classList.remove('show'); }
-        function switchAuthMode(m){ modeAuth=m; document.getElementById('connexion-form').style.display=m==='connexion'?'block':'none'; document.getElementById('inscription-form').style.display=m==='inscription'?'block':'none'; const bc=document.getElementById('btn-connexion-mode'); const bi=document.getElementById('btn-inscription-mode'); const ba=document.getElementById('btn-auth'); if(m==='connexion'){ bc.className='btn btn-success'; bi.className='btn'; ba.innerHTML='<i class="fas fa-check"></i> Se connecter'; }else{ bc.className='btn'; bi.className='btn btn-success'; ba.innerHTML='<i class="fas fa-user-plus"></i> S\'inscrire'; } }
+        
+        function hideAuthModal(){ 
+            document.getElementById('modal-auth').classList.remove('active'); 
+            document.getElementById('erreur-auth').classList.remove('show');
+            document.getElementById('erreur-turnstile').classList.remove('show');
+            resetTurnstile();
+            turnstileWidgetId = null;
+        }
+        
+        function switchAuthMode(m){ 
+            modeAuth=m; 
+            document.getElementById('connexion-form').style.display=m==='connexion'?'block':'none'; 
+            document.getElementById('inscription-form').style.display=m==='inscription'?'block':'none'; 
+            const bc=document.getElementById('btn-connexion-mode'); 
+            const bi=document.getElementById('btn-inscription-mode'); 
+            const ba=document.getElementById('btn-auth'); 
+            if(m==='connexion'){ 
+                bc.className='btn btn-success'; 
+                bi.className='btn'; 
+                ba.innerHTML='<i class="fas fa-check"></i> Se connecter'; 
+            }else{ 
+                bc.className='btn'; 
+                bi.className='btn btn-success'; 
+                ba.innerHTML='<i class="fas fa-user-plus"></i> S\'inscrire'; 
+            }
+            if (turnstileWidgetId !== null) {
+                resetTurnstile();
+                initialiserTurnstile();
+            }
+        }
+        
         function authentifier(){ if(modeAuth==='connexion') connexion(); else inscription(); }
         function afficherErreur(m){ document.getElementById('erreur-texte').textContent=m; document.getElementById('erreur-auth').classList.add('show'); }
         function showLandingPage(){ document.getElementById('landing-page').style.display='block'; document.querySelectorAll('.platform-section').forEach(s=>s.classList.remove('active')); document.getElementById('bottom-nav').classList.remove('visible'); }
@@ -2072,7 +2171,7 @@
         }
 
         document.querySelector('.logo').addEventListener('dblclick',()=>window.open('admin.html','_blank'));
-        window.addEventListener('load',function(){ chargerDonnees(); console.log('🚀 Page index chargée - Version optimisée'); });
+        window.addEventListener('load',function(){ chargerDonnees(); console.log('🚀 Page index chargée - Version optimisée avec Cloudflare Turnstile'); });
     </script>
 </body>
 </html>
