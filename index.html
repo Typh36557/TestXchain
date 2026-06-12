@@ -13,12 +13,14 @@
     <meta name="apple-mobile-web-app-title" content="TYPH X-CHAIN">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Typh36557/typhXchain/fb5657f17ca27d8883b2c36b4fa491d92bc1acd6/logo-application.png">
     
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -220,7 +222,7 @@
         .roue-lots { display: none; }
         .user-badge-bottom { background: rgba(59,130,246,0.1); padding: 10px 20px; border-radius: 40px; font-size: 0.9rem; font-weight: 500; color: var(--text-primary); border: 1px solid rgba(59,130,246,0.3); display: inline-flex; align-items: center; gap: 10px; cursor: pointer; transition: var(--transition); margin-bottom: 15px; }
         .user-badge-bottom:hover { background: rgba(59,130,246,0.2); border-color: var(--accent); }
-        .turnstile-container { display: flex; justify-content: center; margin: 15px 0; min-height: 70px; }
+        .cf-turnstile { display: flex; justify-content: center; margin: 15px 0; }
         @media (max-width: 768px) { .hero-title { font-size: 2rem; } .rates-grid { grid-template-columns: repeat(2, 1fr); } .pin-digit { width: 45px; height: 45px; font-size: 1.3rem; } .modal-content { padding: 20px; } }
     </style>
 </head>
@@ -305,9 +307,15 @@
                     <i class="fas fa-info-circle"></i> Entrer le code parrainage et bénéficier 0% des frais au premier envoi
                 </p>
             </div>
+            <!-- Cloudflare Turnstile pour l'inscription -->
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAADjL2e-71suBiWAD" data-callback="onInscriptionTurnstileSuccess" data-expired-callback="onInscriptionTurnstileExpired" data-error-callback="onInscriptionTurnstileError"></div>
+            <div id="turnstile-inscription-status" style="font-size:0.75rem; color:var(--warning); text-align:center; margin-top:5px;"></div>
         </div>
-        <div id="turnstile-container" class="turnstile-container"></div>
-        <div class="error-message" id="erreur-turnstile"><i class="fas fa-exclamation-triangle"></i> <span id="erreur-turnstile-texte">Veuillez vérifier que vous n'êtes pas un robot</span></div>
+        <!-- Cloudflare Turnstile pour la connexion (caché au départ, s'affiche quand formulaire connexion actif) -->
+        <div id="turnstile-connexion-container" style="margin-top:15px; display:none;">
+            <div class="cf-turnstile" id="turnstile-connexion-widget" data-sitekey="0x4AAAAAADjL2e-71suBiWAD" data-callback="onConnexionTurnstileSuccess" data-expired-callback="onConnexionTurnstileExpired" data-error-callback="onConnexionTurnstileError"></div>
+            <div id="turnstile-connexion-status" style="font-size:0.75rem; color:var(--warning); text-align:center; margin-top:5px;"></div>
+        </div>
         <div class="error-message" id="erreur-auth"><i class="fas fa-exclamation-triangle"></i> <span id="erreur-texte"></span></div>
         <button class="btn btn-success" onclick="authentifier()" id="btn-auth"><i class="fas fa-check"></i> Se connecter</button>
     </div></div>
@@ -402,9 +410,9 @@
         let urlParrainage = '';
         let monUid = null;
         
-        // Variables Turnstile
-        let turnstileWidgetId = null;
-        let turnstileToken = null;
+        // Variables pour Turnstile
+        let turnstileInscriptionToken = null;
+        let turnstileConnexionToken = null;
         
         const pairesBinance = { 'USDT':'USDTUSDT','BTC':'BTCUSDT','ETH':'ETHUSDT','BNB':'BNBUSDT','LTC':'LTCUSDT','SOL':'SOLUSDT','TRX':'TRXUSDT','DOGE':'DOGEUSDT','MATIC':'POLUSDT','SUI':'SUIUSDT','XRP':'XRPUSDT','TON':'TONUSDT','POL':'POLUSDT','USDC':'USDCUSDT' };
         
@@ -419,6 +427,233 @@
             { id: 'L5', nom: 'Merci de votre fidélité', type: 'rien', probabilite: 87 }
         ];
 
+        // ========== FONCTIONS TURNSTILE INSCRIPTION ==========
+        function onInscriptionTurnstileSuccess(token) {
+            console.log("✅ Turnstile Inscription validé");
+            turnstileInscriptionToken = token;
+            const statusDiv = document.getElementById('turnstile-inscription-status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i> Vérification humaine réussie';
+                statusDiv.style.color = '#10B981';
+            }
+            // Réactiver le bouton d'authentification
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = false;
+        }
+        
+        function onInscriptionTurnstileExpired() {
+            console.log("⚠️ Turnstile Inscription expiré");
+            turnstileInscriptionToken = null;
+            const statusDiv = document.getElementById('turnstile-inscription-status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Validation expirée, veuillez refaire la vérification';
+                statusDiv.style.color = '#F59E0B';
+            }
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = true;
+        }
+        
+        function onInscriptionTurnstileError(error) {
+            console.log("❌ Erreur Turnstile Inscription:", error);
+            turnstileInscriptionToken = null;
+            const statusDiv = document.getElementById('turnstile-inscription-status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erreur de vérification, veuillez réessayer';
+                statusDiv.style.color = '#EF4444';
+            }
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = true;
+        }
+        
+        // ========== FONCTIONS TURNSTILE CONNEXION ==========
+        function onConnexionTurnstileSuccess(token) {
+            console.log("✅ Turnstile Connexion validé");
+            turnstileConnexionToken = token;
+            const statusDiv = document.getElementById('turnstile-connexion-status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i> Vérification humaine réussie';
+                statusDiv.style.color = '#10B981';
+            }
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = false;
+        }
+        
+        function onConnexionTurnstileExpired() {
+            console.log("⚠️ Turnstile Connexion expiré");
+            turnstileConnexionToken = null;
+            const statusDiv = document.getElementById('turnstile-connexion-status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Validation expirée, veuillez refaire la vérification';
+                statusDiv.style.color = '#F59E0B';
+            }
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = true;
+        }
+        
+        function onConnexionTurnstileError(error) {
+            console.log("❌ Erreur Turnstile Connexion:", error);
+            turnstileConnexionToken = null;
+            const statusDiv = document.getElementById('turnstile-connexion-status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erreur de vérification, veuillez réessayer';
+                statusDiv.style.color = '#EF4444';
+            }
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = true;
+        }
+        
+        // Fonction pour réinitialiser Turnstile lors du changement de mode
+        function resetTurnstileWidgets() {
+            turnstileInscriptionToken = null;
+            turnstileConnexionToken = null;
+            
+            const statusInscription = document.getElementById('turnstile-inscription-status');
+            if(statusInscription) {
+                statusInscription.innerHTML = '';
+            }
+            const statusConnexion = document.getElementById('turnstile-connexion-status');
+            if(statusConnexion) {
+                statusConnexion.innerHTML = '';
+            }
+            
+            // Réinitialiser les widgets Turnstile s'ils existent
+            if(typeof turnstile !== 'undefined') {
+                const inscWidget = document.querySelector('#inscription-form .cf-turnstile');
+                if(inscWidget && inscWidget.querySelector('iframe')) {
+                    turnstile.reset(inscWidget);
+                }
+                const connWidget = document.querySelector('#turnstile-connexion-container .cf-turnstile');
+                if(connWidget && connWidget.querySelector('iframe')) {
+                    turnstile.reset(connWidget);
+                }
+            }
+            
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = true;
+        }
+        
+        // Modifier la fonction switchAuthMode pour gérer l'affichage de Turnstile
+        const originalSwitchAuthMode = window.switchAuthMode;
+        window.switchAuthMode = function(m) {
+            modeAuth = m;
+            const connexionForm = document.getElementById('connexion-form');
+            const inscriptionForm = document.getElementById('inscription-form');
+            const turnstileConnexionContainer = document.getElementById('turnstile-connexion-container');
+            const btnConnexion = document.getElementById('btn-connexion-mode');
+            const btnInscription = document.getElementById('btn-inscription-mode');
+            const btnAuth = document.getElementById('btn-auth');
+            
+            if(m === 'connexion') {
+                connexionForm.style.display = 'block';
+                inscriptionForm.style.display = 'none';
+                turnstileConnexionContainer.style.display = 'block';
+                btnConnexion.className = 'btn btn-success';
+                btnInscription.className = 'btn';
+                btnAuth.innerHTML = '<i class="fas fa-check"></i> Se connecter';
+                btnAuth.disabled = true;
+                resetTurnstileWidgets();
+            } else {
+                connexionForm.style.display = 'none';
+                inscriptionForm.style.display = 'block';
+                turnstileConnexionContainer.style.display = 'none';
+                btnConnexion.className = 'btn';
+                btnInscription.className = 'btn btn-success';
+                btnAuth.innerHTML = '<i class="fas fa-user-plus"></i> S\'inscrire';
+                btnAuth.disabled = true;
+                resetTurnstileWidgets();
+            }
+        };
+        
+        // Modifier la fonction connexion pour inclure la vérification Turnstile
+        async function connexion() {
+            const email = document.getElementById('email-connexion').value.trim();
+            const password = document.getElementById('password-connexion').value.trim();
+            
+            if(!email || !password) { afficherErreur('Email et mot de passe requis'); return; }
+            
+            // Vérifier Turnstile
+            if(!turnstileConnexionToken) {
+                afficherErreur('Veuillez valider le captcha (case "Je ne suis pas un robot")');
+                return;
+            }
+            
+            try {
+                // Ici vous pouvez envoyer le token à votre backend pour vérification
+                // Pour l'instant on continue avec Firebase
+                await auth.signInWithEmailAndPassword(email, password);
+                hideAuthModal();
+                resetTurnstileWidgets();
+            } catch(error) { 
+                afficherErreur(error.message);
+                // Réinitialiser Turnstile en cas d'erreur
+                if(typeof turnstile !== 'undefined') {
+                    const connWidget = document.querySelector('#turnstile-connexion-container .cf-turnstile');
+                    if(connWidget) turnstile.reset(connWidget);
+                }
+                turnstileConnexionToken = null;
+                const btnAuth = document.getElementById('btn-auth');
+                if(btnAuth) btnAuth.disabled = true;
+            }
+        }
+        
+        // Modifier la fonction inscription pour inclure la vérification Turnstile
+        async function inscription() {
+            const nom = document.getElementById('nom-inscription').value.trim();
+            const email = document.getElementById('email-inscription').value.trim();
+            const password = document.getElementById('password-inscription').value.trim();
+            const parrainId = document.getElementById('parrain-id')?.value.trim() || '';
+            
+            if(!nom || !email || !password) { afficherErreur('Tous les champs sont requis'); return; }
+            if(password.length < 6) { afficherErreur('Mot de passe trop court (6 caractères minimum)'); return; }
+            
+            // Vérifier Turnstile
+            if(!turnstileInscriptionToken) {
+                afficherErreur('Veuillez valider le captcha (case "Je ne suis pas un robot")');
+                return;
+            }
+            
+            try {
+                const uc = await auth.createUserWithEmailAndPassword(email, password);
+                await uc.user.updateProfile({displayName: nom});
+                
+                let parrainValide = false;
+                if(parrainId) {
+                    const usersSnap = await database.ref('donnees/utilisateurs').once('value');
+                    const users = usersSnap.val() || {};
+                    for(const [uid, userData] of Object.entries(users)) {
+                        if(userData.id === parrainId || uid === parrainId) {
+                            parrainValide = true;
+                            await database.ref(`donnees/utilisateurs/${uc.user.uid}`).update({ parrainId: uid });
+                            break;
+                        }
+                    }
+                }
+                
+                hideAuthModal();
+                resetTurnstileWidgets();
+                alert('Inscription réussie ! ' + (parrainValide ? 'Code parrain enregistré.' : '') + '\n\nAjoutez vos numéros dans votre profil pour commencer à échanger.');
+            } catch(error) { 
+                afficherErreur(error.message);
+                // Réinitialiser Turnstile en cas d'erreur
+                if(typeof turnstile !== 'undefined') {
+                    const inscWidget = document.querySelector('#inscription-form .cf-turnstile');
+                    if(inscWidget) turnstile.reset(inscWidget);
+                }
+                turnstileInscriptionToken = null;
+                const btnAuth = document.getElementById('btn-auth');
+                if(btnAuth) btnAuth.disabled = true;
+            }
+        }
+        
+        // Remplacer la fonction authentifier
+        function authentifier() { 
+            if(modeAuth === 'connexion') connexion(); 
+            else inscription(); 
+        }
+        
+        // Le reste du code original continue ici...
+        // (Toutes les fonctions existantes sont conservées inchangées)
+        
         function getDemandesTableau() {
             if(!donnees.demandes) return [];
             if(Array.isArray(donnees.demandes)) return donnees.demandes;
@@ -449,55 +684,6 @@
         function genererIDStable(e,n) { const h=btoa(e+n).replace(/[^a-zA-Z0-9]/g,'').substring(0,8); return `TX-${h}-${Date.now().toString(36)}`; }
         async function hasherPIN(pin){ const salt=crypto.getRandomValues(new Uint8Array(16)); const saltHex=Array.from(salt).map(b=>b.toString(16).padStart(2,'0')).join(''); const data=new TextEncoder().encode(pin+saltHex); const hash=await crypto.subtle.digest('SHA-256',data); const hashHex=Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join(''); return {hash:hashHex,salt:saltHex}; }
         function getMinimumAchat(c){ return c==='TRX'?(donnees.limites?.minAchatTRX||5000):(donnees.limites?.minAchat||2000); }
-
-        // ==================== FONCTIONS TURNSTILE ====================
-        function initialiserTurnstile() {
-            const container = document.getElementById('turnstile-container');
-            if (!container) return;
-            
-            if (turnstileWidgetId !== null && typeof turnstile !== 'undefined') {
-                try { turnstile.reset(turnstileWidgetId); } catch(e) {}
-                turnstileWidgetId = null;
-            }
-            
-            if (typeof turnstile !== 'undefined') {
-                turnstileWidgetId = turnstile.render('turnstile-container', {
-                    sitekey: '0x4AAAAAADjL2e-71suBiWAD',
-                    callback: function(token) {
-                        turnstileToken = token;
-                        document.getElementById('erreur-turnstile').classList.remove('show');
-                        console.log('✅ Turnstile vérifié avec succès');
-                    },
-                    'expired-callback': function() {
-                        turnstileToken = null;
-                        console.log('⏰ Turnstile expiré');
-                    },
-                    'error-callback': function() {
-                        turnstileToken = null;
-                        console.log('❌ Erreur Turnstile');
-                    }
-                });
-            } else {
-                console.log('⏳ Turnstile chargement en cours...');
-                setTimeout(initialiserTurnstile, 500);
-            }
-        }
-
-        function resetTurnstile() {
-            if (turnstileWidgetId !== null && typeof turnstile !== 'undefined') {
-                try { turnstile.reset(turnstileWidgetId); } catch(e) {}
-            }
-            turnstileToken = null;
-        }
-
-        function verifierTurnstile() {
-            if (!turnstileToken) {
-                document.getElementById('erreur-turnstile').classList.add('show');
-                return false;
-            }
-            return true;
-        }
-        // ==================== FIN FONCTIONS TURNSTILE ====================
 
         function obtenirDonneesParDefaut() {
             return {
@@ -1383,58 +1569,6 @@
             verifierLimitesVente(); 
         }
 
-        async function connexion(){
-            if(!verifierTurnstile()) return;
-            
-            const e = document.getElementById('email-connexion').value.trim();
-            const p = document.getElementById('password-connexion').value.trim();
-            if(!e||!p){ afficherErreur('Email et mot de passe requis'); return; }
-            try{
-                await auth.signInWithEmailAndPassword(e,p);
-                hideAuthModal();
-            } catch(error){ 
-                afficherErreur(error.message);
-                resetTurnstile();
-                initialiserTurnstile();
-            }
-        }
-
-        async function inscription(){
-            if(!verifierTurnstile()) return;
-            
-            const n = document.getElementById('nom-inscription').value.trim();
-            const e = document.getElementById('email-inscription').value.trim();
-            const p = document.getElementById('password-inscription').value.trim();
-            const parrainId = document.getElementById('parrain-id')?.value.trim() || '';
-            
-            if(!n||!e||!p){ afficherErreur('Tous les champs sont requis'); return; }
-            if(p.length<6){ afficherErreur('Mot de passe trop court (6 caractères minimum)'); return; }
-            try{
-                const uc = await auth.createUserWithEmailAndPassword(e,p);
-                await uc.user.updateProfile({displayName:n});
-                
-                let parrainValide = false;
-                if(parrainId) {
-                    const usersSnap = await database.ref('donnees/utilisateurs').once('value');
-                    const users = usersSnap.val() || {};
-                    for(const [uid, userData] of Object.entries(users)) {
-                        if(userData.id === parrainId || uid === parrainId) {
-                            parrainValide = true;
-                            await database.ref(`donnees/utilisateurs/${uc.user.uid}`).update({ parrainId: uid });
-                            break;
-                        }
-                    }
-                }
-                
-                hideAuthModal();
-                alert('Inscription réussie ! ' + (parrainValide ? 'Code parrain enregistré.' : '') + '\n\nAjoutez vos numéros dans votre profil pour commencer à échanger.');
-            } catch(error){ 
-                afficherErreur(error.message);
-                resetTurnstile();
-                initialiserTurnstile();
-            }
-        }
-
         function deconnexion(){
             if(confirm('Êtes-vous sûr de vouloir vous déconnecter ?')){
                 auth.signOut().then(()=>{
@@ -1473,44 +1607,31 @@
                 parrainInput.value = '';
             }
             document.getElementById('modal-auth').classList.add('active'); 
-            switchAuthMode('inscription');
-            setTimeout(() => { initialiserTurnstile(); }, 100);
+            switchAuthMode('connexion');
         }
         
         function hideAuthModal(){ 
             document.getElementById('modal-auth').classList.remove('active'); 
             document.getElementById('erreur-auth').classList.remove('show');
-            document.getElementById('erreur-turnstile').classList.remove('show');
-            resetTurnstile();
-            turnstileWidgetId = null;
+            resetTurnstileWidgets();
         }
         
-        function switchAuthMode(m){ 
-            modeAuth=m; 
-            document.getElementById('connexion-form').style.display=m==='connexion'?'block':'none'; 
-            document.getElementById('inscription-form').style.display=m==='inscription'?'block':'none'; 
-            const bc=document.getElementById('btn-connexion-mode'); 
-            const bi=document.getElementById('btn-inscription-mode'); 
-            const ba=document.getElementById('btn-auth'); 
-            if(m==='connexion'){ 
-                bc.className='btn btn-success'; 
-                bi.className='btn'; 
-                ba.innerHTML='<i class="fas fa-check"></i> Se connecter'; 
-            }else{ 
-                bc.className='btn'; 
-                bi.className='btn btn-success'; 
-                ba.innerHTML='<i class="fas fa-user-plus"></i> S\'inscrire'; 
-            }
-            if (turnstileWidgetId !== null) {
-                resetTurnstile();
-                initialiserTurnstile();
-            }
+        function afficherErreur(m){ 
+            document.getElementById('erreur-texte').textContent=m; 
+            document.getElementById('erreur-auth').classList.add('show'); 
         }
         
-        function authentifier(){ if(modeAuth==='connexion') connexion(); else inscription(); }
-        function afficherErreur(m){ document.getElementById('erreur-texte').textContent=m; document.getElementById('erreur-auth').classList.add('show'); }
-        function showLandingPage(){ document.getElementById('landing-page').style.display='block'; document.querySelectorAll('.platform-section').forEach(s=>s.classList.remove('active')); document.getElementById('bottom-nav').classList.remove('visible'); }
-        function showPlatform(){ document.getElementById('landing-page').style.display='none'; document.getElementById('bottom-nav').classList.add('visible'); switchPlatformSection('accueil'); }
+        function showLandingPage(){ 
+            document.getElementById('landing-page').style.display='block'; 
+            document.querySelectorAll('.platform-section').forEach(s=>s.classList.remove('active')); 
+            document.getElementById('bottom-nav').classList.remove('visible'); 
+        }
+        
+        function showPlatform(){ 
+            document.getElementById('landing-page').style.display='none'; 
+            document.getElementById('bottom-nav').classList.add('visible'); 
+            switchPlatformSection('accueil'); 
+        }
 
         async function ajouterNumero() {
             if(!utilisateurCourant || !monUid){ showAuthModal(); return; }
@@ -2171,7 +2292,7 @@
         }
 
         document.querySelector('.logo').addEventListener('dblclick',()=>window.open('admin.html','_blank'));
-        window.addEventListener('load',function(){ chargerDonnees(); console.log('🚀 Page index chargée - Version optimisée avec Cloudflare Turnstile'); });
+        window.addEventListener('load',function(){ chargerDonnees(); console.log('🚀 Page index chargée - Version avec Turnstile'); });
     </script>
 </body>
 </html>
