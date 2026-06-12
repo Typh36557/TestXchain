@@ -1,47 +1,33 @@
-const CACHE_NAME = 'typh-xchain-static-v1';
-const APP_SHELL = [
-  '/',
-  '/index.html',
-  '/admin.html',
-  '/assets/css/index.css',
-  '/assets/css/admin.css',
-  '/assets/js/index.js',
-  '/assets/js/admin.js',
-  '/manifest.json',
-  '/version.json'
+const CACHE_NAME = 'typh-xchain-v1';
+const urlsToCache = [
+    '/',
+    '/index.html',
+    '/css/style.css',
+    '/js/config.js',
+    '/js/auth.js',
+    '/js/functions.js',
+    '/js/app.js',
+    '/manifest.json'
 ];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).catch(() => null)
-  );
-  self.skipWaiting();
+self.addEventListener('install', event => {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+    );
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      )
-    )
-  );
-  self.clients.claim();
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        caches.match(event.request).then(response => response || fetch(event.request))
+    );
 });
 
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-      return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200) {
-          return networkResponse;
-        }
-        const responseClone = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone)).catch(() => null);
-        return networkResponse;
-      });
-    }).catch(() => caches.match('/index.html'))
-  );
+self.addEventListener('activate', event => {
+    event.waitUntil(
+        caches.keys().then(keys => Promise.all(
+            keys.map(key => {
+                if(key !== CACHE_NAME) return caches.delete(key);
+            })
+        ))
+    );
 });
