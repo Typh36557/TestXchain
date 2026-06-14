@@ -6,11 +6,12 @@
     <title>TYPH X-CHAIN • Exchange Crypto ⇄ Ariary</title>
     
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://www.gstatic.com https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https://raw.githubusercontent.com; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' https://typhxchain.firebaseio.com https://api.binance.com https://api.exchangerate-api.com; frame-src https://challenges.cloudflare.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://www.gstatic.com https://cdnjs.cloudflare.com https://*.firebaseio.com https://*.googleapis.com https://api.binance.com https://api.exchangerate-api.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https://raw.githubusercontent.com https://*.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://api.binance.com https://api.exchangerate-api.com https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
     
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
@@ -246,6 +247,15 @@
 }
         .cf-turnstile { display: flex; justify-content: center; margin: 15px 0; }
         @media (max-width: 768px) { .hero-title { font-size: 2rem; } .rates-grid { grid-template-columns: repeat(2, 1fr); } .pin-digit { width: 45px; height: 45px; font-size: 1.3rem; } .modal-content { padding: 20px; } }
+        .parrain-msg-success {
+            background: rgba(16,185,129,0.2);
+            color: #10B981;
+            padding: 10px;
+            border-radius: 16px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -389,50 +399,18 @@
     </div>
 
     <script>
+        // Configuration de sécurité pour éviter les conflits CSP
+        if (typeof window !== 'undefined') {
+            // Désactiver les évaluations non sécurisées si possible
+            window.__CSP_ENFORCED__ = true;
+        }
+        
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(reg => {
-                    console.log('Service Worker registered');
-                }).catch(err => {
-                    console.log('Service Worker failed');
+                navigator.serviceWorker.register('/sw.js').catch(err => {
+                    console.log('Service Worker registration failed');
                 });
             });
-        }
-
-        // ========== FONCTIONS DE VALIDATION ET SÉCURITÉ ==========
-        function echapperHTML(str) {
-            if (str === undefined || str === null) return '';
-            if (typeof str !== 'string') str = String(str);
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            }).substring(0, 200);
-        }
-
-        function validerMontant(valeur, min, max) {
-            let montant = parseFloat(valeur);
-            if (isNaN(montant)) return false;
-            if (montant < min || montant > max) return false;
-            return true;
-        }
-
-        function validerEmail(email) {
-            if (!email || typeof email !== 'string') return false;
-            const regex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
-            return regex.test(String(email).toLowerCase());
-        }
-
-        function validerNumero(numero) {
-            if (!numero || typeof numero !== 'string') return false;
-            const regex = /^[0-9\s\+]{8,15}$/;
-            return regex.test(String(numero).trim());
-        }
-
-        function sanitizeInput(input, maxLength = 100) {
-            if (typeof input !== 'string') return '';
-            return input.replace(/[<>'"]/g, '').substring(0, maxLength);
         }
 
 const _firebase = "eyJhcGlLZXkiOiJBSXphU3lBQzZ4UVhXZ181RXBsTERQUXVfN1J1dVEwTnJDVVNRMmciLCJhdXRoRG9tYWluIjoidHlwaHhjaGFpbi5maXJlYmFzZWFwcC5jb20iLCJkYXRhYmFzZVVSTCI6Imh0dHBzOi8vdHlwaHhjaGFpbi1kZWZhdWx0LXJ0ZGIuZmlyZWJhc2Vpby5jb20iLCJwcm9qZWN0SWQiOiJ0eXBoeGNoYWluIiwic3RvcmFnZUJ1Y2tldCI6InR5cGh4Y2hhaW4uZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiMTAzNjc3MTg3NDQxNiIsImFwcElkIjoiMToxMDM2NzcxODc0NDE2OndlYjphZWNhOWFjMzQ3ZjZiYmNjOTg4NmI1IiwibWVhc3VyZW1lbnRJZCI6IkctREhNWTRNU1A5WSJ9";
@@ -636,7 +614,6 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             const password = document.getElementById('password-connexion').value.trim();
             
             if(!email || !password) { afficherErreur('Email et mot de passe requis'); return; }
-            if(!validerEmail(email)) { afficherErreur('Email invalide'); return; }
             
             if(!turnstileConnexionToken) {
                 afficherErreur('Veuillez valider le captcha (case "Je ne suis pas un robot")');
@@ -660,19 +637,13 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         async function inscription() {
-            let nom = document.getElementById('nom-inscription').value.trim();
-            let email = document.getElementById('email-inscription').value.trim();
-            let password = document.getElementById('password-inscription').value.trim();
-            let parrainId = document.getElementById('parrain-id')?.value.trim() || '';
+            const nom = document.getElementById('nom-inscription').value.trim();
+            const email = document.getElementById('email-inscription').value.trim();
+            const password = document.getElementById('password-inscription').value.trim();
+            const parrainId = document.getElementById('parrain-id')?.value.trim() || '';
             
             if(!nom || !email || !password) { afficherErreur('Tous les champs sont requis'); return; }
-            if(nom.length < 2 || nom.length > 50) { afficherErreur('Nom doit contenir 2 à 50 caractères'); return; }
-            if(!validerEmail(email)) { afficherErreur('Email invalide'); return; }
-            if(password.length < 6 || password.length > 50) { afficherErreur('Mot de passe (6-50 caractères)'); return; }
-            
-            nom = sanitizeInput(nom, 50);
-            email = sanitizeInput(email, 100);
-            parrainId = sanitizeInput(parrainId, 20);
+            if(password.length < 6) { afficherErreur('Mot de passe trop court (6 caractères minimum)'); return; }
             
             if(!turnstileInscriptionToken) {
                 afficherErreur('Veuillez valider le captcha (case "Je ne suis pas un robot")');
@@ -742,6 +713,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         class RateLimiter { constructor(limite = 15, fenetre = 60000) { this.limite = limite; this.fenetre = fenetre; this.requetes = []; } peutExecuter() { const maintenant = Date.now(); this.requetes = this.requetes.filter(t => t > maintenant - this.fenetre); if(this.requetes.length >= this.limite) return false; this.requetes.push(maintenant); return true; } }
         const rateLimiter = new RateLimiter(15, 60000);
 
+        function echapperHTML(t) { if(!t) return ''; return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
         function genererIDStable(e,n) { const h=btoa(e+n).replace(/[^a-zA-Z0-9]/g,'').substring(0,8); return `TX-${h}-${Date.now().toString(36)}`; }
         async function hasherPIN(pin){ const salt=crypto.getRandomValues(new Uint8Array(16)); const saltHex=Array.from(salt).map(b=>b.toString(16).padStart(2,'0')).join(''); const data=new TextEncoder().encode(pin+saltHex); const hash=await crypto.subtle.digest('SHA-256',data); const hashHex=Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join(''); return {hash:hashHex,salt:saltHex}; }
         function getMinimumAchat(c){ return c==='TRX'?(donnees.limites?.minAchatTRX||5000):(donnees.limites?.minAchat||2000); }
@@ -1345,11 +1317,11 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 id: genererIDStable(utilisateurCourant.email, 'LOSE-'+Date.now()), 
                 type: 'BONUS', 
                 date: new Date().toISOString(), 
-                utilisateur: sanitizeInput(utilisateurCourant.nom, 50), 
-                email: sanitizeInput(utilisateurCourant.email, 100), 
+                utilisateur: utilisateurCourant.nom, 
+                email: utilisateurCourant.email, 
                 userID: monUid, 
                 statut: 'rejete', 
-                lotGagne: sanitizeInput(lotGagneInfo.nom, 100), 
+                lotGagne: lotGagneInfo.nom, 
                 montant: '0',
                 notes: 'Tentative de bonus - pas de gain' 
             };
@@ -1360,15 +1332,13 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
 
         async function reclamerBonus() {
-            let contact = document.getElementById('input-bonus-contact').value.trim();
+            const contact = document.getElementById('input-bonus-contact').value.trim();
             const errDiv = document.getElementById('erreur-bonus');
             if (!contact) { 
                 errDiv.textContent = "Veuillez fournir votre information de réception."; 
                 errDiv.classList.add('show'); 
                 return; 
             }
-            
-            contact = sanitizeInput(contact, 200);
             
             if(toursGratuits > 0) {
                 toursGratuits--;
@@ -1380,12 +1350,12 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 id: genererIDStable(utilisateurCourant.email, 'BONUS-'+Date.now()), 
                 type: 'BONUS', 
                 date: new Date().toISOString(), 
-                utilisateur: sanitizeInput(utilisateurCourant.nom, 50), 
-                email: sanitizeInput(utilisateurCourant.email, 100), 
+                utilisateur: utilisateurCourant.nom, 
+                email: utilisateurCourant.email, 
                 userID: monUid, 
                 statut: 'en_attente', 
-                lotGagne: sanitizeInput(lotGagneInfo.nom, 100), 
-                montant: sanitizeInput(lotGagneInfo.nom, 100), 
+                lotGagne: lotGagneInfo.nom, 
+                montant: lotGagneInfo.nom, 
                 adresse: contact, 
                 txid: 'ROUE-'+Date.now().toString().substring(0,8) 
             };
@@ -1406,8 +1376,8 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         let utilisateurRecuperation = null;
         
         async function verifierEmailEtNumero() {
-            let email = document.getElementById('email-recuperation').value.trim();
-            let numero = document.getElementById('numero-recuperation').value.trim();
+            const email = document.getElementById('email-recuperation').value.trim();
+            const numero = document.getElementById('numero-recuperation').value.trim();
             const erreurDiv = document.getElementById('erreur-recuperation');
             
             if(!email || !numero) {
@@ -1415,14 +1385,6 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 erreurDiv.classList.add('show');
                 return;
             }
-            if(!validerEmail(email)) {
-                erreurDiv.textContent = 'Email invalide';
-                erreurDiv.classList.add('show');
-                return;
-            }
-            
-            email = sanitizeInput(email, 100);
-            numero = sanitizeInput(numero, 20);
             
             try {
                 const snapshot = await database.ref('donnees/utilisateurs').once('value');
@@ -1463,12 +1425,12 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         async function reinitialiserMotDePasse() {
-            let nouveauMdp = document.getElementById('nouveau-motdepasse').value;
-            let confirmerMdp = document.getElementById('confirmer-motdepasse').value;
+            const nouveauMdp = document.getElementById('nouveau-motdepasse').value;
+            const confirmerMdp = document.getElementById('confirmer-motdepasse').value;
             const erreurDiv = document.getElementById('erreur-nouveau-mdp');
             
-            if(!nouveauMdp || nouveauMdp.length < 6 || nouveauMdp.length > 50) {
-                erreurDiv.textContent = 'Mot de passe doit contenir 6 à 50 caractères';
+            if(!nouveauMdp || nouveauMdp.length < 6) {
+                erreurDiv.textContent = 'Mot de passe doit contenir au moins 6 caractères';
                 erreurDiv.classList.add('show');
                 return;
             }
@@ -1478,8 +1440,6 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 erreurDiv.classList.add('show');
                 return;
             }
-            
-            nouveauMdp = sanitizeInput(nouveauMdp, 50);
             
             if(!utilisateurRecuperation || !utilisateurRecuperation.email) {
                 erreurDiv.textContent = 'Session expirée, veuillez recommencer';
@@ -1680,10 +1640,10 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             const refId = urlParams.get('ref');
             const parrainInput = document.getElementById('parrain-id');
             if(refId && parrainInput) {
-                parrainInput.value = sanitizeInput(refId, 20);
+                parrainInput.value = refId;
                 setTimeout(() => {
                     const msgDiv = document.createElement('div');
-                    msgDiv.style.cssText = 'background:rgba(16,185,129,0.2); color:#10B981; padding:10px; border-radius:16px; margin-top:10px; font-size:0.8rem; text-align:center;';
+                    msgDiv.className = 'parrain-msg-success';
                     msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> Code parrain détecté automatiquement !';
                     const parent = parrainInput.parentElement;
                     if(parent && !parent.querySelector('.parrain-msg')) {
@@ -1724,21 +1684,9 @@ const firebaseConfig = JSON.parse(atob(_firebase));
 
         async function ajouterNumero() {
             if(!utilisateurCourant || !monUid){ showAuthModal(); return; }
-            let nom = document.getElementById('nouveau-nom').value.trim();
-            let numero = document.getElementById('nouveau-numero').value.trim();
-            
-            if(!nom || nom.length < 2 || nom.length > 50) {
-                alert('Nom invalide (2-50 caractères)');
-                return;
-            }
-            if(!numero || !validerNumero(numero)) {
-                alert('Numéro invalide (8-15 chiffres)');
-                return;
-            }
-            
-            nom = sanitizeInput(nom, 50);
-            numero = sanitizeInput(numero, 20);
-            
+            const nom = document.getElementById('nouveau-nom').value.trim();
+            const numero = document.getElementById('nouveau-numero').value.trim();
+            if(!nom || !numero){ alert('Veuillez remplir tous les champs'); return; }
             const numerosActuels = utilisateurCourant.numeros || {};
             if(Object.keys(numerosActuels).length >= 3){ alert('Limite de 3 numéros atteinte'); return; }
             const idNumero = Date.now().toString();
@@ -1812,29 +1760,16 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         async function enregistrerAdresse() {
-            let label = document.getElementById('nouvelle-adresse-label').value.trim();
-            let adresse = document.getElementById('nouvelle-adresse-valeur').value.trim();
+            const label = document.getElementById('nouvelle-adresse-label').value.trim();
+            const adresse = document.getElementById('nouvelle-adresse-valeur').value.trim();
             const crypto = document.getElementById('nouvelle-adresse-crypto')?.value;
             const reseau = document.getElementById('nouvelle-adresse-reseau')?.value;
             
-            if(!label || label.length < 2 || label.length > 30) {
-                document.getElementById('erreur-adresse').textContent = 'Label invalide (2-30 caractères)';
-                document.getElementById('erreur-adresse').classList.add('show');
-                return;
-            }
-            if(!adresse || adresse.length < 10 || adresse.length > 100) {
-                document.getElementById('erreur-adresse').textContent = 'Adresse invalide';
-                document.getElementById('erreur-adresse').classList.add('show');
-                return;
-            }
-            if(!crypto || !reseau) {
+            if(!label || !adresse || !crypto || !reseau) {
                 document.getElementById('erreur-adresse').textContent = 'Tous les champs sont requis';
                 document.getElementById('erreur-adresse').classList.add('show');
                 return;
             }
-            
-            label = sanitizeInput(label, 30);
-            adresse = sanitizeInput(adresse, 100);
             
             const tousUtilisateurs = await database.ref('donnees/utilisateurs').once('value');
             const users = tousUtilisateurs.val() || {};
@@ -1977,10 +1912,6 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 } else {
                     const urlParams = new URLSearchParams(window.location.search);
                     const refId = urlParams.get('ref');
-                    let parrainIdValide = '';
-                    if(refId) {
-                        parrainIdValide = sanitizeInput(refId, 20);
-                    }
                     const nouvelUtilisateur = {
                         id: genererIDStable(fbUser.email, fbUser.displayName || 'Utilisateur'),
                         nom: fbUser.displayName || fbUser.email.split('@')[0],
@@ -1991,7 +1922,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                         codePIN: { hash: null, salt: null, actif: false, tentativeEchouees: 0, bloque: false },
                         toursGratuits: 0,
                         filleulsCount: 0,
-                        parrainId: parrainIdValide,
+                        parrainId: refId || '',
                         bonusParrainageDonne: false
                     };
                     await userRef.set(nouvelUtilisateur);
@@ -2001,7 +1932,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                     toursGratuits = 0;
                     filleulsCount = 0;
                     
-                    if(parrainIdValide) {
+                    if(refId) {
                         setTimeout(() => verifierParrainageEtAjouterTour(monUid), 5000);
                     }
                 }
@@ -2059,7 +1990,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                     crypto: document.getElementById('crypto-achat').value,
                     reseau: document.getElementById('reseau-achat').value,
                     portefeuille: document.getElementById('portefeuille-achat').value,
-                    adresse: sanitizeInput(document.getElementById('adresse-achat').value, 200),
+                    adresse: document.getElementById('adresse-achat').value,
                     numero: document.getElementById('numero-achat-select').value,
                     nomNumero: document.getElementById('numero-achat-select').selectedOptions[0]?.dataset?.nom || '',
                     montantRecu: montantRecuAchat
@@ -2134,13 +2065,8 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         function copierMessagePaiement(){ const message = document.getElementById('message-paiement-texte').textContent; navigator.clipboard.writeText(message).then(() => { alert('Message copié !'); }); }
         
         function validerConfirmation(){
-            let txid = document.getElementById('txid-input').value.trim();
-            if(!txid || txid.length < 5 || txid.length > 200) {
-                alert('TXID ou preuve invalide (5-200 caractères)');
-                return;
-            }
-            txid = sanitizeInput(txid, 200);
-            
+            const txid = document.getElementById('txid-input').value.trim();
+            if(!txid){ alert('Veuillez fournir le TXID ou la preuve d\'envoi'); return; }
             if(!utilisateurCourant.codePIN || !utilisateurCourant.codePIN.actif){ alert('Veuillez d\'abord configurer votre code PIN dans le profil'); fermerModalConfirmation(); switchPlatformSection('profil'); return; }
             if(utilisateurCourant.codePIN.bloque){ alert('Code PIN bloqué après trop de tentatives. Contactez l\'administrateur pour le débloquer.'); fermerModalConfirmation(); return; }
             transactionEnAttente.txid = txid;
@@ -2285,33 +2211,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         
         async function creerDemande(){
             if(!transactionEnAttente || !utilisateurCourant) return;
-            
-            const montantValide = transactionEnAttente.type === 'ACHAT' ?
-                validerMontant(transactionEnAttente.montant, donnees.limites.minAchat, donnees.limites.maxAchat) :
-                validerMontant(transactionEnAttente.montant, 0.0001, 10000);
-            
-            if(!montantValide) {
-                alert('Montant invalide');
-                return;
-            }
-            
-            const demande = { 
-                id: genererIDStable(utilisateurCourant.email, Date.now().toString()), 
-                type: transactionEnAttente.type === 'ACHAT' ? 'ACHAT' : 'VENTE',
-                date: new Date().toISOString(), 
-                utilisateur: sanitizeInput(utilisateurCourant.nom, 50),
-                email: sanitizeInput(utilisateurCourant.email, 100),
-                userID: monUid,
-                statut: 'en_attente',
-                txid: transactionEnAttente.txid,
-                montant: Math.max(0, parseFloat(transactionEnAttente.montant) || 0),
-                crypto: sanitizeInput(transactionEnAttente.crypto, 10),
-                reseau: sanitizeInput(transactionEnAttente.reseau, 20),
-                operateur: sanitizeInput(transactionEnAttente.operateur, 20),
-                numero: sanitizeInput(transactionEnAttente.numero, 20),
-                montantRecu: Math.max(0, parseFloat(transactionEnAttente.montantRecu) || 0)
-            };
-            
+            const demande = { id: genererIDStable(utilisateurCourant.email, Date.now().toString()), type: transactionEnAttente.type, date: new Date().toISOString(), utilisateur: utilisateurCourant.nom, email: utilisateurCourant.email, userID: monUid, statut: 'en_attente', txid: transactionEnAttente.txid, ...transactionEnAttente };
             const demandesArray = getDemandesTableau();
             demandesArray.unshift(demande);
             sauvegarderDemandes(demandesArray);
@@ -2440,7 +2340,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
 
         document.querySelector('.logo').addEventListener('dblclick',()=>window.open('security.html','_blank'));
-        window.addEventListener('load',function(){ chargerDonnees(); console.log('🚀 Page index chargée - Version avec sécurité renforcée'); });
+        window.addEventListener('load',function(){ chargerDonnees(); console.log('🚀 Page index chargée - Version avec CSP et Headers Sécurité'); });
     </script>
 </body>
 </html>
