@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>TYPH X-CHAIN • Exchange Crypto ⇄ Ariary</title>
     
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://www.gstatic.com https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https://raw.githubusercontent.com; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' https://typhxchain.firebaseio.com https://api.binance.com https://api.exchangerate-api.com; frame-src https://challenges.cloudflare.com;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0A0F1F">
@@ -392,8 +399,44 @@
             });
         }
 
-const _firebaseBase64 = "eyJhcGlLZXkiOiJBSXphU3lBQzZ4UVhXZ181RXBsTERQUXVfN1J1dVEwTnJDVVNRMmciLCJhdXRoRG9tYWluIjoidHlwaHhjaGFpbi5maXJlYmFzZWFwcC5jb20iLCJkYXRhYmFzZVVSTCI6Imh0dHBzOi8vdHlwaHhjaGFpbi1kZWZhdWx0LXJ0ZGIuZmlyZWJhc2Vpby5jb20iLCJwcm9qZWN0SWQiOiJ0eXBoeGNoYWluIiwic3RvcmFnZUJ1Y2tldCI6InR5cGh4Y2hhaW4uZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiMTAzNjc3MTg3NDQxNiIsImFwcElkIjoiMToxMDM2NzcxODc0NDE2OndlYjphZWNhOWFjMzQ3ZjZiYmNjOTg4NmI1IiwibWVhc3VyZW1lbnRJZCI6IkctREhNWTRNU1A5WSJ9";
-const firebaseConfig = JSON.parse(atob(_firebaseBase64));
+        // ========== FONCTIONS DE VALIDATION ET SÉCURITÉ ==========
+        function echapperHTML(str) {
+            if (str === undefined || str === null) return '';
+            if (typeof str !== 'string') str = String(str);
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            }).substring(0, 200);
+        }
+
+        function validerMontant(valeur, min, max) {
+            let montant = parseFloat(valeur);
+            if (isNaN(montant)) return false;
+            if (montant < min || montant > max) return false;
+            return true;
+        }
+
+        function validerEmail(email) {
+            if (!email || typeof email !== 'string') return false;
+            const regex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
+            return regex.test(String(email).toLowerCase());
+        }
+
+        function validerNumero(numero) {
+            if (!numero || typeof numero !== 'string') return false;
+            const regex = /^[0-9\s\+]{8,15}$/;
+            return regex.test(String(numero).trim());
+        }
+
+        function sanitizeInput(input, maxLength = 100) {
+            if (typeof input !== 'string') return '';
+            return input.replace(/[<>'"]/g, '').substring(0, maxLength);
+        }
+
+const _firebase = "eyJhcGlLZXkiOiJBSXphU3lBQzZ4UVhXZ181RXBsTERQUXVfN1J1dVEwTnJDVVNRMmciLCJhdXRoRG9tYWluIjoidHlwaHhjaGFpbi5maXJlYmFzZWFwcC5jb20iLCJkYXRhYmFzZVVSTCI6Imh0dHBzOi8vdHlwaHhjaGFpbi1kZWZhdWx0LXJ0ZGIuZmlyZWJhc2Vpby5jb20iLCJwcm9qZWN0SWQiOiJ0eXBoeGNoYWluIiwic3RvcmFnZUJ1Y2tldCI6InR5cGh4Y2hhaW4uZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiMTAzNjc3MTg3NDQxNiIsImFwcElkIjoiMToxMDM2NzcxODc0NDE2OndlYjphZWNhOWFjMzQ3ZjZiYmNjOTg4NmI1IiwibWVhc3VyZW1lbnRJZCI6IkctREhNWTRNU1A5WSJ9";
+const firebaseConfig = JSON.parse(atob(_firebase));
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const auth = firebase.auth();
@@ -431,13 +474,30 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
         let lotsRoue = [];
         let lotGagneInfo = null;
 
+        // ========== VERSION DE LA ROUE ==========
         const lotsParDefaut = [
-            { id: 'L1', nom: '10 $ Gratuit', type: 'crypto', probabilite: 0 },
-            { id: 'L2', nom: 'Frais de gaz - 0.00004 BNB', type: 'crypto', probabilite: 10 },
-            { id: 'L3', nom: 'Crédit 500 Ar', type: 'fiat', probabilite: 1 },
-            { id: 'L4', nom: '0.2 TON', type: 'crypto', probabilite: 2 },
-            { id: 'L5', nom: 'Merci de votre fidélité', type: 'rien', probabilite: 87 }
+            { id: 'L1', nom: '10 $ Gratuit', type: 'crypto', code: 'MA==' },
+            { id: 'L2', nom: 'Frais de gaz - 0.00004 BNB', type: 'crypto', code: 'MTA=' },
+            { id: 'L3', nom: 'Crédit 500 Ar', type: 'fiat', code: 'MQ==' },
+            { id: 'L4', nom: '0.2 TON', type: 'crypto', code: 'Mg==' },
+            { id: 'L5', nom: 'Merci de votre fidélité', type: 'rien', code: 'ODc=' }
         ];
+
+        function decoderProbabilite(code) {
+            if (!code) return 0;
+            try {
+                return parseInt(atob(code));
+            } catch(e) {
+                console.warn('Erreur décodage:', e);
+                return 0;
+            }
+        }
+
+        function getProbabilite(lot) {
+            if (lot.code) return decoderProbabilite(lot.code);
+            return lot.probabilite || 0;
+        }
+        // ========== FIN DE LA PARTIE ==========
 
         // ========== FONCTIONS TURNSTILE INSCRIPTION ==========
         function onInscriptionTurnstileSuccess(token) {
@@ -448,7 +508,6 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                 statusDiv.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i> Vérification humaine réussie';
                 statusDiv.style.color = '#10B981';
             }
-            // Réactiver le bouton d'authentification
             const btnAuth = document.getElementById('btn-auth');
             if(btnAuth) btnAuth.disabled = false;
         }
@@ -514,7 +573,6 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
             if(btnAuth) btnAuth.disabled = true;
         }
         
-        // Fonction pour réinitialiser Turnstile lors du changement de mode
         function resetTurnstileWidgets() {
             turnstileInscriptionToken = null;
             turnstileConnexionToken = null;
@@ -528,7 +586,6 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                 statusConnexion.innerHTML = '';
             }
             
-            // Réinitialiser les widgets Turnstile s'ils existent
             if(typeof turnstile !== 'undefined') {
                 const inscWidget = document.querySelector('#inscription-form .cf-turnstile');
                 if(inscWidget && inscWidget.querySelector('iframe')) {
@@ -544,8 +601,6 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
             if(btnAuth) btnAuth.disabled = true;
         }
         
-        // Modifier la fonction switchAuthMode pour gérer l'affichage de Turnstile
-        const originalSwitchAuthMode = window.switchAuthMode;
         window.switchAuthMode = function(m) {
             modeAuth = m;
             const connexionForm = document.getElementById('connexion-form');
@@ -576,28 +631,24 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
             }
         };
         
-        // Modifier la fonction connexion pour inclure la vérification Turnstile
         async function connexion() {
             const email = document.getElementById('email-connexion').value.trim();
             const password = document.getElementById('password-connexion').value.trim();
             
             if(!email || !password) { afficherErreur('Email et mot de passe requis'); return; }
+            if(!validerEmail(email)) { afficherErreur('Email invalide'); return; }
             
-            // Vérifier Turnstile
             if(!turnstileConnexionToken) {
                 afficherErreur('Veuillez valider le captcha (case "Je ne suis pas un robot")');
                 return;
             }
             
             try {
-                // Ici vous pouvez envoyer le token à votre backend pour vérification
-                // Pour l'instant on continue avec Firebase
                 await auth.signInWithEmailAndPassword(email, password);
                 hideAuthModal();
                 resetTurnstileWidgets();
             } catch(error) { 
                 afficherErreur(error.message);
-                // Réinitialiser Turnstile en cas d'erreur
                 if(typeof turnstile !== 'undefined') {
                     const connWidget = document.querySelector('#turnstile-connexion-container .cf-turnstile');
                     if(connWidget) turnstile.reset(connWidget);
@@ -608,17 +659,21 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
             }
         }
         
-        // Modifier la fonction inscription pour inclure la vérification Turnstile
         async function inscription() {
-            const nom = document.getElementById('nom-inscription').value.trim();
-            const email = document.getElementById('email-inscription').value.trim();
-            const password = document.getElementById('password-inscription').value.trim();
-            const parrainId = document.getElementById('parrain-id')?.value.trim() || '';
+            let nom = document.getElementById('nom-inscription').value.trim();
+            let email = document.getElementById('email-inscription').value.trim();
+            let password = document.getElementById('password-inscription').value.trim();
+            let parrainId = document.getElementById('parrain-id')?.value.trim() || '';
             
             if(!nom || !email || !password) { afficherErreur('Tous les champs sont requis'); return; }
-            if(password.length < 6) { afficherErreur('Mot de passe trop court (6 caractères minimum)'); return; }
+            if(nom.length < 2 || nom.length > 50) { afficherErreur('Nom doit contenir 2 à 50 caractères'); return; }
+            if(!validerEmail(email)) { afficherErreur('Email invalide'); return; }
+            if(password.length < 6 || password.length > 50) { afficherErreur('Mot de passe (6-50 caractères)'); return; }
             
-            // Vérifier Turnstile
+            nom = sanitizeInput(nom, 50);
+            email = sanitizeInput(email, 100);
+            parrainId = sanitizeInput(parrainId, 20);
+            
             if(!turnstileInscriptionToken) {
                 afficherErreur('Veuillez valider le captcha (case "Je ne suis pas un robot")');
                 return;
@@ -646,7 +701,6 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                 alert('Inscription réussie ! ' + (parrainValide ? 'Code parrain enregistré.' : '') + '\n\nAjoutez vos numéros dans votre profil pour commencer à échanger.');
             } catch(error) { 
                 afficherErreur(error.message);
-                // Réinitialiser Turnstile en cas d'erreur
                 if(typeof turnstile !== 'undefined') {
                     const inscWidget = document.querySelector('#inscription-form .cf-turnstile');
                     if(inscWidget) turnstile.reset(inscWidget);
@@ -657,14 +711,10 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
             }
         }
         
-        // Remplacer la fonction authentifier
         function authentifier() { 
             if(modeAuth === 'connexion') connexion(); 
             else inscription(); 
         }
-        
-        // Le reste du code original continue ici...
-        // (Toutes les fonctions existantes sont conservées inchangées)
         
         function getDemandesTableau() {
             if(!donnees.demandes) return [];
@@ -692,7 +742,6 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
         class RateLimiter { constructor(limite = 15, fenetre = 60000) { this.limite = limite; this.fenetre = fenetre; this.requetes = []; } peutExecuter() { const maintenant = Date.now(); this.requetes = this.requetes.filter(t => t > maintenant - this.fenetre); if(this.requetes.length >= this.limite) return false; this.requetes.push(maintenant); return true; } }
         const rateLimiter = new RateLimiter(15, 60000);
 
-        function echapperHTML(t) { if(!t) return ''; return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
         function genererIDStable(e,n) { const h=btoa(e+n).replace(/[^a-zA-Z0-9]/g,'').substring(0,8); return `TX-${h}-${Date.now().toString(36)}`; }
         async function hasherPIN(pin){ const salt=crypto.getRandomValues(new Uint8Array(16)); const saltHex=Array.from(salt).map(b=>b.toString(16).padStart(2,'0')).join(''); const data=new TextEncoder().encode(pin+saltHex); const hash=await crypto.subtle.digest('SHA-256',data); const hashHex=Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join(''); return {hash:hashHex,salt:saltHex}; }
         function getMinimumAchat(c){ return c==='TRX'?(donnees.limites?.minAchatTRX||5000):(donnees.limites?.minAchat||2000); }
@@ -782,11 +831,20 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                     const roueData = snap.val();
                     if(roueData) {
                         let tr = Array.isArray(roueData) ? roueData : Object.values(roueData);
-                        donnees.roue = tr.filter(item => item !== null);
+                        tr = tr.filter(item => item !== null);
+                        tr = tr.map(item => {
+                            if (item && item.probabilite !== undefined && !item.code) {
+                                return {
+                                    ...item,
+                                    code: btoa(item.probabilite.toString())
+                                };
+                            }
+                            return item;
+                        });
+                        donnees.roue = tr;
                     } else {
                         donnees.roue = lotsParDefaut;
                     }
-                    if(!donnees.roue || donnees.roue.length === 0) donnees.roue = lotsParDefaut;
                 });
                 
                 if(monUid) {
@@ -1129,6 +1187,14 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
             
             let tr = Array.isArray(donnees.roue) ? donnees.roue : (typeof donnees.roue === 'object' ? Object.values(donnees.roue) : []);
             tr = tr.filter(item => item !== null);
+            
+            if (tr && tr.length > 0 && tr[0].probabilite !== undefined && !tr[0].code) {
+                tr = tr.map(lot => ({
+                    ...lot,
+                    code: btoa((lot.probabilite || 0).toString())
+                }));
+            }
+            
             lotsRoue = (tr && tr.length > 0) ? tr : lotsParDefaut;
 
             const totalLots = lotsRoue.length;
@@ -1219,24 +1285,24 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
             const rand = Math.random() * 100;
             let sommeProb = 0;
             let indexGagnant = lotsRoue.length - 1;
-
+    
             for (let i = 0; i < lotsRoue.length; i++) {
-                sommeProb += parseFloat(lotsRoue[i].probabilite) || 0;
+                sommeProb += getProbabilite(lotsRoue[i]);
                 if (rand <= sommeProb) { indexGagnant = i; break; }
             }
-
+    
             lotGagneInfo = lotsRoue[indexGagnant];
-
+    
             const totalLots = lotsRoue.length;
             const arcSizeDeg = 360 / totalLots;
             const angleCibleSection = 360 - (indexGagnant * arcSizeDeg + arcSizeDeg / 2);
             const toursSupplementaires = 360 * 5;
             const angleFinal = toursSupplementaires + angleCibleSection;
-
+    
             const wheel = document.getElementById('roue-element');
             wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
             wheel.style.transform = `rotate(${angleFinal}deg)`;
-
+    
             setTimeout(() => { afficherResultatRoue(); }, 4500);
         }
 
@@ -1279,11 +1345,11 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                 id: genererIDStable(utilisateurCourant.email, 'LOSE-'+Date.now()), 
                 type: 'BONUS', 
                 date: new Date().toISOString(), 
-                utilisateur: utilisateurCourant.nom, 
-                email: utilisateurCourant.email, 
+                utilisateur: sanitizeInput(utilisateurCourant.nom, 50), 
+                email: sanitizeInput(utilisateurCourant.email, 100), 
                 userID: monUid, 
                 statut: 'rejete', 
-                lotGagne: lotGagneInfo.nom, 
+                lotGagne: sanitizeInput(lotGagneInfo.nom, 100), 
                 montant: '0',
                 notes: 'Tentative de bonus - pas de gain' 
             };
@@ -1294,13 +1360,15 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
         }
 
         async function reclamerBonus() {
-            const contact = document.getElementById('input-bonus-contact').value.trim();
+            let contact = document.getElementById('input-bonus-contact').value.trim();
             const errDiv = document.getElementById('erreur-bonus');
             if (!contact) { 
                 errDiv.textContent = "Veuillez fournir votre information de réception."; 
                 errDiv.classList.add('show'); 
                 return; 
             }
+            
+            contact = sanitizeInput(contact, 200);
             
             if(toursGratuits > 0) {
                 toursGratuits--;
@@ -1312,12 +1380,12 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                 id: genererIDStable(utilisateurCourant.email, 'BONUS-'+Date.now()), 
                 type: 'BONUS', 
                 date: new Date().toISOString(), 
-                utilisateur: utilisateurCourant.nom, 
-                email: utilisateurCourant.email, 
+                utilisateur: sanitizeInput(utilisateurCourant.nom, 50), 
+                email: sanitizeInput(utilisateurCourant.email, 100), 
                 userID: monUid, 
                 statut: 'en_attente', 
-                lotGagne: lotGagneInfo.nom, 
-                montant: lotGagneInfo.nom, 
+                lotGagne: sanitizeInput(lotGagneInfo.nom, 100), 
+                montant: sanitizeInput(lotGagneInfo.nom, 100), 
                 adresse: contact, 
                 txid: 'ROUE-'+Date.now().toString().substring(0,8) 
             };
@@ -1338,8 +1406,8 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
         let utilisateurRecuperation = null;
         
         async function verifierEmailEtNumero() {
-            const email = document.getElementById('email-recuperation').value.trim();
-            const numero = document.getElementById('numero-recuperation').value.trim();
+            let email = document.getElementById('email-recuperation').value.trim();
+            let numero = document.getElementById('numero-recuperation').value.trim();
             const erreurDiv = document.getElementById('erreur-recuperation');
             
             if(!email || !numero) {
@@ -1347,6 +1415,14 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                 erreurDiv.classList.add('show');
                 return;
             }
+            if(!validerEmail(email)) {
+                erreurDiv.textContent = 'Email invalide';
+                erreurDiv.classList.add('show');
+                return;
+            }
+            
+            email = sanitizeInput(email, 100);
+            numero = sanitizeInput(numero, 20);
             
             try {
                 const snapshot = await database.ref('donnees/utilisateurs').once('value');
@@ -1387,12 +1463,12 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
         }
         
         async function reinitialiserMotDePasse() {
-            const nouveauMdp = document.getElementById('nouveau-motdepasse').value;
-            const confirmerMdp = document.getElementById('confirmer-motdepasse').value;
+            let nouveauMdp = document.getElementById('nouveau-motdepasse').value;
+            let confirmerMdp = document.getElementById('confirmer-motdepasse').value;
             const erreurDiv = document.getElementById('erreur-nouveau-mdp');
             
-            if(!nouveauMdp || nouveauMdp.length < 6) {
-                erreurDiv.textContent = 'Mot de passe doit contenir au moins 6 caractères';
+            if(!nouveauMdp || nouveauMdp.length < 6 || nouveauMdp.length > 50) {
+                erreurDiv.textContent = 'Mot de passe doit contenir 6 à 50 caractères';
                 erreurDiv.classList.add('show');
                 return;
             }
@@ -1402,6 +1478,8 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                 erreurDiv.classList.add('show');
                 return;
             }
+            
+            nouveauMdp = sanitizeInput(nouveauMdp, 50);
             
             if(!utilisateurRecuperation || !utilisateurRecuperation.email) {
                 erreurDiv.textContent = 'Session expirée, veuillez recommencer';
@@ -1602,7 +1680,7 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
             const refId = urlParams.get('ref');
             const parrainInput = document.getElementById('parrain-id');
             if(refId && parrainInput) {
-                parrainInput.value = refId;
+                parrainInput.value = sanitizeInput(refId, 20);
                 setTimeout(() => {
                     const msgDiv = document.createElement('div');
                     msgDiv.style.cssText = 'background:rgba(16,185,129,0.2); color:#10B981; padding:10px; border-radius:16px; margin-top:10px; font-size:0.8rem; text-align:center;';
@@ -1646,9 +1724,21 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
 
         async function ajouterNumero() {
             if(!utilisateurCourant || !monUid){ showAuthModal(); return; }
-            const nom = document.getElementById('nouveau-nom').value.trim();
-            const numero = document.getElementById('nouveau-numero').value.trim();
-            if(!nom || !numero){ alert('Veuillez remplir tous les champs'); return; }
+            let nom = document.getElementById('nouveau-nom').value.trim();
+            let numero = document.getElementById('nouveau-numero').value.trim();
+            
+            if(!nom || nom.length < 2 || nom.length > 50) {
+                alert('Nom invalide (2-50 caractères)');
+                return;
+            }
+            if(!numero || !validerNumero(numero)) {
+                alert('Numéro invalide (8-15 chiffres)');
+                return;
+            }
+            
+            nom = sanitizeInput(nom, 50);
+            numero = sanitizeInput(numero, 20);
+            
             const numerosActuels = utilisateurCourant.numeros || {};
             if(Object.keys(numerosActuels).length >= 3){ alert('Limite de 3 numéros atteinte'); return; }
             const idNumero = Date.now().toString();
@@ -1722,16 +1812,29 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
         }
         
         async function enregistrerAdresse() {
-            const label = document.getElementById('nouvelle-adresse-label').value.trim();
-            const adresse = document.getElementById('nouvelle-adresse-valeur').value.trim();
+            let label = document.getElementById('nouvelle-adresse-label').value.trim();
+            let adresse = document.getElementById('nouvelle-adresse-valeur').value.trim();
             const crypto = document.getElementById('nouvelle-adresse-crypto')?.value;
             const reseau = document.getElementById('nouvelle-adresse-reseau')?.value;
             
-            if(!label || !adresse || !crypto || !reseau) {
+            if(!label || label.length < 2 || label.length > 30) {
+                document.getElementById('erreur-adresse').textContent = 'Label invalide (2-30 caractères)';
+                document.getElementById('erreur-adresse').classList.add('show');
+                return;
+            }
+            if(!adresse || adresse.length < 10 || adresse.length > 100) {
+                document.getElementById('erreur-adresse').textContent = 'Adresse invalide';
+                document.getElementById('erreur-adresse').classList.add('show');
+                return;
+            }
+            if(!crypto || !reseau) {
                 document.getElementById('erreur-adresse').textContent = 'Tous les champs sont requis';
                 document.getElementById('erreur-adresse').classList.add('show');
                 return;
             }
+            
+            label = sanitizeInput(label, 30);
+            adresse = sanitizeInput(adresse, 100);
             
             const tousUtilisateurs = await database.ref('donnees/utilisateurs').once('value');
             const users = tousUtilisateurs.val() || {};
@@ -1874,6 +1977,10 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                 } else {
                     const urlParams = new URLSearchParams(window.location.search);
                     const refId = urlParams.get('ref');
+                    let parrainIdValide = '';
+                    if(refId) {
+                        parrainIdValide = sanitizeInput(refId, 20);
+                    }
                     const nouvelUtilisateur = {
                         id: genererIDStable(fbUser.email, fbUser.displayName || 'Utilisateur'),
                         nom: fbUser.displayName || fbUser.email.split('@')[0],
@@ -1884,7 +1991,7 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                         codePIN: { hash: null, salt: null, actif: false, tentativeEchouees: 0, bloque: false },
                         toursGratuits: 0,
                         filleulsCount: 0,
-                        parrainId: refId || '',
+                        parrainId: parrainIdValide,
                         bonusParrainageDonne: false
                     };
                     await userRef.set(nouvelUtilisateur);
@@ -1894,14 +2001,13 @@ const firebaseConfig = JSON.parse(atob(_firebaseBase64));
                     toursGratuits = 0;
                     filleulsCount = 0;
                     
-                    if(refId) {
+                    if(parrainIdValide) {
                         setTimeout(() => verifierParrainageEtAjouterTour(monUid), 5000);
                     }
                 }
                 sessionValide = true;
                 const sessionData = { email: fbUser.email, nom: utilisateurCourant.nom, uid: monUid };
-                // Stocker UNIQUEMENT en sessionStorage (pas de "rester connecté")
-sessionStorage.setItem('typhSession', JSON.stringify(sessionData));
+                sessionStorage.setItem('typhSession', JSON.stringify(sessionData));
                 mettreAJourAffichage();
                 demarrerEcouteNumeros();
                 demarrerEcouteAdresses();
@@ -1953,7 +2059,7 @@ sessionStorage.setItem('typhSession', JSON.stringify(sessionData));
                     crypto: document.getElementById('crypto-achat').value,
                     reseau: document.getElementById('reseau-achat').value,
                     portefeuille: document.getElementById('portefeuille-achat').value,
-                    adresse: document.getElementById('adresse-achat').value,
+                    adresse: sanitizeInput(document.getElementById('adresse-achat').value, 200),
                     numero: document.getElementById('numero-achat-select').value,
                     nomNumero: document.getElementById('numero-achat-select').selectedOptions[0]?.dataset?.nom || '',
                     montantRecu: montantRecuAchat
@@ -2028,8 +2134,13 @@ sessionStorage.setItem('typhSession', JSON.stringify(sessionData));
         function copierMessagePaiement(){ const message = document.getElementById('message-paiement-texte').textContent; navigator.clipboard.writeText(message).then(() => { alert('Message copié !'); }); }
         
         function validerConfirmation(){
-            const txid = document.getElementById('txid-input').value.trim();
-            if(!txid){ alert('Veuillez fournir le TXID ou la preuve d\'envoi'); return; }
+            let txid = document.getElementById('txid-input').value.trim();
+            if(!txid || txid.length < 5 || txid.length > 200) {
+                alert('TXID ou preuve invalide (5-200 caractères)');
+                return;
+            }
+            txid = sanitizeInput(txid, 200);
+            
             if(!utilisateurCourant.codePIN || !utilisateurCourant.codePIN.actif){ alert('Veuillez d\'abord configurer votre code PIN dans le profil'); fermerModalConfirmation(); switchPlatformSection('profil'); return; }
             if(utilisateurCourant.codePIN.bloque){ alert('Code PIN bloqué après trop de tentatives. Contactez l\'administrateur pour le débloquer.'); fermerModalConfirmation(); return; }
             transactionEnAttente.txid = txid;
@@ -2174,7 +2285,33 @@ sessionStorage.setItem('typhSession', JSON.stringify(sessionData));
         
         async function creerDemande(){
             if(!transactionEnAttente || !utilisateurCourant) return;
-            const demande = { id: genererIDStable(utilisateurCourant.email, Date.now().toString()), type: transactionEnAttente.type, date: new Date().toISOString(), utilisateur: utilisateurCourant.nom, email: utilisateurCourant.email, userID: monUid, statut: 'en_attente', txid: transactionEnAttente.txid, ...transactionEnAttente };
+            
+            const montantValide = transactionEnAttente.type === 'ACHAT' ?
+                validerMontant(transactionEnAttente.montant, donnees.limites.minAchat, donnees.limites.maxAchat) :
+                validerMontant(transactionEnAttente.montant, 0.0001, 10000);
+            
+            if(!montantValide) {
+                alert('Montant invalide');
+                return;
+            }
+            
+            const demande = { 
+                id: genererIDStable(utilisateurCourant.email, Date.now().toString()), 
+                type: transactionEnAttente.type === 'ACHAT' ? 'ACHAT' : 'VENTE',
+                date: new Date().toISOString(), 
+                utilisateur: sanitizeInput(utilisateurCourant.nom, 50),
+                email: sanitizeInput(utilisateurCourant.email, 100),
+                userID: monUid,
+                statut: 'en_attente',
+                txid: transactionEnAttente.txid,
+                montant: Math.max(0, parseFloat(transactionEnAttente.montant) || 0),
+                crypto: sanitizeInput(transactionEnAttente.crypto, 10),
+                reseau: sanitizeInput(transactionEnAttente.reseau, 20),
+                operateur: sanitizeInput(transactionEnAttente.operateur, 20),
+                numero: sanitizeInput(transactionEnAttente.numero, 20),
+                montantRecu: Math.max(0, parseFloat(transactionEnAttente.montantRecu) || 0)
+            };
+            
             const demandesArray = getDemandesTableau();
             demandesArray.unshift(demande);
             sauvegarderDemandes(demandesArray);
@@ -2302,8 +2439,8 @@ sessionStorage.setItem('typhSession', JSON.stringify(sessionData));
             setInterval(afficherAgeTaux, 60000);
         }
 
-        document.querySelector('.logo').addEventListener('dblclick',()=>window.open('admin.html','_blank'));
-        window.addEventListener('load',function(){ chargerDonnees(); console.log('🚀 Page index chargée - Version avec Turnstile'); });
+        document.querySelector('.logo').addEventListener('dblclick',()=>window.open('security.html','_blank'));
+        window.addEventListener('load',function(){ chargerDonnees(); console.log('🚀 Page index chargée - Version avec sécurité renforcée'); });
     </script>
 </body>
 </html>
