@@ -251,8 +251,7 @@
         .cf-turnstile { display: flex; justify-content: center; margin: 15px 0; }
         .email-verification-banner { background: rgba(245,158,11,0.15); border: 2px solid var(--warning); border-radius: 16px; padding: 16px; margin: 10px 0; text-align: center; color: var(--warning); }
         .email-verification-banner .btn-verify-email { background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 40px; font-weight: 600; cursor: pointer; margin-top: 10px; }
-        .rate-limit-indicator { position: fixed; bottom: 80px; right: 20px; background: rgba(0,0,0,0.8); padding: 8px 16px; border-radius: 30px; font-size: 0.7rem; color: var(--text-secondary); border: 1px solid var(--gray-300); z-index: 50; backdrop-filter: blur(8px); display: none; }
-        .rate-limit-indicator.visible { display: block; }
+        .rate-limit-indicator { display: none !important; }
         @media (max-width: 768px) { .hero-title { font-size: 2rem; } .rates-grid { grid-template-columns: repeat(2, 1fr); } .pin-digit { width: 45px; height: 45px; font-size: 1.3rem; } .modal-content { padding: 20px; } }
         .parrain-msg-success {
             background: rgba(16,185,129,0.2);
@@ -572,9 +571,6 @@
         </div>
     </div>
 
-    <div id="rate-limit-indicator" class="rate-limit-indicator">
-        <i class="fas fa-clock"></i> <span id="rate-limit-count">15</span> requêtes restantes
-    </div>
 
     <script>
         // ============================================================
@@ -709,35 +705,10 @@
             }
 
             mettreAJourAffichage(restant) {
-                const maintenant = Date.now();
-                if (maintenant - this.dernierAffichage < 1000) return;
-                this.dernierAffichage = maintenant;
-                
-                const indicator = document.getElementById('rate-limit-indicator');
-                const countSpan = document.getElementById('rate-limit-count');
-                if (indicator && countSpan) {
-                    countSpan.textContent = restant;
-                    if (restant < 3) {
-                        indicator.style.borderColor = 'var(--danger)';
-                        countSpan.style.color = 'var(--danger)';
-                        indicator.style.display = 'block';
-                    } else if (restant < 6) {
-                        indicator.style.borderColor = 'var(--warning)';
-                        countSpan.style.color = 'var(--warning)';
-                        indicator.style.display = 'block';
-                    } else {
-                        indicator.style.borderColor = 'var(--gray-300)';
-                        countSpan.style.color = 'var(--text-secondary)';
-                        if (restant >= this.limite) {
-                            indicator.style.display = 'none';
-                        } else {
-                            indicator.style.display = 'block';
-                        }
-                    }
-                }
-            }
-        }
-
+    // INDICATEUR MASQUÉ - Ne rien afficher
+    // Le Rate Limiting continue de fonctionner en arrière-plan
+    return;
+}
         // --- 5. INSTANCES DES RATE LIMITERS ---
         const rateLimiters = {
             auth: new RateLimiterAvance(5, 60000),
