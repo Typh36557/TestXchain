@@ -709,15 +709,18 @@
     // Le Rate Limiting continue de fonctionner en arrière-plan
     return;
 }
-        // --- 5. INSTANCES DES RATE LIMITERS ---
-        const rateLimiters = {
-            auth: new RateLimiterAvance(5, 60000),
-            demande: new RateLimiterAvance(10, 60000),
-            refresh: new RateLimiterAvance(20, 60000),
-            estimation: new RateLimiterAvance(30, 60000),
-            default: new RateLimiterAvance(15, 60000),
-            sync: new RateLimiterAvance(10, 300000)
-        };
+
+}
+
+// --- 5. INSTANCES DES RATE LIMITERS ---    
+const rateLimiters = {                       
+    auth: new RateLimiterAvance(5, 60000),   
+    demande: new RateLimiterAvance(10, 60000), 
+    refresh: new RateLimiterAvance(20, 60000), 
+    estimation: new RateLimiterAvance(30, 60000), 
+    default: new RateLimiterAvance(15, 60000), 
+    sync: new RateLimiterAvance(10, 300000)   
+};                                             
 
         // --- 6. PROTECTION CSRF ---
         function genererTokenCSRF() {
