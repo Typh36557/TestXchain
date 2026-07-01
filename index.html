@@ -17,7 +17,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TYPH X-CHAIN">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Typh36557/typhXchain/fb5657f17ca27d8883b2c36b4fa491d92bc1acd6/logo-application.png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/logo-application.png">
     
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     
@@ -126,7 +126,14 @@
         .btn-disabled { background: var(--gray-300); cursor: not-allowed; opacity: 0.6; transform: none !important; }
         .estimated-value { background: var(--primary); border-radius: 40px; padding: 16px 20px; border: 1px solid var(--gray-300); margin: 20px 0; text-align: center; }
         .estimated-label { font-weight: 500; color: var(--text-secondary); font-size: 0.85rem; }
-        .estimated-amount { font-weight: 700; color: var(--white); font-size: 1.3rem; margin-left: 10px; }
+        .estimated-amount { 
+            font-weight: 700; 
+            color: var(--white); 
+            font-size: 2rem; 
+            margin-left: 10px; 
+            display: inline-block;
+            white-space: nowrap;
+        }
         .pause-message { background: rgba(245,158,11,0.1); border: 2px solid var(--warning); border-radius: 28px; padding: 20px; margin: 20px 0; text-align: center; color: var(--warning); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .portfolio-response { background: var(--primary); border-radius: 28px; padding: 18px; margin: 20px 0; border-left: 4px solid var(--accent); }
         .response-text { color: var(--text-primary); font-size: 0.9rem; line-height: 1.5; margin-top: 12px; padding: 14px; background: var(--bg-dark); border-radius: 20px; }
@@ -182,7 +189,6 @@
         .frais-valeur { font-weight: 600; color: var(--warning); }
         .receipt-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--gray-300); }
         .receipt-amount-large { text-align: center; margin: 30px 0; padding: 20px; background: linear-gradient(135deg, var(--primary), var(--bg-dark)); border-radius: 40px; border: 1px solid var(--gray-300); }
-        .receipt-amount-large .amount { font-size: 2rem; font-weight: 700; color: var(--white); }
         .badge-statut.confirme { background: rgba(16,185,129,0.2); border: 1px solid var(--success); color: var(--success); }
         .badge-statut.en_attente { background: rgba(245,158,11,0.2); border: 1px solid var(--warning); color: var(--warning); }
         .receipt-details { background: var(--primary); border-radius: 28px; padding: 20px; margin: 20px 0; }
@@ -228,21 +234,25 @@
         .user-badge-bottom { background: rgba(59,130,246,0.1); padding: 10px 20px; border-radius: 40px; font-size: 0.9rem; font-weight: 500; color: var(--text-primary); border: 1px solid rgba(59,130,246,0.3); display: inline-flex; align-items: center; gap: 10px; cursor: pointer; transition: var(--transition); margin-bottom: 15px; }
         .user-badge-bottom:hover { background: rgba(59,130,246,0.2); border-color: var(--accent); }
         .terms-link {
-    text-align: center;
-    margin-top: 15px;
-    font-size: 0.85rem;
-}
-.terms-link a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: bold;
-    transition: var(--transition);
-}
-.terms-link a:hover {
-    color: var(--accent);
-    text-decoration: underline;
-}
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+        .terms-link a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+        .terms-link a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
         .cf-turnstile { display: flex; justify-content: center; margin: 15px 0; }
+        .email-verification-banner { background: rgba(245,158,11,0.15); border: 2px solid var(--warning); border-radius: 16px; padding: 16px; margin: 10px 0; text-align: center; color: var(--warning); }
+        .email-verification-banner .btn-verify-email { background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 40px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .rate-limit-indicator { position: fixed; bottom: 80px; right: 20px; background: rgba(0,0,0,0.8); padding: 8px 16px; border-radius: 30px; font-size: 0.7rem; color: var(--text-secondary); border: 1px solid var(--gray-300); z-index: 50; backdrop-filter: blur(8px); display: none; }
+        .rate-limit-indicator.visible { display: block; }
         @media (max-width: 768px) { .hero-title { font-size: 2rem; } .rates-grid { grid-template-columns: repeat(2, 1fr); } .pin-digit { width: 45px; height: 45px; font-size: 1.3rem; } .modal-content { padding: 20px; } }
         .parrain-msg-success {
             background: rgba(16,185,129,0.2);
@@ -253,13 +263,148 @@
             font-size: 0.8rem;
             text-align: center;
         }
+        .carousel-banner {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 16px;
+            border: 1px solid rgba(59,130,246,0.15);
+            margin: 16px 0 20px 0;
+            overflow: hidden;
+        }
+        .carousel-banner .banner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .carousel-banner .banner-title {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .carousel-banner .banner-title i {
+            color: var(--accent);
+        }
+        .carousel-banner .banner-indicator {
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            background: var(--primary);
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+        .carousel-banner-wrapper {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--bg-dark);
+            aspect-ratio: 16/6;
+            cursor: pointer;
+        }
+        .carousel-banner-slides {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            height: 100%;
+            width: 100%;
+        }
+        .carousel-banner-slide {
+            min-width: 100%;
+            height: 100%;
+            flex-shrink: 0;
+        }
+        .carousel-banner-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .carousel-banner-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .carousel-banner-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gray-300);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .carousel-banner-dot.active {
+            background: var(--accent);
+            width: 24px;
+            border-radius: 4px;
+        }
+        .carousel-banner-arrows {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+            padding: 0 10px;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .carousel-banner-arrow {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .carousel-banner-arrow:hover {
+            background: rgba(59,130,246,0.7);
+        }
+        .carousel-banner-arrow:active {
+            transform: scale(0.9);
+        }
+        .banner-click-hint {
+            position: absolute;
+            bottom: 12px;
+            right: 14px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            padding: 5px 14px;
+            border-radius: 40px;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.6rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            pointer-events: none;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        @media (max-width: 600px) {
+            .carousel-banner { padding: 12px; }
+            .carousel-banner-wrapper { aspect-ratio: 16/7; }
+            .carousel-banner-arrow { width: 28px; height: 28px; font-size: 0.7rem; }
+            .banner-click-hint { font-size: 0.5rem; padding: 4px 10px; bottom: 8px; right: 10px; }
+        }
     </style>
 </head>
 <body>
     <div class="app-header">
         <div class="header-content">
             <div class="logo" onclick="showLandingPage()">
-                <img src="https://raw.githubusercontent.com/Typh36557/typhXchain/5be50a400d57b79f9c073eca1b30a532fbee3d1c/logo.png" alt="Logo" class="logo-img">
+                <img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/logo.png" alt="Logo" class="logo-img">
                 <span>TYPH X-CHAIN</span>
             </div>
         </div>
@@ -267,26 +412,53 @@
     <div class="container">
         <div id="landing-page" class="landing-page">
             <div class="hero-section"><h1 class="hero-title">TYPH X-CHAIN</h1><h2 class="hero-subtitle">Crypto ⇌ Mvola, Orange et Airtel</h2><p class="hero-description">La solution la plus simple pour convertir vos cryptos et Mobile Money.</p><button class="btn-hero" onclick="showAuthModal()"><i class="fas fa-rocket"></i> Echanger maintenant</button><div class="reviews-link" onclick="scrollToTestimonials()"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i> Premium Service</div></div>
-            <div style="display: flex; flex-direction: column; align-items: flex-end; margin: -10px 0 30px; padding-right: 10px;"><a href="https://typh-xchain.site/apk" target="_blank" class="btn-download-green"><i class="fas fa-arrow-down"></i></a><div style="margin-top:5px;"><span style="color:var(--text-secondary);font-size:0.85rem;"><i class="fas fa-download" style="color:#10B981;"></i> Télécharger l'application</span></div></div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; margin: -10px 0 30px; padding-right: 10px;"><a href="https://www.mediafire.com/file/77fruf8hbz4lkwg/TYPH+X-CHAIN.apk/file" target="_blank" class="btn-download-green"><i class="fas fa-arrow-down"></i></a><div style="margin-top:5px;"><span style="color:var(--text-secondary);font-size:0.85rem;"><i class="fas fa-download" style="color:#10B981;"></i> Télécharger l'application</span></div></div>
             <div class="features-grid"><div class="feature-card"><div class="feature-icon"><i class="fas fa-bolt"></i></div><h3 class="feature-title">Rapide</h3><p class="feature-description">Transactions en moins de 5 minutes, 15h/24 et 7j/7</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><h3 class="feature-title">Sécurisé</h3><p class="feature-description">Validation par code PIN à 6 chiffres</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-hand-holding-usd"></i></div><h3 class="feature-title">Meilleurs taux</h3><p class="feature-description">Des taux compétitifs mis à jour en temps réel</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-alt"></i></div><h3 class="feature-title">Mobile Money</h3><p class="feature-description">Compatible MVola, Orange Money, Airtel Money</p></div></div>
             <div class="stats-section"><div class="stat-item"><div class="stat-number">1K+</div><div class="stat-label">Utilisateurs</div></div><div class="stat-item"><div class="stat-number">5K+</div><div class="stat-label">Transactions</div></div><div class="stat-item"><div class="stat-number">4.8</div><div class="stat-label">Note moyenne</div></div><div class="stat-item"><div class="stat-number">24/7</div><div class="stat-label">Support</div></div></div>
-            <div id="testimonials" class="testimonials-section"><h2 class="section-title">Ce que disent nos clients</h2><div class="testimonials-grid"><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Tantely Hervée</div><div class="testimonial-date">Il y a 2 jours</div></div></div><div class="testimonial-text">"Atokisana à 100% no sady rapide !"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Santatra Cedrick</div><div class="testimonial-date">Il y a 5 jours</div></div></div><div class="testimonial-text">"Mahay mandray olona sady manoro sy manampy"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div></div><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Mahefa Rakotonirina</div><div class="testimonial-date">Il y a 1 semaine</div></div></div><div class="testimonial-text">"Efa 02 taona niarahana fa milam sady atokisana hatrany foana."</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div></div><div style="text-align:center;margin-top:30px;"><a href="https://www.facebook.com/Typh.Exchange.Ofisialy" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a></div></div>
+            <div id="testimonials" class="testimonials-section"><h2 class="section-title">Ce que disent nos clients</h2><div class="testimonials-grid"><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Tantely Hervée</div><div class="testimonial-date">Il y a 2 jours</div></div></div><div class="testimonial-text">"Atokisana à 100% no sady rapide !"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Santatra Cedrick</div><div class="testimonial-date">Il y a 5 jours</div></div></div><div class="testimonial-text">"Mahay mandray olona sady manoro sy manampy"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div></div><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Mahefa Rakotonirina</div><div class="testimonial-date">Il y a 1 semaine</div></div></div><div class="testimonial-text">"Efa 02 taona niarahana fa milam sady atokisana hatrany foana."</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div></div><div style="text-align:center;margin-top:30px;"><a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a></div></div>
             <div class="footer-copyright">Copyright ©2026 All rights reserved | Dev. Typh</div>
-<div class="terms-link">
-    <a href="https://policies.google.com/privacy?hl=fr" target="_blank" rel="noopener noreferrer">
-        <i class="fas fa-file-contract"></i> Terms & Conditions - Mentions Légales (NIF/STAT)
-    </a>
-</div>
+            <div class="terms-link">
+                <a href="https://policies.google.com/privacy?hl=fr" target="_blank" rel="noopener noreferrer">
+                    <i class="fas fa-file-contract"></i> Terms & Conditions - Mentions Légales (NIF/STAT)
+                </a>
+            </div>
         </div>
-        <div id="accueil-section" class="platform-section"><div class="card"><div class="card-header"><h2 class="card-title"><i class="fas fa-chart-line"></i> Taux en direct</h2></div><div class="info-message"><i class="fas fa-info-circle"></i><span>Les taux sont actualisés toutes les 30 minutes. <a href="#" onclick="syncBinanceManuel()" style="color: var(--accent);">Actualiser maintenant</a></span></div><div class="last-update" id="taux-last-update">Mise à jour: ...</div><div class="rates-grid" id="taux-direct"></div></div><div class="card"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-history"></i> Transactions par nos clients</h2><ul class="activity-list" id="recent-activity"></ul></div><div class="card"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-newspaper"></i> Actualités & Annonces</h2><div class="news-container" id="news-container"></div></div></div>
-        <div id="achat-section" class="platform-section"><div class="card"><h2 class="card-title"><i class="fas fa-arrow-down"></i> Achat crypto</h2><div id="pause-message-achat" class="pause-message" style="display:none;"><i class="fas fa-pause-circle"></i><span>Service temporairement suspendu</span></div><div id="achat-content"><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant <span id="montant-limite-achat" style="color:var(--warning);font-size:0.7rem;"></span></label><div class="input-wrapper"><input type="number" id="montant-achat" value="2000" oninput="estimerAchat(); verifierLimitesAchat()"></div><div class="limite-error" id="limite-error-achat">Le montant doit être entre <span id="min-affichage-achat">2 000</span> Ar et <span id="max-affichage-achat">100 000</span> Ar</div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-achat" onchange="estimerAchat(); mettreAJourReseaux('achat'); mettreAJourLimiteAchat()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-achat-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-achat" onchange="estimerAchat(); afficherFraisReseauAchat()"></select></div></div><div id="message-trx-special" class="frais-special" style="display:none;"><i class="fas fa-info-circle"></i> Frais réseau TRC20 : 3% ou -1 TRX si activation</div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-qrcode"></i> Adresse</label><div class="input-wrapper"><input type="text" placeholder="ID ou Email ou Adresse..." id="adresse-achat"></div></div><div class="form-group" id="groupe-numero-achat" style="display:none;"><label class="form-label"><i class="fas fa-phone-alt"></i> Numéro à débiter</label><div class="input-wrapper"><select id="numero-achat-select" onchange="afficherInfosNumeroAchat()"><option value="">Sélectionnez un numéro</option></select></div><div id="info-numero-achat-selectionne" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div></div><div class="limite-info"><span class="limite-label"><i class="fas fa-info-circle"></i> Limites d'échange</span><span class="limite-valeur" id="limite-affichee-achat">2 000 Ar - 100 000 Ar</span></div><div class="estimated-value" id="estimation-achat-container"></div><button class="btn btn-success" onclick="preparerConfirmation('ACHAT')" id="btn-confirmer-achat"><i class="fas fa-lock"></i> Suivant</button></div></div></div>
-        <div id="vente-section" class="platform-section"><div class="card"><h2 class="card-title"><i class="fas fa-arrow-up"></i> Vente crypto</h2><div id="pause-message-vente" class="pause-message" style="display:none;"><i class="fas fa-pause-circle"></i><span>Service temporairement suspendu</span></div><div id="vente-content"><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-vente" onchange="estimerVente(); mettreAJourReseaux('vente'); mettreAJourChampAdresseVente()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant</label><div class="input-wrapper"><input type="number" id="montant-vente" value="0.01" oninput="estimerVente()"></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-vente-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-vente" onchange="estimerVente(); afficherFraisReseauVente(); mettreAJourChampAdresseVente()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-vente"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-vente" onchange="afficherReponseVente(); mettreAJourChampAdresseVente()"></select></div></div>
+        <div id="accueil-section" class="platform-section"><div class="card"><div class="card-header"><h2 class="card-title"><i class="fas fa-chart-line"></i> Taux en direct</h2></div><div class="info-message"><i class="fas fa-info-circle"></i><span>Les taux sont actualisés toutes les 30 minutes. <a href="#" onclick="syncBinanceManuel()" style="color: var(--accent);">Actualiser maintenant</a></span></div><div class="last-update" id="taux-last-update">Mise à jour: ...</div><div class="rates-grid" id="taux-direct"></div></div>
+            <div class="carousel-banner">
+                <div class="banner-header">
+                    <div class="banner-title">
+                        <i class="fas fa-images"></i> Promotions & Partenaires
+                    </div>
+                    <div class="banner-indicator">
+                        <span id="bannerCounter">1</span>/3
+                    </div>
+                </div>
+                <div class="carousel-banner-wrapper" id="bannerWrapper">
+                    <div class="carousel-banner-slides" id="bannerSlides">
+                        <div class="carousel-banner-slide" data-link="https://typh-xchain.site/conditions.html">
+                            <img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/Upfoto_BfGTKbCo7bslBjtSf1EdVOwa9CVxIGmKpAizJkyqemRxi.jpg" alt="Airtel Money">
+                        </div>
+                        <div class="carousel-banner-slide" data-link="https://www.facebook.com/profile.php?id=100091581669686">
+                            <img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/Upfoto_x4JLUFUIW61wqL6p3PQuK1WXnrySELyeJaLLRIpGLShnk.jpg" alt="MVola">
+                        </div>
+                        <div class="carousel-banner-slide" data-link="https://www.facebook.com/100086398339003/posts/937478695808733/?app=fbl">
+                            <img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/file_000000000d9c72469b962665e160edd2.png" alt="Orange Money">
+                        </div>
+                    </div>
+                    <div class="banner-click-hint">
+                        <i class="fas fa-hand-pointer"></i> Cliquez
+                    </div>
+                </div>
+                <div class="carousel-banner-dots" id="bannerDots"></div>
+            </div><div class="card"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-history"></i> Transactions par nos clients</h2><ul class="activity-list" id="recent-activity"></ul></div><div class="card"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-newspaper"></i> Actualités & Annonces</h2><div class="news-container" id="news-container"></div></div></div>
+        <div id="achat-section" class="platform-section"><div class="card"><h2 class="card-title"><i class="fas fa-arrow-down"></i> Achat crypto</h2><div id="pause-message-achat" class="pause-message" style="display:none;"><i class="fas fa-pause-circle"></i><span>Service temporairement suspendu</span></div><div id="achat-content"><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant <span id="montant-limite-achat" style="color:var(--warning);font-size:0.7rem;"></span></label><div class="input-wrapper"><input type="number" id="montant-achat" value="2000" oninput="estimerAchat(); verifierLimitesAchat()"></div><div class="limite-error" id="limite-error-achat">Le montant doit être entre <span id="min-affichage-achat">2 000</span> Ar et <span id="max-affichage-achat">200 000</span> Ar</div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-achat" onchange="estimerAchat(); mettreAJourReseaux('achat'); mettreAJourLimiteAchat()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-achat-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-achat" onchange="estimerAchat(); afficherFraisReseauAchat()"></select></div></div><div id="message-trx-special" class="frais-special" style="display:none;"><i class="fas fa-info-circle"></i> Frais réseau TRC20 : 3% ou -1 TRX si activation</div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-qrcode"></i> Adresse</label><div class="input-wrapper"><input type="text" placeholder="ID ou Email ou Adresse..." id="adresse-achat"></div></div><div class="form-group" id="groupe-numero-achat" style="display:none;"><label class="form-label"><i class="fas fa-phone-alt"></i> Numéro à débiter</label><div class="input-wrapper"><select id="numero-achat-select" onchange="afficherInfosNumeroAchat()"><option value="">Sélectionnez un numéro</option></select></div><div id="info-numero-achat-selectionne" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div></div><div class="limite-info"><span class="limite-label"><i class="fas fa-info-circle"></i> Limites d'échange</span><span class="limite-valeur" id="limite-affichee-achat">2 000 Ar - 200 000 Ar</span></div><div class="estimated-value" id="estimation-achat-container"></div><button class="btn btn-success" onclick="preparerConfirmation('ACHAT')" id="btn-confirmer-achat"><i class="fas fa-lock"></i> Suivant</button></div></div></div>
+        <div id="vente-section" class="platform-section"><div class="card"><h2 class="card-title"><i class="fas fa-arrow-up"></i> Vente crypto</h2><div id="pause-message-vente" class="pause-message" style="display:none;"><i class="fas fa-pause-circle"></i><span>Service temporairement suspendu</span></div><div id="vente-content"><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-vente" onchange="estimerVente(); mettreAJourReseaux('vente'); mettreAJourChampAdresseVente()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant</label><div class="input-wrapper"><input type="number" id="montant-vente" value="0.6" oninput="estimerVente()"></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-vente-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-vente" onchange="estimerVente(); afficherFraisReseauVente(); mettreAJourChampAdresseVente()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-vente"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-vente" onchange="afficherReponseVente(); mettreAJourChampAdresseVente()"></select></div></div>
             <div id="groupe-adresse-liee" style="display:none; margin-bottom: 20px;">
                 <label class="form-label"><i class="fas fa-link"></i> 📍 Mon adresse de réception</label>
                 <div class="input-wrapper"><select id="adresse-liee-select" onchange="selectionnerAdresseLiee()"><option value="">Sélectionnez une adresse</option></select></div>
                 <div id="info-adresse-liee" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div>
             </div>
-            <div class="form-group"><label class="form-label"><i class="fas fa-phone-alt"></i> Numéro à créditer</label><div class="input-wrapper"><select id="numero-vente-select" onchange="afficherInfosNumeroVente()"><option value="">Sélectionnez un numéro</option></select></div><div id="info-numero-selectionne" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div></div><div class="limite-info"><span class="limite-label"><i class="fas fa-info-circle"></i> Limites d'échange</span><span class="limite-valeur" id="limite-affichee-vente">2 000 Ar - 100 000 Ar</span></div><div class="limite-error" id="limite-error-vente">La valeur doit être entre 2 000 Ar et 100 000 Ar</div><div class="estimated-value" id="estimation-vente-container"></div><div class="portfolio-response" id="reponse-portefeuille-vente-container"><strong><i class="fas fa-info-circle"></i> Détails du portefeuille</strong><div id="reponse-portefeuille-vente" class="response-text"></div></div><button class="btn btn-warning" onclick="preparerConfirmation('VENTE')" id="btn-confirmer-vente"><i class="fas fa-lock"></i> Suivant</button></div></div></div>
+            <div class="form-group"><label class="form-label"><i class="fas fa-phone-alt"></i> Numéro à créditer</label><div class="input-wrapper"><select id="numero-vente-select" onchange="afficherInfosNumeroVente()"><option value="">Sélectionnez un numéro</option></select></div><div id="info-numero-selectionne" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div></div><div class="limite-info"><span class="limite-label"><i class="fas fa-info-circle"></i> Limites d'échange</span><span class="limite-valeur" id="limite-affichee-vente">2 000 Ar - 200 000 Ar</span></div><div class="limite-error" id="limite-error-vente">La valeur doit être entre 2 000 Ar et 200 000 Ar</div><div class="estimated-value" id="estimation-vente-container"></div><div class="portfolio-response" id="reponse-portefeuille-vente-container"><strong><i class="fas fa-info-circle"></i> Détails du portefeuille</strong><div id="reponse-portefeuille-vente" class="response-text"></div></div><button class="btn btn-warning" onclick="preparerConfirmation('VENTE')" id="btn-confirmer-vente"><i class="fas fa-lock"></i> Suivant</button></div></div></div>
         <div id="demandes-section" class="platform-section">
             <div class="card">
                 <div class="refresh-header">
@@ -301,6 +473,13 @@
         </div>
         <div id="profil-section" class="platform-section">
             <div class="card"><h2 class="card-title"><i class="fas fa-user-circle"></i> Profil</h2><div class="profile-info" id="profil-infos"></div></div>
+            <div id="email-verification-banner" class="email-verification-banner" style="display:none;">
+                <i class="fas fa-exclamation-triangle"></i> ⚠️ Votre email n'est pas vérifié. Vous devez vérifier votre email pour accéder aux fonctionnalités.
+                <br>
+                <button class="btn-verify-email" onclick="renvoyerEmailVerification()">
+                    <i class="fas fa-envelope"></i> Renvoyer l'email de vérification
+                </button>
+            </div>
             <div id="affiliate-card" class="affiliate-card" style="display: none;">
                 <div class="affiliate-title"><i class="fas fa-link"></i> Votre lien de parrainage</div>
                 <div class="affiliate-link-container">
@@ -322,7 +501,7 @@
                 <p id="bonus-restriction" style="color:var(--warning); font-size:0.8rem; margin-top:8px;">🔒 Une transaction confirmée aujourd'hui ou un tour gratuit est requis</p>
             </div>
             <div class="card"><h2 class="card-title"><i class="fas fa-key"></i> Code PIN de sécurité</h2><div id="pin-management"></div><button class="btn btn-success" onclick="gererPIN()" id="btn-gerer-pin"><i class="fas fa-key"></i> Configurer mon code PIN</button></div>
-            <div class="card"><h2 class="card-title"><i class="fas fa-link"></i> 🔗 Mes adresses de portefeuille</h2><div id="liste-adresses-utilisateur" class="activity-list"></div><button class="btn btn-success" onclick="ouvrirModalAjoutAdresse()" style="margin-bottom: 10px;"><i class="fas fa-plus"></i> Ajouter une adresse</button><div class="info-message"><i class="fas fa-info-circle"></i> Les adresses enregistrées seront utilisées lors de vos retraits si le portefeuille le nécessite.</div></div><div class="card"><h2 class="card-title"><i class="fas fa-phone-alt"></i> Mes numéros (max 3)</h2><div id="liste-numeros-utilisateur" class="activity-list"></div><div id="form-ajout-numero" style="margin-top:20px;"><div class="form-group"><label class="form-label">Nom complet</label><div class="input-wrapper"><input type="text" id="nouveau-nom" placeholder="Rakoto Jean"></div></div><div class="form-group"><label class="form-label">Numéro</label><div class="input-wrapper"><input type="tel" id="nouveau-numero" placeholder="034 00 000 00"></div></div><button class="btn btn-success" onclick="ajouterNumero()" id="btn-ajouter-numero"><i class="fas fa-plus"></i> Ajouter un numéro</button></div><div style="margin-top:20px;text-align:center;"><div id="user-badge-bottom-container" style="margin-bottom: 15px;"></div><a href="https://www.facebook.com/Typh.Exchange.Ofisialy" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a></div></div><div class="card" id="carte-deconnexion"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-sign-out-alt"></i> Session</h2><button class="btn btn-warning" onclick="deconnexion()" style="background:var(--danger);"><i class="fas fa-power-off"></i> Se déconnecter</button></div></div>
+            <div class="card"><h2 class="card-title"><i class="fas fa-link"></i> 🔗 Mes adresses de portefeuille</h2><div id="liste-adresses-utilisateur" class="activity-list"></div><button class="btn btn-success" onclick="ouvrirModalAjoutAdresse()" style="margin-bottom: 10px;"><i class="fas fa-plus"></i> Ajouter une adresse</button><div class="info-message"><i class="fas fa-info-circle"></i> Les adresses enregistrées seront utilisées lors de vos retraits si le portefeuille le nécessite.</div></div><div class="card"><h2 class="card-title"><i class="fas fa-phone-alt"></i> Mes numéros (max 3)</h2><div id="liste-numeros-utilisateur" class="activity-list"></div><div id="form-ajout-numero" style="margin-top:20px;"><div class="form-group"><label class="form-label">Nom complet</label><div class="input-wrapper"><input type="text" id="nouveau-nom" placeholder="Rakoto Jean"></div></div><div class="form-group"><label class="form-label">Numéro</label><div class="input-wrapper"><input type="tel" id="nouveau-numero" placeholder="034 00 000 00"></div></div><button class="btn btn-success" onclick="ajouterNumero()" id="btn-ajouter-numero"><i class="fas fa-plus"></i> Ajouter un numéro</button></div><div style="margin-top:20px;text-align:center;"><div id="user-badge-bottom-container" style="margin-bottom: 15px;"></div><a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a></div></div><div class="card" id="carte-deconnexion"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-sign-out-alt"></i> Session</h2><button class="btn btn-warning" onclick="deconnexion()" style="background:var(--danger);"><i class="fas fa-power-off"></i> Se déconnecter</button></div></div>
     </div>
     <div class="bottom-nav" id="bottom-nav"><div class="nav-menu"><div class="nav-item" onclick="switchPlatformSection('accueil')" id="nav-accueil"><i class="fas fa-home"></i><span>Accueil</span></div><div class="nav-item" onclick="verifierAvantAcces('achat')" id="nav-achat"><i class="fas fa-arrow-down"></i><span>Dépôt</span></div><div class="nav-item" onclick="verifierAvantAcces('vente')" id="nav-vente"><i class="fas fa-arrow-up"></i><span>Retrait</span></div><div class="nav-item" onclick="verifierAvantAcces('demandes')" id="nav-demandes"><i class="fas fa-clipboard-list"></i><span>Demandes</span></div><div class="nav-item" onclick="switchPlatformSection('profil')" id="nav-profil"><i class="fas fa-user-circle"></i><span>Profil</span></div></div></div>
 
@@ -330,7 +509,7 @@
         <div id="connexion-form"><input type="email" id="email-connexion" class="modal-input" placeholder="Email"><input type="password" id="password-connexion" class="modal-input" placeholder="Mot de passe"><div style="display:flex;align-items:center;gap:8px;margin:15px 0;"><input type="checkbox" id="check-rester-connecte" style="width:18px;height:18px;accent-color:var(--accent);" checked><label style="color:var(--text-secondary);font-size:0.85rem;"><i class="fas fa-lock"></i> Rester connecté</label></div><div style="text-align:right;margin:10px 0 20px;"><span onclick="ouvrirModalMotDePasseOublie()" style="color:var(--accent);cursor:pointer;font-size:0.85rem;"><i class="fas fa-question-circle"></i> Mot de passe oublié ?</span></div></div>
         <div id="inscription-form" style="display:none;">
             <input type="text" id="nom-inscription" class="modal-input" placeholder="Nom complet">
-            <input type="email" id="email-inscription" class="modal-input" placeholder="Email">
+            <input type="email" id="email-inscription" class="modal-input" placeholder="Email (@gmail.com)">
             <input type="password" id="password-inscription" class="modal-input" placeholder="Mot de passe">
             <div style="margin: 10px 0; background: rgba(16,185,129,0.1); border-radius: 20px; padding: 12px;">
                 <label style="color: var(--text-secondary); font-size: 0.75rem; display: block; margin-bottom: 5px;">
@@ -363,7 +542,7 @@
     
     <div id="modal-confirmation" class="modal"><div class="modal-content"><div class="modal-title" id="modal-titre"><i class="fas fa-clock"></i> Vérification de la transaction</div><div id="details-demande" class="request-detail-modal"></div><div id="message-paiement-container" style="display:none;"><div class="message-admin" id="message-paiement"><i class="fas fa-info-circle"></i><div class="message-admin-content" id="message-paiement-texte"></div><button class="btn-copy" onclick="copierMessagePaiement()" id="btn-copy-paiement"><i class="fas fa-copy"></i> Copier</button></div></div><div class="timer-large" id="confirmation-timer"><i class="fas fa-hourglass-half"></i><span id="timer-display">15:00</span></div><div class="form-group" style="margin:20px 0;"><label class="form-label"><i class="fas fa-hashtag"></i> TXID ou PREUVE D'ENVOI</label><div class="input-wrapper"><input type="text" id="txid-input" placeholder="Entrez le TXID ou votre adresse d'envoi ou message preuve"></div></div><div class="warning-message"><i class="fas fa-exclamation-triangle"></i><span>Vérifiez bien le numéro ou l'adresse d'envoi ,et aussi les informations avant d'envoyer ! </span></div><div class="modal-buttons"><button class="btn btn-cancel" onclick="fermerModalConfirmation()"><i class="fas fa-times"></i> Annuler</button><button class="btn btn-confirm" onclick="validerConfirmation()" id="btn-confirmer-avec-txid"><i class="fas fa-arrow-right"></i> Confirmer</button></div></div></div>
     <div id="modal-details-demande" class="modal"><div class="modal-content"><div class="modal-title"><i class="fas fa-info-circle"></i> Détails</div><div id="details-demande-complete" class="request-detail-modal"></div><button class="btn btn-cancel" onclick="fermerDetailsDemande()"><i class="fas fa-times"></i> Fermer</button></div></div>
-    <div id="modal-recu" class="modal"><div class="modal-content"><div class="receipt-header" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;"><img src="https://raw.githubusercontent.com/Typh36557/typhXchain/5be50a400d57b79f9c073eca1b30a532fbee3d1c/logo.png" alt="Logo" style="height: 64px; width: auto;"><h2 style="margin:0;">TYPH X-CHAIN</h2></div><div id="recu-content"></div><div class="receipt-actions"><button class="btn-receipt" onclick="verifierMesActifs()"><i class="fas fa-wallet"></i> Vérifier mes actifs</button><div class="rating-section"><div class="rating-title">RAPIDE - SIMPLE - SÉCURISÉ</div><div class="rating-stars"><i class="fas fa-star" onclick="noter(1)"></i><i class="fas fa-star" onclick="noter(2)"></i><i class="fas fa-star" onclick="noter(3)"></i><i class="fas fa-star" onclick="noter(4)"></i><i class="fas fa-star" onclick="noter(5)"></i></div><div class="rating-buttons"><span class="rating-btn" onclick="noter('positif')">Positive</span><span class="rating-btn" onclick="noter('negatif')">Négative</span></div></div></div><button class="btn btn-cancel" onclick="fermerModalRecu()" style="margin-top:20px;"><i class="fas fa-times"></i> Fermer</button></div></div>
+    <div id="modal-recu" class="modal"><div class="modal-content"><div class="receipt-header" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;"><img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/logo.png" alt="Logo" style="height: 64px; width: auto;"><h2 style="margin:0;">TYPH X-CHAIN</h2></div><div id="recu-content"></div><div class="receipt-actions"><button class="btn-receipt" onclick="verifierMesActifs()"><i class="fas fa-wallet"></i> Vérifier mes actifs</button><div class="rating-section"><div class="rating-title">RAPIDE - SIMPLE - SÉCURISÉ</div><div class="rating-stars"><i class="fas fa-star" onclick="noter(1)"></i><i class="fas fa-star" onclick="noter(2)"></i><i class="fas fa-star" onclick="noter(3)"></i><i class="fas fa-star" onclick="noter(4)"></i><i class="fas fa-star" onclick="noter(5)"></i></div><div class="rating-buttons"><span class="rating-btn" onclick="noter('positif')">Positive</span><span class="rating-btn" onclick="noter('negatif')">Négative</span></div></div></div><button class="btn btn-cancel" onclick="fermerModalRecu()" style="margin-top:20px;"><i class="fas fa-times"></i> Fermer</button></div></div>
     
     <div id="modal-news-detail" class="modal"><div class="modal-content"><div class="modal-title" id="modal-news-title"><i class="fas fa-newspaper"></i> Actualité</div><div id="modal-news-content" style="color:var(--text-primary);line-height:1.6;margin-bottom:20px;"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--gray-300);"><span id="modal-news-date" style="color:var(--text-secondary);font-size:0.85rem;"></span><span id="modal-news-author" style="color:var(--accent);font-size:0.85rem;"></span></div><button class="btn btn-cancel" onclick="fermerModalNews()" style="margin-top:20px;"><i class="fas fa-times"></i> Fermer</button></div></div>
     
@@ -393,10 +572,303 @@
         </div>
     </div>
 
+    <div id="rate-limit-indicator" class="rate-limit-indicator">
+        <i class="fas fa-clock"></i> <span id="rate-limit-count">15</span> requêtes restantes
+    </div>
+
     <script>
-        // Configuration de sécurité pour éviter les conflits CSP
+        // ============================================================
+        //  🔒 CORRECTIFS DE SÉCURITÉ - XSS + CSRF + RATE LIMITING
+        // ============================================================
+
+        // --- 1. FONCTION D'ÉCHAPPEMENT HTML (Anti-XSS) ---
+        function echapperHTMLSecurise(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;')
+                .replace(/\//g, '&#x2F;')
+                .replace(/\\/g, '&#x5C;')
+                .replace(/`/g, '&#x60;')
+                .replace(/=/g, '&#x3D;')
+                .replace(/\(/g, '&#x28;')
+                .replace(/\)/g, '&#x29;');
+        }
+
+        window.echapperHTML = function(t) {
+            return echapperHTMLSecurise(t);
+        };
+
+        // --- 2. VALIDATION DES ENTRÉES (Anti-XSS renforcé) ---
+        function validerEntreeSecurisee(valeur, type) {
+            if (typeof valeur !== 'string') return false;
+            valeur = valeur.trim();
+            if (valeur === '') return false;
+            
+            const interdits = [
+                /<script.*?>.*?<\/script>/gi,
+                /<iframe.*?>.*?<\/iframe>/gi,
+                /<object.*?>.*?<\/object>/gi,
+                /<embed.*?>.*?<\/embed>/gi,
+                /<svg.*?>.*?<\/svg>/gi,
+                /<img.*?onerror.*?>/gi,
+                /javascript:/gi,
+                /vbscript:/gi,
+                /onerror\s*=/gi,
+                /onload\s*=/gi,
+                /onclick\s*=/gi,
+                /onmouseover\s*=/gi,
+                /onfocus\s*=/gi,
+                /onblur\s*=/gi,
+                /onchange\s*=/gi,
+                /oninput\s*=/gi,
+                /data:text\/html/gi,
+                /%3Cscript/gi,
+                /%3Ciframe/gi
+            ];
+            
+            for (let pattern of interdits) {
+                if (pattern.test(valeur)) {
+                    console.warn('⚠️ Tentative d\'injection bloquée:', valeur);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // --- 3. VALIDATION DES TAUX (Protection des taux en temps réel) ---
+        function validerTauxSecurise(taux) {
+            if (!taux || typeof taux !== 'object') return false;
+            const required = ['prixUSD', 'prixMGA', 'variation', 'couleur', 'lastUpdate'];
+            for (let key of required) {
+                if (taux[key] === undefined || taux[key] === null) return false;
+                if (key === 'prixUSD' || key === 'prixMGA') {
+                    if (isNaN(taux[key]) || taux[key] < 0) return false;
+                }
+                if (key === 'couleur' && !['positive', 'negative'].includes(taux[key])) return false;
+                if (key === 'lastUpdate' && isNaN(Date.parse(taux[key]))) return false;
+            }
+            return true;
+        }
+
+        // --- 4. RATE LIMITER AVANCÉ ---
+        class RateLimiterAvance {
+            constructor(limite = 15, fenetre = 60000) {
+                this.limite = limite;
+                this.fenetre = fenetre;
+                this.requetes = {};
+                this.chargerDepuisLocal();
+                this.dernierAffichage = 0;
+            }
+
+            chargerDepuisLocal() {
+                try {
+                    const data = localStorage.getItem('rate_limiter');
+                    if (data) {
+                        const parsed = JSON.parse(data);
+                        this.requetes = parsed.requetes || {};
+                        const maintenant = Date.now();
+                        for (let [action, timestamps] of Object.entries(this.requetes)) {
+                            this.requetes[action] = timestamps.filter(t => t > maintenant - this.fenetre);
+                        }
+                    }
+                } catch(e) {}
+            }
+
+            sauvegarderLocal() {
+                try {
+                    localStorage.setItem('rate_limiter', JSON.stringify({ requetes: this.requetes }));
+                } catch(e) {}
+            }
+
+            peutExecuter(action = 'default') {
+                const maintenant = Date.now();
+                if (!this.requetes[action]) this.requetes[action] = [];
+                
+                this.requetes[action] = this.requetes[action].filter(t => t > maintenant - this.fenetre);
+                
+                if (this.requetes[action].length >= this.limite) {
+                    this.mettreAJourAffichage(this.getRestant(action));
+                    return false;
+                }
+                
+                this.requetes[action].push(maintenant);
+                this.sauvegarderLocal();
+                this.mettreAJourAffichage(this.getRestant(action));
+                return true;
+            }
+
+            getRestant(action = 'default') {
+                const maintenant = Date.now();
+                if (!this.requetes[action]) return this.limite;
+                const actifs = this.requetes[action].filter(t => t > maintenant - this.fenetre);
+                return Math.max(0, this.limite - actifs.length);
+            }
+
+            mettreAJourAffichage(restant) {
+                const maintenant = Date.now();
+                if (maintenant - this.dernierAffichage < 1000) return;
+                this.dernierAffichage = maintenant;
+                
+                const indicator = document.getElementById('rate-limit-indicator');
+                const countSpan = document.getElementById('rate-limit-count');
+                if (indicator && countSpan) {
+                    countSpan.textContent = restant;
+                    if (restant < 3) {
+                        indicator.style.borderColor = 'var(--danger)';
+                        countSpan.style.color = 'var(--danger)';
+                        indicator.style.display = 'block';
+                    } else if (restant < 6) {
+                        indicator.style.borderColor = 'var(--warning)';
+                        countSpan.style.color = 'var(--warning)';
+                        indicator.style.display = 'block';
+                    } else {
+                        indicator.style.borderColor = 'var(--gray-300)';
+                        countSpan.style.color = 'var(--text-secondary)';
+                        if (restant >= this.limite) {
+                            indicator.style.display = 'none';
+                        } else {
+                            indicator.style.display = 'block';
+                        }
+                    }
+                }
+            }
+        }
+
+        // --- 5. INSTANCES DES RATE LIMITERS ---
+        const rateLimiters = {
+            auth: new RateLimiterAvance(5, 60000),
+            demande: new RateLimiterAvance(10, 60000),
+            refresh: new RateLimiterAvance(20, 60000),
+            estimation: new RateLimiterAvance(30, 60000),
+            default: new RateLimiterAvance(15, 60000),
+            sync: new RateLimiterAvance(10, 300000)
+        };
+
+        // --- 6. PROTECTION CSRF ---
+        function genererTokenCSRF() {
+            return Math.random().toString(36).substring(2, 15) + 
+                   Math.random().toString(36).substring(2, 15);
+        }
+
+        function ajouterTokensCSRF() {
+            const csrfToken = genererTokenCSRF();
+            try {
+                sessionStorage.setItem('csrfToken', csrfToken);
+            } catch(e) {}
+            
+            document.querySelectorAll('form').forEach(form => {
+                if (!form.querySelector('input[name="csrf_token"]')) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'csrf_token';
+                    input.value = csrfToken;
+                    form.appendChild(input);
+                }
+            });
+        }
+
+        function protegerDonneesSensibles() {
+            if (window.transactionEnAttente) {
+                Object.defineProperty(window, 'transactionEnAttente', {
+                    configurable: false,
+                    enumerable: false,
+                    writable: true
+                });
+            }
+            if (window.utilisateurCourant) {
+                Object.defineProperty(window, 'utilisateurCourant', {
+                    configurable: false,
+                    enumerable: false,
+                    writable: true
+                });
+            }
+        }
+
+        // --- 7. PATCH DES FONCTIONS SENSIBLES AVEC VALIDATION ---
+        (function patcherFonctions() {
+            const originalAjouterNumero = window.ajouterNumero;
+            if (originalAjouterNumero) {
+                window.ajouterNumero = async function() {
+                    const nom = document.getElementById('nouveau-nom')?.value?.trim() || '';
+                    const numero = document.getElementById('nouveau-numero')?.value?.trim() || '';
+                    
+                    if (!validerEntreeSecurisee(nom, 'text')) {
+                        alert('⚠️ Nom invalide - contenu non autorisé');
+                        return;
+                    }
+                    if (!validerEntreeSecurisee(numero, 'tel')) {
+                        alert('⚠️ Numéro invalide - contenu non autorisé');
+                        return;
+                    }
+                    if (!rateLimiters.default.peutExecuter('ajout_numero')) {
+                        alert('⏳ Trop de tentatives d\'ajout de numéro. Veuillez patienter.');
+                        return;
+                    }
+                    return originalAjouterNumero.call(this);
+                };
+            }
+
+            const originalEnregistrerAdresse = window.enregistrerAdresse;
+            if (originalEnregistrerAdresse) {
+                window.enregistrerAdresse = async function() {
+                    const label = document.getElementById('nouvelle-adresse-label')?.value?.trim() || '';
+                    const adresse = document.getElementById('nouvelle-adresse-valeur')?.value?.trim() || '';
+                    
+                    if (!validerEntreeSecurisee(label, 'text')) {
+                        alert('⚠️ Label invalide - contenu non autorisé');
+                        return;
+                    }
+                    if (!validerEntreeSecurisee(adresse, 'text')) {
+                        alert('⚠️ Adresse invalide - contenu non autorisé');
+                        return;
+                    }
+                    if (!rateLimiters.default.peutExecuter('ajout_adresse')) {
+                        alert('⏳ Trop de tentatives d\'ajout d\'adresse. Veuillez patienter.');
+                        return;
+                    }
+                    return originalEnregistrerAdresse.call(this);
+                };
+            }
+
+            const originalPreparerConfirmation = window.preparerConfirmation;
+            if (originalPreparerConfirmation) {
+                window.preparerConfirmation = function(type) {
+                    if (!rateLimiters.demande.peutExecuter('preparer_' + type)) {
+                        alert('⏳ Trop de préparations de demande. Veuillez patienter.');
+                        return;
+                    }
+                    return originalPreparerConfirmation.call(this, type);
+                };
+            }
+        })();
+
+        // --- 8. INITIALISATION ---
+        (function initialiserCorrectifs() {
+            console.log('🔒 Initialisation des correctifs de sécurité...');
+            
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    ajouterTokensCSRF();
+                    protegerDonneesSensibles();
+                    console.log('✅ Correctifs de sécurité activés');
+                });
+            } else {
+                ajouterTokensCSRF();
+                protegerDonneesSensibles();
+                console.log('✅ Correctifs de sécurité activés');
+            }
+        })();
+
+        // ============================================================
+        //  FIN DES CORRECTIFS DE SÉCURITÉ
+        // ============================================================
+
+        // --- Configuration de sécurité ---
         if (typeof window !== 'undefined') {
-            // Désactiver les évaluations non sécurisées si possible
             window.__CSP_ENFORCED__ = true;
         }
         
@@ -408,17 +880,21 @@
             });
         }
 
-const _firebase = "eyJhcGlLZXkiOiJBSXphU3lBQzZ4UVhXZ181RXBsTERQUXVfN1J1dVEwTnJDVVNRMmciLCJhdXRoRG9tYWluIjoidHlwaHhjaGFpbi5maXJlYmFzZWFwcC5jb20iLCJkYXRhYmFzZVVSTCI6Imh0dHBzOi8vdHlwaHhjaGFpbi1kZWZhdWx0LXJ0ZGIuZmlyZWJhc2Vpby5jb20iLCJwcm9qZWN0SWQiOiJ0eXBoeGNoYWluIiwic3RvcmFnZUJ1Y2tldCI6InR5cGh4Y2hhaW4uZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiMTAzNjc3MTg3NDQxNiIsImFwcElkIjoiMToxMDM2NzcxODc0NDE2OndlYjphZWNhOWFjMzQ3ZjZiYmNjOTg4NmI1IiwibWVhc3VyZW1lbnRJZCI6IkctREhNWTRNU1A5WSJ9";
-const firebaseConfig = JSON.parse(atob(_firebase));
+        // ============================================================
+        //  CODE APPLICATION
+        // ============================================================
+
+        const _firebase = "eyJhcGlLZXkiOiJBSXphU3lBQzZ4UVhXZ181RXBsTERQUXVfN1J1dVEwTnJDVVNRMmciLCJhdXRoRG9tYWluIjoidHlwaHhjaGFpbi5maXJlYmFzZWFwcC5jb20iLCJkYXRhYmFzZVVSTCI6Imh0dHBzOi8vdHlwaHhjaGFpbi1kZWZhdWx0LXJ0ZGIuZmlyZWJhc2Vpby5jb20iLCJwcm9qZWN0SWQiOiJ0eXBoeGNoYWluIiwic3RvcmFnZUJ1Y2tldCI6InR5cGh4Y2hhaW4uZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiMTAzNjc3MTg3NDQxNiIsImFwcElkIjoiMToxMDM2NzcxODc0NDE2OndlYjphZWNhOWFjMzQ3ZjZiYmNjOTg4NmI1IiwibWVhc3VyZW1lbnRJZCI6IkctREhNWTRNU1A5WSJ9";
+        const firebaseConfig = JSON.parse(atob(_firebase));
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const auth = firebase.auth();
 
         let donnees = {
             portefeuilles: [], operateurs: [], cryptos: ["USDT","BTC","ETH","BNB","LTC","SOL","TRX","DOGE","MATIC","SUI","XRP","TON","USDC"],
-            taux: {}, reseaux: [], frais: { achat: 1.5, vente: 2.0 }, pause: { achat: false, vente: false }, demandes: {}, news: [],
+            reseaux: [], frais: { achat: 1.5, vente: 2.0 }, pause: { achat: false, vente: false }, demandes: {}, news: [],
             tauxMode: 'auto', usdMGA: 4700,
-            limites: { minAchat: 2000, minAchatTRX: 5000, maxAchat: 100000, minVente: 2000, maxVente: 100000 },
+            limites: { minAchat: 2000, minAchatTRX: 5000, maxAchat: 200000, minVente: 2000, maxVente: 200000 },
             messagesSpeciaux: { trx: "Frais réseau TRC20 : 3% ou -1 TRX si activation" },
             roue: [], roueActive: true
         };
@@ -437,8 +913,9 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         let filleulsCount = 0;
         let urlParrainage = '';
         let monUid = null;
+        let emailVerifie = false;
+        let tentativeAuth = 0;
         
-        // Variables pour Turnstile
         let turnstileInscriptionToken = null;
         let turnstileConnexionToken = null;
         
@@ -447,9 +924,8 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         let lotsRoue = [];
         let lotGagneInfo = null;
 
-        // ========== VERSION DE LA ROUE ==========
         const lotsParDefaut = [
-            { id: 'L1', nom: '10 $ Gratuit', type: 'crypto', code: 'MA==' },
+            { id: 'L1', nom: '05 $ Gratuit', type: 'crypto', code: 'MA==' },
             { id: 'L2', nom: 'Frais de gaz - 0.00004 BNB', type: 'crypto', code: 'MTA=' },
             { id: 'L3', nom: 'Crédit 500 Ar', type: 'fiat', code: 'MQ==' },
             { id: 'L4', nom: '0.2 TON', type: 'crypto', code: 'Mg==' },
@@ -470,11 +946,9 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             if (lot.code) return decoderProbabilite(lot.code);
             return lot.probabilite || 0;
         }
-        // ========== FIN DE LA PARTIE ==========
 
-        // ========== FONCTIONS TURNSTILE INSCRIPTION ==========
+        // ========== FONCTIONS TURNSTILE ==========
         function onInscriptionTurnstileSuccess(token) {
-            console.log("✅ Turnstile Inscription validé");
             turnstileInscriptionToken = token;
             const statusDiv = document.getElementById('turnstile-inscription-status');
             if(statusDiv) {
@@ -486,7 +960,6 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         function onInscriptionTurnstileExpired() {
-            console.log("⚠️ Turnstile Inscription expiré");
             turnstileInscriptionToken = null;
             const statusDiv = document.getElementById('turnstile-inscription-status');
             if(statusDiv) {
@@ -498,7 +971,6 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         function onInscriptionTurnstileError(error) {
-            console.log("❌ Erreur Turnstile Inscription:", error);
             turnstileInscriptionToken = null;
             const statusDiv = document.getElementById('turnstile-inscription-status');
             if(statusDiv) {
@@ -509,9 +981,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             if(btnAuth) btnAuth.disabled = true;
         }
         
-        // ========== FONCTIONS TURNSTILE CONNEXION ==========
         function onConnexionTurnstileSuccess(token) {
-            console.log("✅ Turnstile Connexion validé");
             turnstileConnexionToken = token;
             const statusDiv = document.getElementById('turnstile-connexion-status');
             if(statusDiv) {
@@ -523,7 +993,6 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         function onConnexionTurnstileExpired() {
-            console.log("⚠️ Turnstile Connexion expiré");
             turnstileConnexionToken = null;
             const statusDiv = document.getElementById('turnstile-connexion-status');
             if(statusDiv) {
@@ -535,7 +1004,6 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         function onConnexionTurnstileError(error) {
-            console.log("❌ Erreur Turnstile Connexion:", error);
             turnstileConnexionToken = null;
             const statusDiv = document.getElementById('turnstile-connexion-status');
             if(statusDiv) {
@@ -551,23 +1019,15 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             turnstileConnexionToken = null;
             
             const statusInscription = document.getElementById('turnstile-inscription-status');
-            if(statusInscription) {
-                statusInscription.innerHTML = '';
-            }
+            if(statusInscription) statusInscription.innerHTML = '';
             const statusConnexion = document.getElementById('turnstile-connexion-status');
-            if(statusConnexion) {
-                statusConnexion.innerHTML = '';
-            }
+            if(statusConnexion) statusConnexion.innerHTML = '';
             
             if(typeof turnstile !== 'undefined') {
                 const inscWidget = document.querySelector('#inscription-form .cf-turnstile');
-                if(inscWidget && inscWidget.querySelector('iframe')) {
-                    turnstile.reset(inscWidget);
-                }
+                if(inscWidget && inscWidget.querySelector('iframe')) turnstile.reset(inscWidget);
                 const connWidget = document.querySelector('#turnstile-connexion-container .cf-turnstile');
-                if(connWidget && connWidget.querySelector('iframe')) {
-                    turnstile.reset(connWidget);
-                }
+                if(connWidget && connWidget.querySelector('iframe')) turnstile.reset(connWidget);
             }
             
             const btnAuth = document.getElementById('btn-auth');
@@ -605,6 +1065,11 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         };
         
         async function connexion() {
+            if (!rateLimiters.auth.peutExecuter('connexion')) {
+                afficherErreur('⏳ Trop de tentatives de connexion. Veuillez attendre 60 secondes.');
+                return;
+            }
+            
             const email = document.getElementById('email-connexion').value.trim();
             const password = document.getElementById('password-connexion').value.trim();
             
@@ -616,7 +1081,14 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             }
             
             try {
-                await auth.signInWithEmailAndPassword(email, password);
+                const result = await auth.signInWithEmailAndPassword(email, password);
+                // Vérification email après connexion
+                await result.user.reload();
+                if (!result.user.emailVerified) {
+                    await auth.signOut();
+                    afficherErreur('⚠️ Veuillez vérifier votre email avant de vous connecter. Un lien de vérification a été envoyé à votre adresse.');
+                    return;
+                }
                 hideAuthModal();
                 resetTurnstileWidgets();
             } catch(error) { 
@@ -632,10 +1104,21 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         async function inscription() {
+            if (!rateLimiters.auth.peutExecuter('inscription')) {
+                afficherErreur('⏳ Trop de tentatives d\'inscription. Veuillez attendre 60 secondes.');
+                return;
+            }
+            
             const nom = document.getElementById('nom-inscription').value.trim();
             const email = document.getElementById('email-inscription').value.trim();
             const password = document.getElementById('password-inscription').value.trim();
             const parrainId = document.getElementById('parrain-id')?.value.trim() || '';
+            
+            // ✅ Vérification @gmail.com
+            if (!email.endsWith('@gmail.com')) {
+                afficherErreur('⚠️ Seules les adresses Gmail sont autorisées (@gmail.com)');
+                return;
+            }
             
             if(!nom || !email || !password) { afficherErreur('Tous les champs sont requis'); return; }
             if(password.length < 6) { afficherErreur('Mot de passe trop court (6 caractères minimum)'); return; }
@@ -647,14 +1130,20 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             
             try {
                 const uc = await auth.createUserWithEmailAndPassword(email, password);
+                
+                // Envoi de l'email de vérification
+                await uc.user.sendEmailVerification();
+                
                 await uc.user.updateProfile({displayName: nom});
+                
+                // Stocker dans Firebase que l'email n'est pas vérifié
+                await database.ref(`donnees/utilisateurs/${uc.user.uid}/emailVerifie`).set(false);
+                await database.ref(`donnees/utilisateurs/${uc.user.uid}/email`).set(email);
                 
                 let parrainValide = false;
                 if(parrainId) {
                     try {
-                        // En raison des nouvelles règles, on ne peut pas lister tous les utilisateurs.
-                        // Firebase acceptera la mise à jour pour cet utilisateur de façon sécurisée.
-                        await database.ref(`donnees/utilisateurs/${uc.user.uid}`).update({ parrainId: parrainId });
+                        await database.ref(`donnees/utilisateurs/${uc.user.uid}/parrainId`).set(parrainId);
                         parrainValide = true;
                     } catch(e) {
                         console.warn("Impossible de valider le parrainage avec certitude via les règles de sécurité strictes.");
@@ -663,7 +1152,16 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 
                 hideAuthModal();
                 resetTurnstileWidgets();
-                alert('Inscription réussie ! ' + (parrainValide ? 'Code parrain enregistré.' : '') + '\n\nAjoutez vos numéros dans votre profil pour commencer à échanger.');
+                
+                // Déconnexion automatique pour forcer la vérification email
+                await auth.signOut();
+                
+                alert(`✅ Inscription réussie !\n\n📧 Un email de vérification a été envoyé à ${email}.\n\n⚠️ Vous devez vérifier votre email avant de pouvoir accéder à la plateforme.` + 
+                      (parrainValide ? '\n\n✅ Code parrain enregistré.' : ''));
+                
+                // Réafficher la modale d'auth
+                setTimeout(() => showAuthModal(), 1000);
+                
             } catch(error) { 
                 afficherErreur(error.message);
                 if(typeof turnstile !== 'undefined') {
@@ -673,6 +1171,19 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 turnstileInscriptionToken = null;
                 const btnAuth = document.getElementById('btn-auth');
                 if(btnAuth) btnAuth.disabled = true;
+            }
+        }
+        
+        async function renvoyerEmailVerification() {
+            if (!auth.currentUser) {
+                alert('Veuillez vous connecter d\'abord.');
+                return;
+            }
+            try {
+                await auth.currentUser.sendEmailVerification();
+                alert('📧 Un nouvel email de vérification a été envoyé à votre adresse.');
+            } catch(e) {
+                alert('Erreur lors de l\'envoi de l\'email: ' + e.message);
             }
         }
         
@@ -696,10 +1207,8 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             chargerLocal() { try { const cache = sessionStorage.getItem('tauxCache'); if(cache) { const { data, timestamp } = JSON.parse(cache); if((Date.now() - timestamp) < 3600000) { this.donnees = data; this.timestamp = timestamp; return true; } } } catch(e) {} return false; }
         };
         
-        class RateLimiter { constructor(limite = 15, fenetre = 60000) { this.limite = limite; this.fenetre = fenetre; this.requetes = []; } peutExecuter() { const maintenant = Date.now(); this.requetes = this.requetes.filter(t => t > maintenant - this.fenetre); if(this.requetes.length >= this.limite) return false; this.requetes.push(maintenant); return true; } }
-        const rateLimiter = new RateLimiter(15, 60000);
-
-        function echapperHTML(t) { if(!t) return ''; return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+        // Utilisation de la fonction echapperHTML sécurisée
+        function echapperHTML(t) { if(!t) return ''; return echapperHTMLSecurise(t); }
         function genererIDStable(e,n) { const h=btoa(e+n).replace(/[^a-zA-Z0-9]/g,'').substring(0,8); return `TX-${h}-${Date.now().toString(36)}`; }
         async function hasherPIN(pin){ const salt=crypto.getRandomValues(new Uint8Array(16)); const saltHex=Array.from(salt).map(b=>b.toString(16).padStart(2,'0')).join(''); const data=new TextEncoder().encode(pin+saltHex); const hash=await crypto.subtle.digest('SHA-256',data); const hashHex=Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join(''); return {hash:hashHex,salt:saltHex}; }
         function getMinimumAchat(c){ return c==='TRX'?(donnees.limites?.minAchatTRX||5000):(donnees.limites?.minAchat||2000); }
@@ -708,7 +1217,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             return {
                 portefeuilles: [], operateurs: [], cryptos: ["USDT","BTC","ETH","BNB","LTC","SOL","TRX","DOGE","MATIC","SUI","XRP","TON","USDC"],
                 reseaux: [], frais: { achat: 1.5, vente: 2.0 }, pause: { achat: false, vente: false }, taux: {}, demandes: {}, news: [],
-                tauxMode: 'auto', usdMGA: 4700, limites: { minAchat: 2000, minAchatTRX: 5000, maxAchat: 100000, minVente: 2000, maxVente: 100000 },
+                tauxMode: 'auto', usdMGA: 4700, limites: { minAchat: 2000, minAchatTRX: 5000, maxAchat: 200000, minVente: 2000, maxVente: 200000 },
                 messagesSpeciaux: { trx: "Frais réseau TRC20 : 3% ou -1 TRX si activation" }, roue: lotsParDefaut, roueActive: true
             };
         }
@@ -717,6 +1226,9 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         
         function rafraichirDemandesOptimise() {
             if(!monUid) return;
+            if (!rateLimiters.refresh.peutExecuter('rafraichir_demandes')) {
+                return;
+            }
             const maintenant = Date.now();
             if(maintenant - dernierRafraichissementDemandes < 60000) return;
             dernierRafraichissementDemandes = maintenant;
@@ -731,7 +1243,6 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                     mettreAJourMesDemandes();
                 }
                 
-                // Mettre à jour l'affichage des transactions récentes (localement pour respecter les règles)
                 const toutesDemandes = donnees.demandes || {};
                 const demandesRecentes = Object.values(toutesDemandes).filter(d => d.statut === 'confirme').slice(0,5);
                 const l = document.getElementById('recent-activity');
@@ -744,7 +1255,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
 
         function chargerDonnees() {
-            if(!monUid) return; // Sécurité: Attente de l'authentification
+            if(!monUid) return;
 
             if(cacheTaux.chargerLocal() && cacheTaux.donnees) {
                 donnees.taux = cacheTaux.donnees;
@@ -758,6 +1269,16 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                     if(s.exists()) donnees[noeud] = s.val();
                 }).catch(e => console.warn(`Ignoré (${noeud}) : nécessitera peut-être des droits accrus`));
             })).then(() => {
+                // Filtrer les taux invalides
+                const tauxValides = {};
+                for (let [crypto, data] of Object.entries(donnees.taux || {})) {
+                    if (validerTauxSecurise(data)) {
+                        tauxValides[crypto] = data;
+                    } else {
+                        console.warn('⚠️ Taux invalide détecté pour', crypto, 'ignoré');
+                    }
+                }
+                donnees.taux = tauxValides;
                 cacheTaux.set(donnees.taux);
                 
                 database.ref('donnees/roueActive').on('value', snap => {
@@ -896,7 +1417,10 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
 
         async function syncBinanceManuel() {
-            if(!rateLimiter.peutExecuter()) { alert('Veuillez attendre un moment'); return; }
+            if (!rateLimiters.sync.peutExecuter('sync_manuel')) {
+                alert('⏳ Trop de synchronisations manuelles. Veuillez attendre 5 minutes.');
+                return;
+            }
             alert('🔄 Synchronisation...');
             await syncBinance();
             alert('✅ Taux mis à jour !');
@@ -928,7 +1452,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         
         async function syncBinance() {
             if(donnees.tauxMode !== 'auto') return;
-            if(!rateLimiter.peutExecuter()) return;
+            if (!rateLimiterSync.peutExecuter('sync_binance')) return;
             try{ 
                 const tauxMGA=await getTauxMGA(); 
                 const r=await fetch('https://api.binance.com/api/v3/ticker/price'); 
@@ -947,32 +1471,45 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                     } 
                 }); 
                 
-                // Mettre à jour localement d'abord pour l'UI
                 Object.keys(updates).forEach(key => {
                     const crypto = key.split('/').pop();
                     if(!donnees.taux) donnees.taux = {};
-                    donnees.taux[crypto] = updates[key];
+                    // Valider avant d'ajouter
+                    if (validerTauxSecurise(updates[key])) {
+                        donnees.taux[crypto] = updates[key];
+                    }
                 });
                 cacheTaux.set(donnees.taux);
                 afficherTauxSimplifies();
                 sessionStorage.setItem('derniereSyncTaux', Date.now().toString());
                 afficherAgeTaux();
 
-                // Essayer d'envoyer à Firebase (seul l'admin y arrivera grâce aux nouvelles règles)
-                try {
-                    await database.ref().update(updates); 
-                } catch(firebaseErr) {
-                    // C'est normal pour un utilisateur standard. On l'ignore silencieusement.
-                }
+                // ⚠️ Désactivation de l'écriture Firebase pour protéger les taux
+                // Les taux sont uniquement lus depuis Firebase, pas écrits par le client
+                // await database.ref().update(updates); // ❌ Désactivé pour la sécurité
 
             } catch(e){ console.error(e); } 
         }
         
+        // Rate limiter pour syncBinance
+        const rateLimiterSync = new RateLimiterAvance(10, 300000);
+        
+        // ⚠️ FONCTION CORRIGÉE - XSS échappé + validation des taux
         function afficherTauxSimplifies(){ 
             const div=document.getElementById('taux-direct'); 
             if(!div) return; 
             const cs=donnees.cryptos||[]; 
             if(cs.length===0){ div.innerHTML='<div class="rate-card">Aucune crypto</div>'; return; } 
+            
+            // Filtrer les taux invalides
+            const tauxValides = {};
+            for (let [crypto, data] of Object.entries(donnees.taux || {})) {
+                if (validerTauxSecurise(data)) {
+                    tauxValides[crypto] = data;
+                }
+            }
+            donnees.taux = tauxValides;
+            
             div.innerHTML=cs.map(c=>{ 
                 const t=donnees.taux[c]||{prixUSD:c==='USDT'?1:0,prixMGA:c==='USDT'?donnees.usdMGA:0,variation:"0",couleur:"positive",source:'manual'}; 
                 const vc=t.couleur==='positive'?'positive':'negative'; 
@@ -980,10 +1517,14 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 let sym=c; 
                 const sp={'MATIC':'POL','POL':'POL','TON':'TON','USDC':'USDC','USDT':'USDT','BTC':'BTC','ETH':'ETH','BNB':'BNB','SOL':'SOL','XRP':'XRP'}; 
                 if(sp[c]) sym=sp[c]; 
-                return `<div class="rate-card"><div class="rate-pair"><span><i class="fas fa-coins"></i> ${sym}/Ar</span></div><div class="rate-value-main">${t.prixMGA.toLocaleString()} Ar</div><div class="rate-footer"><span class="rate-change ${vc}"><i class="fas fa-${vi}"></i> ${t.variation}%</span></div></div>`; 
+                const prixMGA = echapperHTML(t.prixMGA.toLocaleString());
+                const variation = echapperHTML(t.variation);
+                const symbole = echapperHTML(sym);
+                return `<div class="rate-card"><div class="rate-pair"><span><i class="fas fa-coins"></i> ${symbole}/Ar</span></div><div class="rate-value-main">${prixMGA} Ar</div><div class="rate-footer"><span class="rate-change ${vc}"><i class="fas fa-${vi}"></i> ${variation}%</span></div></div>`; 
             }).join(''); 
         }
 
+        // ⚠️ FONCTION CORRIGÉE - XSS échappé
         function afficherNews(){ 
             const c=document.getElementById('news-container'); 
             if(!c) return; 
@@ -992,7 +1533,13 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             c.innerHTML=nt.map(n=>{ 
                 const d=new Date(n.date); 
                 const df=d.toLocaleDateString('fr-FR')+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); 
-                return `<div class="news-item" onclick="voirDetailNews('${echapperHTML(n.id)}')"><div class="news-header"><div class="news-title"><i class="fas ${n.important?'fa-exclamation-circle':'fa-newspaper'}"></i>${echapperHTML(n.titre)}</div><div class="news-date">${echapperHTML(df)}</div></div><div class="news-content">${echapperHTML(n.contenu.length>100?n.contenu.substring(0,100)+'...':n.contenu)}</div><div class="news-footer"><span class="news-author"><i class="fas fa-user-shield"></i> ${echapperHTML(n.auteur||'Admin')}</span>${n.important?'<span class="news-important">IMPORTANT</span>':''}</div></div>`; 
+                const titre = echapperHTML(n.titre);
+                const contenu = echapperHTML(n.contenu.length>100?n.contenu.substring(0,100)+'...':n.contenu);
+                const date = echapperHTML(df);
+                const auteur = echapperHTML(n.auteur||'Admin');
+                const id = echapperHTML(n.id);
+                const important = n.important ? '<span class="news-important">IMPORTANT</span>' : '';
+                return `<div class="news-item" onclick="voirDetailNews('${id}')"><div class="news-header"><div class="news-title"><i class="fas ${n.important?'fa-exclamation-circle':'fa-newspaper'}"></i>${titre}</div><div class="news-date">${date}</div></div><div class="news-content">${contenu}</div><div class="news-footer"><span class="news-author"><i class="fas fa-user-shield"></i> ${auteur}</span>${important}</div></div>`; 
             }).join(''); 
         }
         
@@ -1008,13 +1555,26 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         
         function fermerModalNews(){ document.getElementById('modal-news-detail').classList.remove('active'); }
 
+        // ⚠️ FONCTION CORRIGÉE - XSS échappé
         function mettreAJourProfil(){ 
             const p=document.getElementById('profil-infos'); 
             if(!p) return; 
-            if(utilisateurCourant) p.innerHTML=`<div class="profile-row"><span class="profile-label">ID</span><span class="profile-value" style="color:var(--accent);font-weight:700;">${echapperHTML(utilisateurCourant.id||'Non attribué')}</span></div><div class="profile-row"><span class="profile-label">Nom</span><span class="profile-value">${echapperHTML(utilisateurCourant.nom)}</span></div><div class="profile-row"><span class="profile-label">Email</span><span class="profile-value">${echapperHTML(utilisateurCourant.email||'Non renseigné')}</span></div><div class="profile-row"><span class="profile-label">Membre depuis</span><span class="profile-value">${echapperHTML(new Date(utilisateurCourant.dateInscription).toLocaleDateString())}</span></div><div class="profile-row"><span class="profile-label">Numéros</span><span class="profile-value">${Object.keys(utilisateurCourant.numeros||{}).length} enregistré(s)</span></div><div class="profile-row"><span class="profile-label">Adresses liées</span><span class="profile-value">${Object.keys(adressesUtilisateur).length} enregistrée(s)</span></div><div class="profile-row"><span class="profile-label">Code PIN</span><span class="profile-value">${utilisateurCourant.codePIN?.actif ? '✅ Configuré' : '❌ Non configuré'}</span></div><div class="profile-row"><span class="profile-label">Tours gratuits</span><span class="profile-value">🎟️ ${toursGratuits} tour(s)</span></div><div class="profile-row"><span class="profile-label">Filleuls</span><span class="profile-value">👥 ${filleulsCount} personne(s)</span></div>`; 
-            else p.innerHTML='<div class="profile-row">Connectez-vous</div>'; 
+            if(utilisateurCourant) {
+                const id = echapperHTML(utilisateurCourant.id||'Non attribué');
+                const nom = echapperHTML(utilisateurCourant.nom);
+                const email = echapperHTML(utilisateurCourant.email||'Non renseigné');
+                const date = echapperHTML(new Date(utilisateurCourant.dateInscription).toLocaleDateString());
+                const numerosCount = Object.keys(utilisateurCourant.numeros||{}).length;
+                const adressesCount = Object.keys(adressesUtilisateur).length;
+                const pinStatus = utilisateurCourant.codePIN?.actif ? '✅ Configuré' : '❌ Non configuré';
+                const emailStatus = emailVerifie ? '✅ Vérifié' : '⚠️ Non vérifié';
+                p.innerHTML=`<div class="profile-row"><span class="profile-label">ID</span><span class="profile-value" style="color:var(--accent);font-weight:700;">${id}</span></div><div class="profile-row"><span class="profile-label">Nom</span><span class="profile-value">${nom}</span></div><div class="profile-row"><span class="profile-label">Email</span><span class="profile-value">${email}</span></div><div class="profile-row"><span class="profile-label">Email vérifié</span><span class="profile-value" style="color:${emailVerifie ? 'var(--success)' : 'var(--danger)'};">${emailStatus}</span></div><div class="profile-row"><span class="profile-label">Membre depuis</span><span class="profile-value">${date}</span></div><div class="profile-row"><span class="profile-label">Numéros</span><span class="profile-value">${numerosCount} enregistré(s)</span></div><div class="profile-row"><span class="profile-label">Adresses liées</span><span class="profile-value">${adressesCount} enregistrée(s)</span></div><div class="profile-row"><span class="profile-label">Code PIN</span><span class="profile-value">${pinStatus}</span></div><div class="profile-row"><span class="profile-label">Tours gratuits</span><span class="profile-value">🎟️ ${toursGratuits} tour(s)</span></div><div class="profile-row"><span class="profile-label">Filleuls</span><span class="profile-value">👥 ${filleulsCount} personne(s)</span></div>`; 
+            } else {
+                p.innerHTML='<div class="profile-row">Connectez-vous</div>'; 
+            }
         }
 
+        // ⚠️ FONCTION CORRIGÉE - XSS échappé
         function mettreAJourAffichage(){
             mettreAJourSelecteurs();
             mettreAJourProfil();
@@ -1029,6 +1589,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             mettreAJourChampAdresseVente();
             verifierAccesBonus();
             mettreAJourAffichageAffiliation();
+            mettreAJourBanniereEmail();
             if(utilisateurCourant){
                 const nomTronque = tronquerNom(utilisateurCourant.nom);
                 const userBadgeContainer = document.getElementById('user-badge-bottom-container');
@@ -1044,6 +1605,16 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 document.getElementById('carte-deconnexion').style.display='none';
             }
         }
+        
+        function mettreAJourBanniereEmail() {
+            const banner = document.getElementById('email-verification-banner');
+            if (!banner) return;
+            if (utilisateurCourant && !emailVerifie) {
+                banner.style.display = 'block';
+            } else {
+                banner.style.display = 'none';
+            }
+        }
 
         function verifierAccesBonus() {
             const btnRoue = document.getElementById('btn-roue-action');
@@ -1057,6 +1628,15 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 btnRoue.classList.add('btn-wheel-disabled');
                 if(msgRestriction) msgRestriction.style.display = 'block';
                 if(msgRestriction) msgRestriction.innerHTML = '🔒 Connectez-vous pour jouer';
+                if(msgNormal) msgNormal.textContent = '💰 Roue de la Fortune';
+                return;
+            }
+            
+            if (!emailVerifie) {
+                btnRoue.disabled = true;
+                btnRoue.classList.add('btn-wheel-disabled');
+                if(msgRestriction) msgRestriction.style.display = 'block';
+                if(msgRestriction) msgRestriction.innerHTML = '🔒 Vérifiez votre email pour accéder à la roue';
                 if(msgNormal) msgNormal.textContent = '💰 Roue de la Fortune';
                 return;
             }
@@ -1168,6 +1748,11 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         function ouvrirModalRoue() {
             if(!utilisateurCourant) { showAuthModal(); return; }
             
+            if (!emailVerifie) {
+                alert('⚠️ Veuillez vérifier votre email avant de jouer à la roue.');
+                return;
+            }
+            
             const aujourdhui = new Date().toLocaleDateString('fr-FR');
             const demandesArray = getDemandesTableau();
             
@@ -1214,6 +1799,11 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
 
         function tournerRoue() {
+            if (!rateLimiters.default.peutExecuter('roue_tourner')) {
+                alert('⏳ Trop de tentatives. Veuillez patienter.');
+                return;
+            }
+            
             document.getElementById('btn-tourner-roue').disabled = true;
             document.getElementById('btn-fermer-roue').style.display = 'none';
             
@@ -1281,11 +1871,11 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 id: demandeId, 
                 type: 'BONUS', 
                 date: new Date().toISOString(), 
-                utilisateur: utilisateurCourant.nom, 
-                email: utilisateurCourant.email, 
+                utilisateur: echapperHTML(utilisateurCourant.nom), 
+                email: echapperHTML(utilisateurCourant.email), 
                 userID: monUid, 
                 statut: 'rejete', 
-                lotGagne: lotGagneInfo.nom, 
+                lotGagne: echapperHTML(lotGagneInfo.nom), 
                 montant: '0',
                 notes: 'Tentative de bonus - pas de gain' 
             };
@@ -1299,6 +1889,11 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
 
         async function reclamerBonus() {
+            if (!rateLimiters.demande.peutExecuter('reclamer_bonus')) {
+                alert('⏳ Trop de tentatives de réclamation. Veuillez patienter.');
+                return;
+            }
+            
             const contact = document.getElementById('input-bonus-contact').value.trim();
             const errDiv = document.getElementById('erreur-bonus');
             if (!contact) { 
@@ -1318,13 +1913,13 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 id: demandeId, 
                 type: 'BONUS', 
                 date: new Date().toISOString(), 
-                utilisateur: utilisateurCourant.nom, 
-                email: utilisateurCourant.email, 
+                utilisateur: echapperHTML(utilisateurCourant.nom), 
+                email: echapperHTML(utilisateurCourant.email), 
                 userID: monUid, 
                 statut: 'en_attente', 
-                lotGagne: lotGagneInfo.nom, 
-                montant: lotGagneInfo.nom, 
-                adresse: contact, 
+                lotGagne: echapperHTML(lotGagneInfo.nom), 
+                montant: echapperHTML(lotGagneInfo.nom), 
+                adresse: echapperHTML(contact), 
                 txid: 'ROUE-'+Date.now().toString().substring(0,8) 
             };
             
@@ -1360,8 +1955,6 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             }
             
             try {
-                // Pour des raisons de sécurité, les règles bloquent la lecture de tous les utilisateurs.
-                // On utilise donc directement le lien de récupération Firebase Auth sécurisé.
                 await auth.sendPasswordResetEmail(email);
                 alert(`Si ces informations correspondent à un compte, un lien de réinitialisation a été envoyé à ${email}.`);
                 fermerModalMotDePasseOublie();
@@ -1373,7 +1966,6 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         async function reinitialiserMotDePasse() {
-            // Cette fonction n'est plus utilisée, le reset se fait via le lien Firebase envoyé par email.
             alert("Veuillez utiliser le lien de réinitialisation envoyé par email.");
         }
         
@@ -1456,7 +2048,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         function mettreAJourLimiteAchat(){ 
             const c=document.getElementById('crypto-achat')?.value; 
             const min=getMinimumAchat(c); 
-            const max=donnees.limites?.maxAchat||100000; 
+            const max=donnees.limites?.maxAchat||200000; 
             const i=document.getElementById('montant-achat'); 
             const ls=document.getElementById('montant-limite-achat'); 
             const la=document.getElementById('limite-affichee-achat'); 
@@ -1474,7 +2066,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             const m=parseFloat(document.getElementById('montant-achat')?.value)||0; 
             const c=document.getElementById('crypto-achat')?.value; 
             const min=getMinimumAchat(c); 
-            const max=donnees.limites?.maxAchat||100000; 
+            const max=donnees.limites?.maxAchat||200000; 
             const e=document.getElementById('limite-error-achat'); 
             const b=document.getElementById('btn-confirmer-achat'); 
             if(m<min||m>max){ e.classList.add('show'); if(b) b.disabled=true; return false; }else{ e.classList.remove('show'); if(b) b.disabled=false; return true; } 
@@ -1486,7 +2078,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             const t=donnees.taux[c]?.prixMGA||0; 
             const va=m*t; 
             const min=donnees.limites?.minVente||2000; 
-            const max=donnees.limites?.maxVente||100000; 
+            const max=donnees.limites?.maxVente||200000; 
             const e=document.getElementById('limite-error-vente'); 
             const b=document.getElementById('btn-confirmer-vente'); 
             if(va<min||va>max){ e.classList.add('show'); if(b) b.disabled=true; return false; }else{ e.classList.remove('show'); if(b) b.disabled=false; return true; } 
@@ -1499,6 +2091,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
 
         function estimerAchat(){ 
+            if (!rateLimiters.estimation.peutExecuter('estimation_achat')) return;
             const m=parseFloat(document.getElementById('montant-achat')?.value)||0; 
             const c=document.getElementById('crypto-achat')?.value; 
             const f=donnees.frais?.achat||1.5; 
@@ -1513,6 +2106,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         function estimerVente(){ 
+            if (!rateLimiters.estimation.peutExecuter('estimation_vente')) return;
             const m=parseFloat(document.getElementById('montant-vente')?.value)||0; 
             const c=document.getElementById('crypto-vente')?.value; 
             const rs=document.getElementById('reseau-vente'); 
@@ -1525,7 +2119,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             const fe=mb*(ftot/100); 
             const mn=mb-fe; 
             montantRecuVente=mn; 
-            document.getElementById('estimation-vente-container').innerHTML=`<div><span class="estimated-label">Vous recevez:</span><span class="estimated-amount">${mn.toLocaleString()} Ar</span></div>`; 
+            document.getElementById('estimation-vente-container').innerHTML=`<div><span class="estimated-label">Vous recevez:</span><span class="estimated-amount">${Math.round(mn).toLocaleString()} Ar</span></div>`; 
             verifierLimitesVente(); 
         }
 
@@ -1535,6 +2129,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                     utilisateurCourant = null;
                     sessionValide = false;
                     monUid = null;
+                    emailVerifie = false;
                     adressesUtilisateur = {};
                     toursGratuits = 0;
                     filleulsCount = 0;
@@ -1592,11 +2187,34 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             switchPlatformSection('accueil'); 
         }
 
+        // ⚠️ FONCTION CORRIGÉE - XSS échappé + validation
         async function ajouterNumero() {
             if(!utilisateurCourant || !monUid){ showAuthModal(); return; }
+            
+            if (!emailVerifie) {
+                alert('⚠️ Veuillez vérifier votre email avant d\'ajouter un numéro.');
+                return;
+            }
+            
             const nom = document.getElementById('nouveau-nom').value.trim();
             const numero = document.getElementById('nouveau-numero').value.trim();
+            
+            if(!validerEntreeSecurisee(nom, 'text')) {
+                alert('⚠️ Nom invalide - contenu non autorisé');
+                return;
+            }
+            if(!validerEntreeSecurisee(numero, 'tel')) {
+                alert('⚠️ Numéro invalide - contenu non autorisé');
+                return;
+            }
+            
             if(!nom || !numero){ alert('Veuillez remplir tous les champs'); return; }
+            
+            if (!rateLimiters.default.peutExecuter('ajout_numero')) {
+                alert('⏳ Trop de tentatives d\'ajout de numéro. Veuillez patienter.');
+                return;
+            }
+            
             const numerosActuels = utilisateurCourant.numeros || {};
             if(Object.keys(numerosActuels).length >= 3){ alert('Limite de 3 numéros atteinte'); return; }
             const idNumero = Date.now().toString();
@@ -1610,12 +2228,19 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             } catch(error) { console.error(error); alert('Erreur lors de l\'ajout du numéro'); }
         }
 
+        // ⚠️ FONCTION CORRIGÉE - XSS échappé
         function mettreAJourNumerosUtilisateur() {
             const liste = document.getElementById('liste-numeros-utilisateur');
             if(!liste) return;
             const numeros = utilisateurCourant?.numeros || {};
             if(Object.keys(numeros).length === 0){ liste.innerHTML = '<div class="activity-item">Aucun numéro</div>'; return; }
-            liste.innerHTML = Object.entries(numeros).map(([id, num]) => `<div class="numero-item"><div class="numero-info"><div class="numero-nom">${echapperHTML(num.nom)}</div><div class="numero-value">${echapperHTML(num.numero)}</div></div><div class="numero-status status-${echapperHTML(num.statut)}">${num.statut === 'en_attente' ? 'En attente' : (num.statut === 'approuve' ? 'Approuvé' : 'Rejeté')}</div></div>`).join('');
+            liste.innerHTML = Object.entries(numeros).map(([id, num]) => {
+                const nom = echapperHTML(num.nom);
+                const numero = echapperHTML(num.numero);
+                const statut = num.statut === 'en_attente' ? 'En attente' : (num.statut === 'approuve' ? 'Approuvé' : 'Rejeté');
+                const statutClass = num.statut === 'en_attente' ? 'en_attente' : (num.statut === 'approuve' ? 'approuve' : 'rejete');
+                return `<div class="numero-item"><div class="numero-info"><div class="numero-nom">${nom}</div><div class="numero-value">${numero}</div></div><div class="numero-status status-${echapperHTML(statutClass)}">${echapperHTML(statut)}</div></div>`;
+            }).join('');
         }
 
         function mettreAJourListeNumerosVente() {
@@ -1625,7 +2250,11 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             const numerosApprouves = Object.entries(numeros).filter(([id, num]) => num.statut === 'approuve');
             const ancienneValeur = select.value;
             if(numerosApprouves.length === 0){ select.innerHTML = '<option value="">Aucun numéro approuvé</option>'; select.disabled = true; }
-            else { select.disabled = false; select.innerHTML = numerosApprouves.map(([id, num]) => `<option value="${echapperHTML(num.numero)}" data-nom="${echapperHTML(num.nom)}" data-id="${id}">${echapperHTML(num.nom)} - ${echapperHTML(num.numero)}</option>`).join(''); if(ancienneValeur && Array.from(select.options).some(o => o.value === ancienneValeur)) select.value = ancienneValeur; }
+            else { select.disabled = false; select.innerHTML = numerosApprouves.map(([id, num]) => {
+                const nom = echapperHTML(num.nom);
+                const numero = echapperHTML(num.numero);
+                return `<option value="${numero}" data-nom="${nom}" data-id="${id}">${nom} - ${numero}</option>`;
+            }).join(''); if(ancienneValeur && Array.from(select.options).some(o => o.value === ancienneValeur)) select.value = ancienneValeur; }
         }
 
         function mettreAJourListeNumerosAchat() {
@@ -1638,7 +2267,11 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             if(numerosApprouves.length > 0){
                 groupe.style.display = 'block';
                 const ancienneValeur = select.value;
-                select.innerHTML = numerosApprouves.map(([id, num]) => `<option value="${echapperHTML(num.numero)}" data-nom="${echapperHTML(num.nom)}" data-id="${id}">${echapperHTML(num.nom)} - ${echapperHTML(num.numero)}</option>`).join('');
+                select.innerHTML = numerosApprouves.map(([id, num]) => {
+                    const nom = echapperHTML(num.nom);
+                    const numero = echapperHTML(num.numero);
+                    return `<option value="${numero}" data-nom="${nom}" data-id="${id}">${nom} - ${numero}</option>`;
+                }).join('');
                 if(ancienneValeur && Array.from(select.options).some(o => o.value === ancienneValeur)) select.value = ancienneValeur;
                 select.disabled = false;
             } else { groupe.style.display = 'none'; select.innerHTML = '<option value="">Aucun numéro approuvé</option>'; select.disabled = true; }
@@ -1646,6 +2279,12 @@ const firebaseConfig = JSON.parse(atob(_firebase));
 
         function ouvrirModalAjoutAdresse() {
             if(!utilisateurCourant || !monUid){ showAuthModal(); return; }
+            
+            if (!emailVerifie) {
+                alert('⚠️ Veuillez vérifier votre email avant d\'ajouter une adresse.');
+                return;
+            }
+            
             const cryptoSelect = document.getElementById('nouvelle-adresse-crypto');
             if(cryptoSelect && donnees.cryptos) {
                 cryptoSelect.innerHTML = donnees.cryptos.map(c => `<option value="${echapperHTML(c)}">${echapperHTML(c)}</option>`).join('');
@@ -1670,10 +2309,21 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         async function enregistrerAdresse() {
+            if (!rateLimiters.default.peutExecuter('enregistrer_adresse')) {
+                alert('⏳ Trop de tentatives d\'enregistrement. Veuillez patienter.');
+                return;
+            }
+            
             const label = document.getElementById('nouvelle-adresse-label').value.trim();
             const adresse = document.getElementById('nouvelle-adresse-valeur').value.trim();
             const crypto = document.getElementById('nouvelle-adresse-crypto')?.value;
             const reseau = document.getElementById('nouvelle-adresse-reseau')?.value;
+            
+            if(!validerEntreeSecurisee(label, 'text') || !validerEntreeSecurisee(adresse, 'text')) {
+                document.getElementById('erreur-adresse').textContent = '⚠️ Données invalides détectées';
+                document.getElementById('erreur-adresse').classList.add('show');
+                return;
+            }
             
             if(!label || !adresse || !crypto || !reseau) {
                 document.getElementById('erreur-adresse').textContent = 'Tous les champs sont requis';
@@ -1681,8 +2331,6 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 return;
             }
             
-            // Avec les nouvelles règles de sécurité, on ne peut pas lire la base entière des utilisateurs.
-            // On vérifie donc uniquement les doublons chez l'utilisateur connecté.
             if(adressesUtilisateur) {
                 for(const [id, addr] of Object.entries(adressesUtilisateur)) {
                     if(addr.adresse === adresse && addr.crypto === crypto && addr.reseau === reseau) {
@@ -1708,6 +2356,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             catch(error) { console.error(error); alert('Erreur lors de la suppression'); }
         }
         
+        // ⚠️ FONCTION CORRIGÉE - XSS échappé
         function mettreAJourListeAdresses() {
             const liste = document.getElementById('liste-adresses-utilisateur');
             if(!liste) return;
@@ -1715,14 +2364,20 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 liste.innerHTML = '<div class="activity-item">Aucune adresse enregistrée</div>';
                 return;
             }
-            liste.innerHTML = Object.entries(adressesUtilisateur).map(([id, addr]) => `
-                <div class="adresse-item">
-                    <div class="adresse-label"><i class="fas fa-tag"></i> ${echapperHTML(addr.label)}</div>
-                    <div class="adresse-value"><i class="fas fa-link"></i> ${echapperHTML(addr.adresse)}</div>
-                    <div class="adresse-details"><span><i class="fas fa-coins"></i> ${echapperHTML(addr.crypto)}</span><span><i class="fas fa-network-wired"></i> ${echapperHTML(addr.reseau)}</span></div>
-                    <button class="btn btn-delete-adresse" onclick="supprimerAdresse('${echapperHTML(id)}')"><i class="fas fa-trash"></i> Supprimer</button>
-                </div>
-            `).join('');
+            liste.innerHTML = Object.entries(adressesUtilisateur).map(([id, addr]) => {
+                const label = echapperHTML(addr.label);
+                const adresse = echapperHTML(addr.adresse);
+                const crypto = echapperHTML(addr.crypto);
+                const reseau = echapperHTML(addr.reseau);
+                return `
+                    <div class="adresse-item">
+                        <div class="adresse-label"><i class="fas fa-tag"></i> ${label}</div>
+                        <div class="adresse-value"><i class="fas fa-link"></i> ${adresse}</div>
+                        <div class="adresse-details"><span><i class="fas fa-coins"></i> ${crypto}</span><span><i class="fas fa-network-wired"></i> ${reseau}</span></div>
+                        <button class="btn btn-delete-adresse" onclick="supprimerAdresse('${echapperHTML(id)}')"><i class="fas fa-trash"></i> Supprimer</button>
+                    </div>
+                `;
+            }).join('');
         }
         
         function mettreAJourChampAdresseVente() {
@@ -1744,7 +2399,11 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 if(adressesFiltrees.length > 0) {
                     groupeAdresse.style.display = 'block';
                     const ancienneValeur = adresseSelect.value;
-                    adresseSelect.innerHTML = `<option value="">Sélectionnez une adresse</option>` + adressesFiltrees.map(([id, addr]) => `<option value="${echapperHTML(addr.adresse)}" data-label="${echapperHTML(addr.label)}" data-id="${id}">${echapperHTML(addr.label)} - ${echapperHTML(addr.adresse.substring(0,20))}...</option>`).join('');
+                    adresseSelect.innerHTML = `<option value="">Sélectionnez une adresse</option>` + adressesFiltrees.map(([id, addr]) => {
+                        const label = echapperHTML(addr.label);
+                        const adresse = echapperHTML(addr.adresse);
+                        return `<option value="${adresse}" data-label="${label}" data-id="${id}">${label} - ${adresse.substring(0,20)}...</option>`;
+                    }).join('');
                     if(ancienneValeur && Array.from(adresseSelect.options).some(o => o.value === ancienneValeur)) adresseSelect.value = ancienneValeur;
                     adresseSelect.disabled = false;
                     const btnSuivant = document.getElementById('btn-confirmer-vente');
@@ -1793,7 +2452,24 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             if(fbUser){
                 monUid = fbUser.uid;
                 
-                // CRUCIAL : On charge les données globales après avoir validé l'authentification
+                // Vérification de l'email
+                await fbUser.reload();
+                emailVerifie = fbUser.emailVerified;
+                
+                if (!emailVerifie) {
+                    // Déconnecter l'utilisateur s'il n'a pas vérifié son email
+                    await auth.signOut();
+                    alert('⚠️ Veuillez vérifier votre email avant de continuer ! Un lien de vérification vous a été envoyé.');
+                    if (fbUser.email) {
+                        await fbUser.sendEmailVerification();
+                    }
+                    utilisateurCourant = null;
+                    sessionValide = false;
+                    monUid = null;
+                    mettreAJourAffichage();
+                    return;
+                }
+                
                 chargerDonnees();
                 
                 const userRef = database.ref(`donnees/utilisateurs/${monUid}`);
@@ -1818,7 +2494,8 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                         toursGratuits: 0,
                         filleulsCount: 0,
                         parrainId: refId || '',
-                        bonusParrainageDonne: false
+                        bonusParrainageDonne: false,
+                        emailVerifie: true
                     };
                     await userRef.set(nouvelUtilisateur);
                     utilisateurCourant = nouvelUtilisateur;
@@ -1845,6 +2522,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 utilisateurCourant = null;
                 sessionValide = false;
                 monUid = null;
+                emailVerifie = false;
                 adressesUtilisateur = {};
                 toursGratuits = 0;
                 filleulsCount = 0;
@@ -1856,6 +2534,16 @@ const firebaseConfig = JSON.parse(atob(_firebase));
 
         function preparerConfirmation(type) {
             if(!sessionValide || !utilisateurCourant){ alert('Veuillez vous connecter'); showAuthModal(); return; }
+            
+            if (!emailVerifie) {
+                alert('⚠️ Veuillez vérifier votre email avant d\'effectuer une transaction.');
+                return;
+            }
+            
+            if (!rateLimiters.demande.peutExecuter('preparer_' + type)) {
+                alert('⏳ Trop de préparations de demande. Veuillez patienter.');
+                return;
+            }
             
             if(type === 'ACHAT'){
                 const selectNumero = document.getElementById('numero-achat-select');
@@ -1924,7 +2612,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             if(transactionEnAttente.type === 'ACHAT'){
                 const operateur = donnees.operateurs.find(o => o.nom === transactionEnAttente.operateur);
                 messagePaiement = operateur ? operateur.messageConfirmation : 'Effectuez le paiement au numéro indiqué';
-                detailsHtml = `<p><strong>Type:</strong> <span>ACHAT de crypto</span></p><p><strong>Montant à payer:</strong> <span>${transactionEnAttente.montant.toLocaleString()} Ar</span></p><p><strong>Crypto reçue:</strong> <span>${transactionEnAttente.montantRecu.toFixed(4)} ${transactionEnAttente.crypto}</span></p><p><strong>Opérateur:</strong> <span>${echapperHTML(transactionEnAttente.operateur)}</span></p><p><strong>Réseau:</strong> <span>${echapperHTML(transactionEnAttente.reseau)}</span></p><p><strong>Portefeuille destination:</strong> <span>${echapperHTML(transactionEnAttente.portefeuille)}</span></p><p><strong>Adresse destination:</strong> <span style="word-break:break-all;">${echapperHTML(transactionEnAttente.adresse || 'Non spécifiée')}</span></p><p><strong>Numéro à débiter:</strong> <span>${echapperHTML(transactionEnAttente.nomNumero)} (${echapperHTML(transactionEnAttente.numero)})</span></p>`;
+                detailsHtml = `<p><strong>Type:</strong> <span>ACHAT de crypto</span></p><p><strong>Montant à payer:</strong> <span>${transactionEnAttente.montant.toLocaleString()} Ar</span></p><p><strong>Crypto reçue:</strong> <span>${transactionEnAttente.montantRecu.toFixed(4)} ${echapperHTML(transactionEnAttente.crypto)}</span></p><p><strong>Opérateur:</strong> <span>${echapperHTML(transactionEnAttente.operateur)}</span></p><p><strong>Réseau:</strong> <span>${echapperHTML(transactionEnAttente.reseau)}</span></p><p><strong>Portefeuille destination:</strong> <span>${echapperHTML(transactionEnAttente.portefeuille)}</span></p><p><strong>Adresse destination:</strong> <span style="word-break:break-all;">${echapperHTML(transactionEnAttente.adresse || 'Non spécifiée')}</span></p><p><strong>Numéro à débiter:</strong> <span>${echapperHTML(transactionEnAttente.nomNumero)} (${echapperHTML(transactionEnAttente.numero)})</span></p>`;
             } else {
                 const portefeuille = donnees.portefeuilles.find(p => p.nom === transactionEnAttente.portefeuille);
                 messagePaiement = portefeuille ? portefeuille.messageConfirmation : 'Envoyez les cryptos à l\'adresse indiquée';
@@ -1934,7 +2622,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
                 } else {
                     adresseDestinataire = `<p><strong>Adresse du portefeuille:</strong> <span style="word-break:break-all;">${portefeuille ? echapperHTML(portefeuille.reponse) : 'Non spécifiée'}</span></p>`;
                 }
-                detailsHtml = `<p><strong>Type:</strong> <span>VENTE de crypto</span></p><p><strong>Crypto à envoyer:</strong> <span>${transactionEnAttente.montant} ${transactionEnAttente.crypto}</span></p><p><strong>Montant reçu:</strong> <span>${transactionEnAttente.montantRecu.toLocaleString()} Ar</span></p><p><strong>Réseau:</strong> <span>${echapperHTML(transactionEnAttente.reseau)}</span></p><p><strong>Portefeuille source:</strong> <span>${echapperHTML(transactionEnAttente.portefeuille)}</span></p>${adresseDestinataire}<p><strong>Opérateur:</strong> <span>${echapperHTML(transactionEnAttente.operateur)}</span></p><p><strong>Numéro à créditer:</strong> <span>${echapperHTML(transactionEnAttente.nomNumero)} (${echapperHTML(transactionEnAttente.numero)})</span></p>`;
+                detailsHtml = `<p><strong>Type:</strong> <span>VENTE de crypto</span></p><p><strong>Crypto à envoyer:</strong> <span>${transactionEnAttente.montant} ${echapperHTML(transactionEnAttente.crypto)}</span></p><p><strong>Montant reçu:</strong> <span>${transactionEnAttente.montantRecu.toLocaleString()} Ar</span></p><p><strong>Réseau:</strong> <span>${echapperHTML(transactionEnAttente.reseau)}</span></p><p><strong>Portefeuille source:</strong> <span>${echapperHTML(transactionEnAttente.portefeuille)}</span></p>${adresseDestinataire}<p><strong>Opérateur:</strong> <span>${echapperHTML(transactionEnAttente.operateur)}</span></p><p><strong>Numéro à créditer:</strong> <span>${echapperHTML(transactionEnAttente.nomNumero)} (${echapperHTML(transactionEnAttente.numero)})</span></p>`;
             }
             
             detailsDiv.innerHTML = detailsHtml;
@@ -1960,6 +2648,11 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         function copierMessagePaiement(){ const message = document.getElementById('message-paiement-texte').textContent; navigator.clipboard.writeText(message).then(() => { alert('Message copié !'); }); }
         
         function validerConfirmation(){
+            if (!rateLimiters.demande.peutExecuter('valider_confirmation')) {
+                alert('⏳ Trop de tentatives de validation. Veuillez patienter.');
+                return;
+            }
+            
             const txid = document.getElementById('txid-input').value.trim();
             if(!txid){ alert('Veuillez fournir le TXID ou la preuve d\'envoi'); return; }
             if(!utilisateurCourant.codePIN || !utilisateurCourant.codePIN.actif){ alert('Veuillez d\'abord configurer votre code PIN dans le profil'); fermerModalConfirmation(); switchPlatformSection('profil'); return; }
@@ -2072,6 +2765,11 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         async function verifierPIN(){
+            if (!rateLimiters.default.peutExecuter('verifier_pin')) {
+                alert('⏳ Trop de tentatives de vérification PIN. Veuillez patienter.');
+                return;
+            }
+            
             if(pinVerifValue.length !== 6){ document.getElementById('pin-error').textContent = 'Code PIN invalide (6 chiffres requis)'; document.getElementById('pin-error').classList.add('show'); return; }
             if(!utilisateurCourant || !utilisateurCourant.codePIN || !utilisateurCourant.codePIN.actif){ alert('Code PIN non configuré'); fermerModalPIN(); return; }
             const storedHash = utilisateurCourant.codePIN.hash;
@@ -2105,14 +2803,40 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         }
         
         async function creerDemande(){
+            if (!rateLimiters.demande.peutExecuter('creer_demande')) {
+                alert('⏳ Trop de demandes. Veuillez patienter.');
+                return;
+            }
+            
             if(!transactionEnAttente || !utilisateurCourant) return;
             const demandeId = genererIDStable(utilisateurCourant.email, Date.now().toString());
-            const demande = { id: demandeId, type: transactionEnAttente.type, date: new Date().toISOString(), utilisateur: utilisateurCourant.nom, email: utilisateurCourant.email, userID: monUid, statut: 'en_attente', txid: transactionEnAttente.txid, ...transactionEnAttente };
+            
+            // Nettoyer toutes les entrées avant envoi
+            const demande = { 
+                id: demandeId, 
+                type: transactionEnAttente.type, 
+                date: new Date().toISOString(), 
+                utilisateur: echapperHTML(utilisateurCourant.nom), 
+                email: echapperHTML(utilisateurCourant.email), 
+                userID: monUid, 
+                statut: 'en_attente', 
+                txid: echapperHTML(transactionEnAttente.txid),
+                montant: transactionEnAttente.montant,
+                crypto: echapperHTML(transactionEnAttente.crypto),
+                reseau: echapperHTML(transactionEnAttente.reseau),
+                operateur: echapperHTML(transactionEnAttente.operateur),
+                portefeuille: echapperHTML(transactionEnAttente.portefeuille),
+                numero: echapperHTML(transactionEnAttente.numero),
+                nomNumero: echapperHTML(transactionEnAttente.nomNumero),
+                montantRecu: transactionEnAttente.montantRecu,
+                adresse: echapperHTML(transactionEnAttente.adresse || ''),
+                adresseLiee: echapperHTML(transactionEnAttente.adresseLiee || '')
+            };
             
             try {
                 await database.ref(`donnees/demandes/${demandeId}`).set(demande);
                 if(!donnees.demandes) donnees.demandes = {};
-                donnees.demandes[demandeId] = demande; // Update local data
+                donnees.demandes[demandeId] = demande;
                 
                 ouvrirModalSucces(demande);
                 transactionEnAttente = null;
@@ -2128,11 +2852,22 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             }
         }
         
+        // ⚠️ FONCTION CORRIGÉE - XSS échappé
         function ouvrirModalSucces(demande){
             const modal = document.getElementById('modal-recu');
             const recuContent = document.getElementById('recu-content');
-            const montantRecu = demande.type === 'ACHAT' ? `${demande.montantRecu.toFixed(4)} ${demande.crypto}` : `${demande.montantRecu.toLocaleString()} Ar`;
-            recuContent.innerHTML = `<div class="receipt-amount-large"><div class="amount">${echapperHTML(montantRecu)}</div><div class="description">${demande.type === 'ACHAT' ? 'Achat effectué' : 'Vente effectuée'}</div><div class="badge-statut en_attente">EN ATTENTE</div></div><div class="receipt-details"><div class="detail-row"><span class="detail-label">ID Transaction</span><span class="detail-value">${echapperHTML(demande.id)}</span></div><div class="detail-row"><span class="detail-label">Type</span><span class="detail-value">${echapperHTML(demande.type)}</span></div><div class="detail-row"><span class="detail-label">Montant</span><span class="detail-value">${demande.type === 'ACHAT' ? demande.montant.toLocaleString() + ' Ar' : demande.montant + ' ' + demande.crypto}</span></div><div class="detail-row"><span class="detail-label">Vous recevez</span><span class="detail-value">${echapperHTML(montantRecu)}</span></div><div class="detail-row"><span class="detail-label">TXID</span><span class="detail-value small">${echapperHTML(demande.txid)}</span></div><div class="detail-row"><span class="detail-label">Statut</span><span class="detail-value">En attente de validation</span></div></div><p style="text-align:center; color:var(--warning); margin-top:15px;"><i class="fas fa-clock"></i> Votre demande est en cours de traitement par l'administrateur</p>`;
+            const montantRecu = demande.type === 'ACHAT' ? `${demande.montantRecu.toFixed(4)} ${demande.crypto}` : `${Math.round(demande.montantRecu).toLocaleString()} Ar`;
+            const montantRecuHTML = echapperHTML(montantRecu);
+            const demandeId = echapperHTML(demande.id);
+            const demandeType = echapperHTML(demande.type);
+            const demandeTxid = echapperHTML(demande.txid);
+            let montantAffiche = '';
+            if(demande.type === 'ACHAT') {
+                montantAffiche = echapperHTML(demande.montant.toLocaleString()) + ' Ar';
+            } else {
+                montantAffiche = echapperHTML(demande.montant) + ' ' + echapperHTML(demande.crypto);
+            }
+            recuContent.innerHTML = `<div class="receipt-amount-large"><div class="amount" style="font-size:3rem; font-weight:700; white-space:nowrap; color:var(--success);">${montantRecuHTML}</div><div class="description">${demande.type === 'ACHAT' ? 'Achat effectué' : 'Vente effectuée'}</div><div class="badge-statut en_attente">EN ATTENTE</div></div><div class="receipt-details"><div class="detail-row"><span class="detail-label">ID Transaction</span><span class="detail-value">${demandeId}</span></div><div class="detail-row"><span class="detail-label">Type</span><span class="detail-value">${demandeType}</span></div><div class="detail-row"><span class="detail-label">Montant</span><span class="detail-value">${montantAffiche}</span></div><div class="detail-row"><span class="detail-label">Vous recevez</span><span class="detail-value">${montantRecuHTML}</span></div><div class="detail-row"><span class="detail-label">TXID</span><span class="detail-value small">${demandeTxid}</span></div><div class="detail-row"><span class="detail-label">Statut</span><span class="detail-value">En attente de validation</span></div></div><p style="text-align:center; color:var(--warning); margin-top:15px;"><i class="fas fa-clock"></i> Votre demande est en cours de traitement par l'administrateur</p>`;
             modal.classList.add('active');
         }
         
@@ -2141,6 +2876,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         function noter(v){ alert(`Merci pour votre ${v==='positif'||v==='negatif'?`retour ${v}`:`note de ${v} étoile(s)`} !`); window.open('https://www.facebook.com/Typh.Exchange.Ofisialy','_blank'); }
         function gererPIN(){ if(!sessionValide || !utilisateurCourant){ showAuthModal(); return; } ouvrirModalPIN(); }
 
+        // ⚠️ FONCTION CORRIGÉE - XSS échappé
         function mettreAJourMesDemandes(){ 
             const l=document.getElementById('mes-demandes-liste'); 
             if(!l) return; 
@@ -2148,11 +2884,28 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             const demandesArray = getDemandesTableau();
             const m=demandesArray.filter(d=>d.userID===monUid).sort((a,b)=>new Date(b.date)-new Date(a.date)); 
             if(m.length===0){ l.innerHTML='<div class="activity-item">Aucune demande</div>'; return; } 
-            l.innerHTML=m.map(d=>`<li class="activity-item" onclick="ouvrirRecu('${echapperHTML(d.id)}')"><div class="activity-left"><div class="activity-icon ${echapperHTML(d.type)}"><i class="fas ${d.type==='ACHAT'?'fa-arrow-down':(d.type==='VENTE'?'fa-arrow-up':'fa-gift')}"></i></div><div class="activity-info"><h4>${echapperHTML(d.type)} ${d.crypto ? echapperHTML(d.crypto) : ''}</h4><div class="activity-date">${echapperHTML(new Date(d.date).toLocaleString())}</div></div></div><div><div class="activity-amount">${d.type==='ACHAT'?d.montant.toLocaleString()+' Ar':(d.type==='VENTE'?d.montant+' '+d.crypto:'Gain')}</div><div class="activity-status status-${echapperHTML(d.statut)}">${echapperHTML(d.statut)}</div></div></li>`).join(''); 
+            l.innerHTML=m.map(d=>{
+                const id = echapperHTML(d.id);
+                const type = echapperHTML(d.type);
+                const crypto = echapperHTML(d.crypto || '');
+                const date = echapperHTML(new Date(d.date).toLocaleString());
+                const statut = echapperHTML(d.statut);
+                let montantAffiche = '';
+                if(d.type==='ACHAT') montantAffiche = echapperHTML(d.montant.toLocaleString()) + ' Ar';
+                else if(d.type==='VENTE') montantAffiche = d.montant.toFixed(4) + ' ' + crypto;
+                else montantAffiche = 'Gain';
+                const icon = d.type==='ACHAT'?'fa-arrow-down':(d.type==='VENTE'?'fa-arrow-up':'fa-gift');
+                return `<li class="activity-item" onclick="ouvrirRecu('${id}')"><div class="activity-left"><div class="activity-icon ${type}"><i class="fas ${icon}"></i></div><div class="activity-info"><h4>${type} ${crypto}</h4><div class="activity-date">${date}</div></div></div><div><div class="activity-amount">${montantAffiche}</div><div class="activity-status status-${statut}">${statut}</div></div></li>`;
+            }).join(''); 
             verifierAccesBonus();
         }
         
         function rafraichirMesDemandes() {
+            if (!rateLimiters.refresh.peutExecuter('rafraichir_mes_demandes')) {
+                alert('⏳ Trop de rafraîchissements. Veuillez patienter.');
+                return;
+            }
+            
             console.log('🔄 Rafraîchissement des demandes...');
             if(monUid) {
                 database.ref('donnees/demandes').orderByChild('userID').equalTo(monUid).once('value').then((snapshot) => {
@@ -2163,6 +2916,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             } else { alert('Veuillez vous connecter'); }
         }
         
+        // ⚠️ FONCTION CORRIGÉE - XSS échappé
         function ouvrirRecu(id){ 
             const demandesArray = getDemandesTableau();
             const d=demandesArray.find(d=>d.id===id); 
@@ -2171,7 +2925,7 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             if(d.statut==='confirme'){ st='confirmée'; cl='confirme'; }else if(d.statut==='en_attente'){ st='en attente'; cl='en_attente'; }else if(d.statut==='rejete'){ st='rejetée'; cl='rejete'; } 
             
             if(d.type==='ACHAT'){ mp=(d.montantRecu||0).toFixed(4)+' '+d.crypto; desc=`Achat ${st} de ${parseFloat(d.montant).toLocaleString()} Ar`; }
-            else if(d.type==='VENTE'){ mp=(d.montantRecu||0).toLocaleString()+' Ar'; desc=`Vente ${st} de ${d.montant} ${d.crypto}`; } 
+            else if(d.type==='VENTE'){ mp=Math.round(d.montantRecu||0).toLocaleString()+' Ar'; desc=`Vente ${st} de ${d.montant} ${d.crypto}`; } 
             else if(d.type==='BONUS'){ mp=echapperHTML(d.lotGagne || d.montant || 'N/A'); desc=`Bonus de fidélité ${st}`; }
             
             let b='';
@@ -2179,12 +2933,40 @@ const firebaseConfig = JSON.parse(atob(_firebase));
             else if(d.type==='VENTE') b=d.nomNumero?`${d.nomNumero} (${d.numero})`:d.numero||'Non spécifié';
             else if(d.type==='BONUS') b=d.adresse || d.numero || 'Non spécifié';
 
+            const mpEscape = echapperHTML(mp);
+            const descEscape = echapperHTML(desc);
+            const statutEscape = echapperHTML(d.statut.toUpperCase());
+            const idEscape = echapperHTML(d.id);
+            const userIDEscape = echapperHTML(d.userID||'Non attribué');
+            const dateEscape = echapperHTML(new Date(d.date).toLocaleString('fr-FR'));
+            const typeEscape = echapperHTML(d.type);
+            const benefEscape = echapperHTML(b);
+            const txidEscape = echapperHTML(d.txid);
+            const cryptoEscape = echapperHTML(d.crypto);
+            const reseauEscape = echapperHTML(d.reseau||'N/A');
+
             let typeInfoHtml = '';
             if(d.type !== 'BONUS') {
-                typeInfoHtml = `<div class="detail-row"><span class="detail-label">Crypto</span><span class="detail-value">${echapperHTML(d.crypto)}</span></div><div class="detail-row"><span class="detail-label">Réseau</span><span class="detail-value">${echapperHTML(d.reseau||'N/A')}</span></div><div class="detail-row"><span class="detail-label">Montant envoyé</span><span class="detail-value">${d.type==='ACHAT'?parseFloat(d.montant).toLocaleString()+' Ar':d.montant+' '+d.crypto}</span></div>`;
+                typeInfoHtml = `<div class="detail-row"><span class="detail-label">Crypto</span><span class="detail-value">${cryptoEscape}</span></div><div class="detail-row"><span class="detail-label">Réseau</span><span class="detail-value">${reseauEscape}</span></div><div class="detail-row"><span class="detail-label">Montant envoyé</span><span class="detail-value">${d.type==='ACHAT'?parseFloat(d.montant).toLocaleString()+' Ar':d.montant+' '+d.crypto}</span></div>`;
             }
 
-            document.getElementById('recu-content').innerHTML=`<div class="receipt-amount-large"><div class="amount">${echapperHTML(mp)}</div><div class="description">${echapperHTML(desc)}</div><div class="badge-statut ${echapperHTML(cl)}">${echapperHTML(d.statut.toUpperCase())}</div></div><div class="receipt-details"><div class="detail-row"><span class="detail-label">ID Transaction</span><span class="detail-value small">${echapperHTML(d.id)}</span></div><div class="detail-row"><span class="detail-label">ID Client</span><span class="detail-value small">${echapperHTML(d.userID||'Non attribué')}</span></div><div class="detail-row"><span class="detail-label">Date</span><span class="detail-value">${echapperHTML(new Date(d.date).toLocaleString('fr-FR'))}</span></div><div class="detail-row"><span class="detail-label">Type</span><span class="detail-value">${echapperHTML(d.type)}</span></div>${typeInfoHtml}<div class="detail-row"><span class="detail-label">${d.type==='BONUS'?'Info Réception':'Bénéficiaire / Débiteur'}</span><span class="detail-value small">${echapperHTML(b)}</span></div><div class="detail-row"><span class="detail-label">TXID/Preuve</span><span class="detail-value small" style="cursor:pointer;" onclick="copierTexte('${echapperHTML(d.txid)}')">${d.txid?echapperHTML(d.txid.substring(0,20))+'...':'Non fourni'} ${d.txid?'<i class="fas fa-copy" style="margin-left:5px;"></i>':''}</span></div></div>`; 
+            document.getElementById('recu-content').innerHTML=`
+                <div class="receipt-amount-large">
+                    <div class="amount" style="font-size:3rem; white-space:nowrap;">${mpEscape}</div>
+                    <div class="description">${descEscape}</div>
+                    <div class="badge-statut ${echapperHTML(cl)}">${statutEscape}</div>
+                </div>
+                <div class="receipt-details">
+                    <div class="detail-row"><span class="detail-label">ID Transaction</span><span class="detail-value small">${idEscape}</span></div>
+                    <div class="detail-row"><span class="detail-label">ID Client</span><span class="detail-value small">${userIDEscape}</span></div>
+                    <div class="detail-row"><span class="detail-label">Date</span><span class="detail-value">${dateEscape}</span></div>
+                    <div class="detail-row"><span class="detail-label">Type</span><span class="detail-value">${typeEscape}</span></div>
+                    ${typeInfoHtml}
+                    <div class="detail-row"><span class="detail-label">${d.type==='BONUS'?'Info Réception':'Bénéficiaire / Débiteur'}</span><span class="detail-value small">${benefEscape}</span></div>
+                    <div class="detail-row"><span class="detail-label">TXID/Preuve</span><span class="detail-value small" style="cursor:pointer;" onclick="copierTexte('${txidEscape}')">${txidEscape ? txidEscape.substring(0,20)+'...' : 'Non fourni'} ${txidEscape?'<i class="fas fa-copy" style="margin-left:5px;"></i>':''}</span></div>
+                    <div class="detail-row"><span class="detail-label">Vous recevez</span><span class="detail-value" style="font-weight:700; color:var(--success); font-size:2.5rem;">${mpEscape}</span></div>
+                </div>
+            `; 
             document.getElementById('modal-recu').classList.add('active'); 
         }
         
@@ -2208,6 +2990,12 @@ const firebaseConfig = JSON.parse(atob(_firebase));
 
         function verifierAvantAcces(s){ 
             if(!sessionValide||!utilisateurCourant){ showAuthModal(); return; } 
+            
+            if (!emailVerifie) {
+                alert('⚠️ Veuillez vérifier votre email avant d\'accéder à cette fonctionnalité.');
+                return;
+            }
+            
             if(!aNumeroApprouve()&&(s==='achat'||s==='vente'||s==='demandes')){ alert('Vous devez avoir un numéro approuvé. Ajoutez un numéro dans votre profil et attendez la validation.'); switchPlatformSection('profil'); return; } 
             if(s==='achat'&&donnees.pause?.achat){ alert('Service suspendu'); switchPlatformSection('accueil'); return; } 
             if(s==='vente'&&donnees.pause?.vente){ alert('Service suspendu'); switchPlatformSection('accueil'); return; } 
@@ -2246,9 +3034,251 @@ const firebaseConfig = JSON.parse(atob(_firebase));
         
         window.addEventListener('load',function(){ 
             console.log('🚀 Page index chargée - Version avec CSP et Headers Sécurité'); 
-            // Chargement initial pour les données publiques éventuelles si les règles le permettent
-            chargerDonnees();
+            setTimeout(function() {
+                if (typeof verifierCorrectifsSecurite === 'function') {
+                    verifierCorrectifsSecurite();
+                }
+            }, 2000);
         });
+
+        // ============================================================
+        //  CARROUSEL BANNIÈRE - 16:6
+        // ============================================================
+        (function initBannerCarousel() {
+            const slides = document.querySelectorAll('#bannerSlides .carousel-banner-slide');
+            if (slides.length === 0) return;
+
+            const dotsContainer = document.getElementById('bannerDots');
+            const slidesContainer = document.getElementById('bannerSlides');
+            const counter = document.getElementById('bannerCounter');
+            const DELAY = 5000;
+            let currentIndex = 0;
+            let intervalId = null;
+
+            slides.forEach((_, i) => {
+                const dot = document.createElement('button');
+                dot.className = 'carousel-banner-dot' + (i === 0 ? ' active' : '');
+                dot.dataset.index = i;
+                dot.addEventListener('click', () => goToSlide(i));
+                dotsContainer.appendChild(dot);
+            });
+
+            function goToSlide(index) {
+                if (index < 0) index = slides.length - 1;
+                if (index >= slides.length) index = 0;
+                currentIndex = index;
+                slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+                document.querySelectorAll('.carousel-banner-dot').forEach((d, i) => {
+                    d.classList.toggle('active', i === currentIndex);
+                });
+                if (counter) counter.textContent = currentIndex + 1;
+            }
+
+            function nextSlide() { 
+                goToSlide(currentIndex + 1); 
+            }
+
+            function startAutoplay() {
+                if (intervalId) clearInterval(intervalId);
+                intervalId = setInterval(nextSlide, DELAY);
+            }
+
+            slides.forEach(slide => {
+                slide.addEventListener('click', function(e) {
+                    const link = this.dataset.link;
+                    if (link) {
+                        window.open(link, '_blank');
+                    }
+                });
+            });
+
+            const wrapper = document.getElementById('bannerWrapper');
+            wrapper.addEventListener('mouseenter', () => {
+                if (intervalId) clearInterval(intervalId);
+            });
+            wrapper.addEventListener('mouseleave', startAutoplay);
+
+            wrapper.addEventListener('touchstart', () => {
+                if (intervalId) clearInterval(intervalId);
+            });
+            wrapper.addEventListener('touchend', () => {
+                setTimeout(startAutoplay, 3000);
+            });
+
+            goToSlide(0);
+            startAutoplay();
+            console.log('🎠 Bannière carrousel démarrée (16:6)');
+        })();
+    </script>
+    <script>
+    // ============================================================
+    //  🔄 GESTION DES MISES À JOUR DU SERVICE WORKER
+    // ============================================================
+
+    (function setupServiceWorkerUpdates() {
+        if (!('serviceWorker' in navigator)) {
+            console.log('❌ Service Worker non supporté');
+            return;
+        }
+
+        const SW_VERSION = '2.1.1';
+
+        const storedVersion = localStorage.getItem('sw_version');
+        if (storedVersion !== SW_VERSION) {
+            console.log(`🔄 Nouvelle version SW détectée: ${SW_VERSION}`);
+            localStorage.setItem('sw_version', SW_VERSION);
+        }
+
+        let registration = null;
+        let pendingUpdate = false;
+
+        navigator.serviceWorker.register('/sw.js')
+            .then((reg) => {
+                registration = reg;
+                console.log('✅ Service Worker enregistré');
+
+                checkForUpdate();
+
+                setInterval(checkForUpdate, 5 * 60 * 1000);
+
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    console.log('🔄 Nouveau SW détecté en installation...');
+
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            console.log('🔄 Nouveau SW installé, mise à jour disponible');
+                            pendingUpdate = true;
+                            showUpdateNotification();
+                        }
+                    });
+                });
+
+                if (registration.waiting) {
+                    console.log('🔄 SW en attente détecté');
+                    pendingUpdate = true;
+                    showUpdateNotification();
+                }
+            })
+            .catch((error) => {
+                console.error('❌ Erreur enregistrement SW:', error);
+            });
+
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log('🔄 Contrôleur SW changé');
+            setTimeout(() => {
+                if (pendingUpdate) {
+                    pendingUpdate = false;
+                    window.location.reload(true);
+                }
+            }, 1000);
+        });
+
+        function checkForUpdate() {
+            if (registration) {
+                registration.update()
+                    .then(() => {
+                        console.log('🔍 Vérification des mises à jour effectuée');
+                    })
+                    .catch((error) => {
+                        console.warn('⚠️ Erreur vérification mise à jour:', error);
+                    });
+            }
+        }
+
+        function showUpdateNotification() {
+            if (document.getElementById('sw-update-notification')) {
+                return;
+            }
+
+            const notification = document.createElement('div');
+            notification.id = 'sw-update-notification';
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #1A253C, #3B82F6);
+                color: white;
+                padding: 18px 25px;
+                border-radius: 30px;
+                z-index: 9999;
+                box-shadow: 0 8px 30px rgba(59,130,246,0.5);
+                font-family: 'Inter', sans-serif;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                animation: slideUp 0.5s ease;
+                max-width: 90%;
+                border: 2px solid rgba(255,255,255,0.1);
+                backdrop-filter: blur(10px);
+            `;
+            
+            notification.innerHTML = `
+                <i class="fas fa-sync-alt" style="font-size:1.2rem; animation: spin 2s linear infinite;"></i>
+                <span style="font-size:0.95rem;">🔄 Nouvelle version disponible !</span>
+                <button onclick="forceUpdateApp()" style="
+                    background: white;
+                    color: #1A253C;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 25px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    font-size: 0.85rem;
+                    transition: all 0.3s;
+                ">
+                    <i class="fas fa-download"></i> Mettre à jour
+                </button>
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideUp {
+                    from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+                    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+                }
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                const notif = document.getElementById('sw-update-notification');
+                if (notif) {
+                    notif.style.opacity = '0';
+                    notif.style.transition = 'opacity 0.5s';
+                    setTimeout(() => notif.remove(), 500);
+                }
+            }, 30000);
+        }
+
+        window.forceUpdateApp = function() {
+            console.log('🔄 Forçage de la mise à jour...');
+            
+            const notif = document.getElementById('sw-update-notification');
+            if (notif) notif.remove();
+            
+            if (registration && registration.waiting) {
+                registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                pendingUpdate = true;
+            } else {
+                window.location.reload(true);
+            }
+        };
+
+        window.checkForSWUpdate = checkForUpdate;
+        window.getSWVersion = function() {
+            return SW_VERSION;
+        };
+
+        console.log(`📱 Version SW: ${SW_VERSION}`);
+    })();
     </script>
 </body>
 </html>
