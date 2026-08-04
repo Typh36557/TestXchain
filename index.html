@@ -414,6 +414,16 @@
         };
 
         // ============================================================
+        // FONCTION UTILITAIRE - GÉNÉRER ID
+        // ============================================================
+        function genererIDStable(email, nom) {
+            // Génère un ID unique basé sur l'email et le nom
+            const base = email + nom + Date.now().toString();
+            const hash = btoa(base).replace(/[^a-zA-Z0-9]/g, '').substring(0, 8);
+            return `TX-${hash}`;
+        }
+
+        // ============================================================
         // FONCTIONS AUTH
         // ============================================================
         function switchAuthMode(m) {
@@ -655,17 +665,56 @@
             }
 
             try {
+                // 1. CRÉER L'UTILISATEUR DANS FIREBASE AUTH
                 const uc = await auth.createUserWithEmailAndPassword(email, password);
+                const uid = uc.user.uid;
+                
+                // Envoyer l'email de vérification
                 await uc.user.sendEmailVerification();
                 await uc.user.updateProfile({ displayName: nom });
-                await database.ref(`donnees/utilisateurs/${uc.user.uid}/emailVerifie`).set(false);
-                await database.ref(`donnees/utilisateurs/${uc.user.uid}/email`).set(email);
 
-                if (parrainId) {
+                // 2. GÉNÉRER UN ID UNIQUE
+                const idUtilisateur = genererIDStable(email, nom);
+
+                // 3. CRÉER L'OBJET UTILISATEUR COMPLET
+                const nouvelUtilisateur = {
+                    id: idUtilisateur,
+                    nom: nom,
+                    email: email,
+                    dateInscription: new Date().toISOString(),
+                    numeros: {},
+                    adressesLiees: {},
+                    codePIN: { hash: null, salt: null, actif: false, tentativeEchouees: 0, bloque: false },
+                    toursGratuits: 0,
+                    filleulsCount: 0,
+                    parrainId: parrainId || '',
+                    bonusParrainageDonne: false,
+                    emailVerifie: false,
+                    solde: 0
+                };
+
+                console.log('📝 Création utilisateur:', JSON.stringify(nouvelUtilisateur, null, 2));
+
+                // 4. ✅ ÉCRIRE TOUT L'OBJET AVEC set()
+                await database.ref(`donnees/utilisateurs/${uid}`).set(nouvelUtilisateur);
+
+                // 5. VÉRIFIER QUE L'ÉCRITURE A RÉUSSI
+                const verification = await database.ref(`donnees/utilisateurs/${uid}`).once('value');
+                
+                if (verification.exists()) {
+                    console.log('✅ Utilisateur créé avec succès');
+                    console.log('📋 ID:', verification.val().id);
+                    console.log('📋 Date:', verification.val().dateInscription);
+                } else {
+                    console.error('❌ Échec de la vérification');
+                    
+                    // FALLBACK : Essayer un chemin alternatif
                     try {
-                        await database.ref(`donnees/utilisateurs/${uc.user.uid}/parrainId`).set(parrainId);
-                    } catch (e) {
-                        console.warn('Parrainage non enregistré');
+                        await database.ref(`utilisateurs/${uid}`).set(nouvelUtilisateur);
+                        console.log('✅ Fallback réussi');
+                    } catch (fallbackError) {
+                        console.error('❌ Fallback échoué:', fallbackError);
+                        throw new Error('Impossible de créer le profil utilisateur');
                     }
                 }
 
@@ -673,12 +722,24 @@
                 resetTurnstileWidgets();
                 await auth.signOut();
 
-                alert(`✅ Inscription réussie !\n\n📧 Un email de vérification a été envoyé à ${email}.\n\n⚠️ Vous devez vérifier votre email avant de pouvoir accéder à la plateforme.`);
+                alert(`✅ Inscription réussie !\n\n📧 Un email de vérification a été envoyé à ${email}.\n\n⚠️ Vous devez vérifier votre email avant de pouvoir accéder à la plateforme.` +
+                      (parrainId ? '\n\n✅ Code parrain enregistré.' : ''));
 
                 setTimeout(() => showAuthModal(), 1000);
 
             } catch (error) {
-                afficherErreur(error.message);
+                console.error('❌ Erreur inscription:', error);
+                
+                if (error.code === 'auth/email-already-in-use') {
+                    afficherErreur('❌ Cette adresse email est déjà utilisée.');
+                } else if (error.code === 'auth/weak-password') {
+                    afficherErreur('❌ Mot de passe trop faible.');
+                } else if (error.code === 'PERMISSION_DENIED' || error.message?.includes('PERMISSION_DENIED')) {
+                    afficherErreur('⚠️ Problème de base de données. Veuillez contacter le support.');
+                } else {
+                    afficherErreur(error.message);
+                }
+                
                 if (typeof turnstile !== 'undefined') {
                     const inscWidget = document.querySelector('#inscription-form .cf-turnstile');
                     if (inscWidget) turnstile.reset(inscWidget);
