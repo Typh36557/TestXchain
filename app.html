@@ -30,13 +30,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
     <style>
-        /* ===== TOUT LE CSS EXISTANT DE l'APPLICATION (1500+ lignes) ===== */
-        /* Copier ici TOUT le CSS de la version originale, sections : */
-        /* - :root, body, .app-header, .container, .card, .modal, etc. */
-        /* - Tous les styles de la version originale */
-
-        /* Pour économiser de l'espace, je mets le CSS complet plus bas */
-        /* ... TOUT LE CSS ORIGINAL ... */
+        /* ===== TOUT LE CSS EXISTANT ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-dark: #0A0F1F; --bg-card: #131B2F; --primary: #1A253C; --primary-light: #1F2A44;
@@ -122,10 +116,6 @@
         .nav-item i { font-size: 1.4rem; }
         .nav-item.active { color: var(--accent); }
         .nav-item:hover { color: var(--accent-light); }
-        /* ... TOUT LE RESTE DU CSS ORIGINAL ... */
-        /* Pour le code complet, voir la version originale */
-
-        /* Styles essentiels pour le fonctionnement */
         .btn { border: none; padding: 14px 24px; border-radius: 50px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
         .btn i { font-size: 1.1rem; }
         .btn-success { background: linear-gradient(135deg, var(--success), #059669); color: white; }
@@ -591,10 +581,6 @@
     </div>
 
     <!-- ===== MODALS ===== -->
-    <!-- Toutes les modals existantes (PIN, confirmation, recu, etc.) -->
-    <!-- ... Copier ici TOUTES les modals de la version originale ... -->
-    <!-- Pour économiser de l'espace, je ne les réécris pas mais elles sont IDENTIQUES -->
-
     <div id="modal-pin" class="modal"><div class="modal-content"><div class="modal-title"><i class="fas fa-lock"></i> Code PIN</div><div id="pin-setup" style="display:block;"><p style="color:var(--text-secondary);margin-bottom:20px;">Entrez un code PIN à 6 chiffres</p><div class="pin-digits" id="pin-setup-digits"><div class="pin-digit" id="setup-digit1"></div><div class="pin-digit" id="setup-digit2"></div><div class="pin-digit" id="setup-digit3"></div><div class="pin-digit" id="setup-digit4"></div><div class="pin-digit" id="setup-digit5"></div><div class="pin-digit" id="setup-digit6"></div></div><div class="pin-keypad" id="pin-setup-keypad"><div class="pin-key" onclick="ajouterChiffrePIN('setup','1')">1</div><div class="pin-key" onclick="ajouterChiffrePIN('setup','2')">2</div><div class="pin-key" onclick="ajouterChiffrePIN('setup','3')">3</div><div class="pin-key" onclick="ajouterChiffrePIN('setup','4')">4</div><div class="pin-key" onclick="ajouterChiffrePIN('setup','5')">5</div><div class="pin-key" onclick="ajouterChiffrePIN('setup','6')">6</div><div class="pin-key" onclick="ajouterChiffrePIN('setup','7')">7</div><div class="pin-key" onclick="ajouterChiffrePIN('setup','8')">8</div><div class="pin-key" onclick="ajouterChiffrePIN('setup','9')">9</div><div class="pin-key special" onclick="effacerDernierPIN('setup')">⌫</div><div class="pin-key" onclick="ajouterChiffrePIN('setup','0')">0</div><div class="pin-key special" onclick="effacerPIN('setup')">C</div></div><p style="color:var(--text-secondary);margin:10px 0;">Confirmer</p><div class="pin-digits" id="pin-setup-confirm-digits"><div class="pin-digit" id="setup-confirm-digit1"></div><div class="pin-digit" id="setup-confirm-digit2"></div><div class="pin-digit" id="setup-confirm-digit3"></div><div class="pin-digit" id="setup-confirm-digit4"></div><div class="pin-digit" id="setup-confirm-digit5"></div><div class="pin-digit" id="setup-confirm-digit6"></div></div><div class="pin-keypad" id="pin-setup-confirm-keypad"><div class="pin-key" onclick="ajouterChiffrePIN('setup-confirm','1')">1</div><div class="pin-key" onclick="ajouterChiffrePIN('setup-confirm','2')">2</div><div class="pin-key" onclick="ajouterChiffrePIN('setup-confirm','3')">3</div><div class="pin-key" onclick="ajouterChiffrePIN('setup-confirm','4')">4</div><div class="pin-key" onclick="ajouterChiffrePIN('setup-confirm','5')">5</div><div class="pin-key" onclick="ajouterChiffrePIN('setup-confirm','6')">6</div><div class="pin-key" onclick="ajouterChiffrePIN('setup-confirm','7')">7</div><div class="pin-key" onclick="ajouterChiffrePIN('setup-confirm','8')">8</div><div class="pin-key" onclick="ajouterChiffrePIN('setup-confirm','9')">9</div><div class="pin-key special" onclick="effacerDernierPIN('setup-confirm')">⌫</div><div class="pin-key" onclick="ajouterChiffrePIN('setup-confirm','0')">0</div><div class="pin-key special" onclick="effacerPIN('setup-confirm')">C</div></div><div class="error-message" id="pin-setup-error"></div><button class="btn btn-success" onclick="sauvegarderPIN()" style="margin-top:20px;"><i class="fas fa-check"></i> Enregistrer</button></div>
     <div id="pin-verification" style="display:none;"><p style="color:var(--text-secondary);margin-bottom:20px;">Entrez votre code PIN</p><div class="pin-digits" id="pin-verif-digits"><div class="pin-digit" id="verif-digit1" onclick="selectionnerCasePIN(1)"></div><div class="pin-digit" id="verif-digit2" onclick="selectionnerCasePIN(2)"></div><div class="pin-digit" id="verif-digit3" onclick="selectionnerCasePIN(3)"></div><div class="pin-digit" id="verif-digit4" onclick="selectionnerCasePIN(4)"></div><div class="pin-digit" id="verif-digit5" onclick="selectionnerCasePIN(5)"></div><div class="pin-digit" id="verif-digit6" onclick="selectionnerCasePIN(6)"></div></div><div class="pin-keypad" id="pin-verif-keypad"><div class="pin-key" onclick="ajouterChiffrePINVerification('1')">1</div><div class="pin-key" onclick="ajouterChiffrePINVerification('2')">2</div><div class="pin-key" onclick="ajouterChiffrePINVerification('3')">3</div><div class="pin-key" onclick="ajouterChiffrePINVerification('4')">4</div><div class="pin-key" onclick="ajouterChiffrePINVerification('5')">5</div><div class="pin-key" onclick="ajouterChiffrePINVerification('6')">6</div><div class="pin-key" onclick="ajouterChiffrePINVerification('7')">7</div><div class="pin-key" onclick="ajouterChiffrePINVerification('8')">8</div><div class="pin-key" onclick="ajouterChiffrePINVerification('9')">9</div><div class="pin-key special" onclick="effacerDernierPINVerification()">⌫</div><div class="pin-key" onclick="ajouterChiffrePINVerification('0')">0</div><div class="pin-key special" onclick="effacerPINVerification()">C</div></div><div class="error-message" id="pin-error"></div><p id="pin-tentatives" style="color:var(--warning);margin-top:10px;text-align:center;"></p><p style="text-align:center; margin-top:15px;"><span onclick="afficherResetPIN()" style="color:var(--accent);cursor:pointer;font-size:0.85rem;"><i class="fas fa-unlock-alt"></i> Code PIN oublié ?</span></p><div class="modal-buttons" style="margin-top:20px;"><button class="btn btn-cancel" onclick="fermerModalPIN()">Annuler</button><button class="btn btn-confirm" onclick="verifierPIN()">Valider</button></div></div>
     <div id="pin-reset" style="display:none;"><p style="color:var(--text-secondary);margin-bottom:20px;">Réinitialisation du code PIN</p><input type="text" id="reset-pin-id" class="modal-input" placeholder="Entrez votre ID Utilisateur exact"><div class="info-message" style="font-size:0.8rem; margin-top:5px;"><i class="fas fa-info-circle"></i> Votre ID se trouve dans votre Profil.</div><div class="error-message" id="reset-pin-error"></div><div class="modal-buttons" style="margin-top:20px;"><button class="btn btn-cancel" onclick="annulerResetPIN()">Annuler</button><button class="btn btn-confirm" onclick="validerResetPIN()">Réinitialiser</button></div></div>
@@ -667,28 +653,7 @@
 
     <script>
         // ============================================================
-        // TOUT LE JAVASCRIPT DE L'APPLICATION ORIGINALE
-        // ============================================================
-        // Copier ici TOUT le JavaScript de la version originale
-        // (sauf la partie Firebase Config et Auth qui est déjà dans index.html)
-        // 
-        // Le JavaScript complet inclut :
-        // - Sécurité (verrouillerUtilisateur, mettreAJourSoldeDepuisFirebase, etc.)
-        // - Données (donnees, utilisateurCourant, etc.)
-        // - Taux (syncBinance, afficherTauxSimplifies, etc.)
-        // - Transactions (estimerAchat, estimerVente, preparerConfirmation, etc.)
-        // - PIN (verifierPIN, sauvegarderPIN, etc.)
-        // - Bonus (verifierAccesBonus, tournerRoue, etc.)
-        // - Support (envoyerMessageSupport, actualiserSupport, etc.)
-        // - Profil (mettreAJourProfil, ajouterNumero, etc.)
-        // - Demandes (mettreAJourMesDemandes, rafraichirMesDemandes, etc.)
-        // - Navigation (switchPlatformSection, verifierAvantAcces, etc.)
-        //
-        // ⚠️ IMPORTANT : Modifier les fonctions de connexion/déconnexion
-        // pour utiliser window.location.href vers index.html si besoin
-
-        // ============================================================
-        // CONFIGURATION FIREBASE (identique)
+        // CONFIGURATION FIREBASE
         // ============================================================
         const _firebase = "eyJhcGlLZXkiOiJBSXphU3lBQzZ4UVhXZ181RXBsTERQUXVfN1J1dVEwTnJDVVNRMmciLCJhdXRoRG9tYWluIjoidHlwaHhjaGFpbi5maXJlYmFzZWFwcC5jb20iLCJkYXRhYmFzZVVSTCI6Imh0dHBzOi8vdHlwaHhjaGFpbi1kZWZhdWx0LXJ0ZGIuZmlyZWJhc2Vpby5jb20iLCJwcm9qZWN0SWQiOiJ0eXBoeGNoYWluIiwic3RvcmFnZUJ1Y2tldCI6InR5cGh4Y2hhaW4uZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiMTAzNjc3MTg3NDQxNiIsImFwcElkIjoiMToxMDM2NzcxODc0NDE2OndlYjphZWNhOWFjMzQ3ZjZiYmNjOTg4NmI1IiwibWVhc3VyZW1lbnRJZCI6IkctREhNWTRNU1A5WSJ9";
         const firebaseConfig = JSON.parse(atob(_firebase));
@@ -787,7 +752,7 @@
         // FONCTIONS UTILITAIRES
         // ============================================================
         function echapperHTML(t) { if(!t) return ''; return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;').replace(/\//g,'&#x2F;').replace(/\\/g,'&#x5C;').replace(/`/g,'&#x60;').replace(/=/g,'&#x3D;').replace(/\(/g,'&#x28;').replace(/\)/g,'&#x29;'); }
-        function genererIDStable(e,n) { const h=btoa(e+n).replace(/[^a-zA-Z0-9]/g,'').substring(0,8); return `TX-${h}-${Date.now().toString(36)}`; }
+        function genererIDStable(e,n) { const h=btoa(e+n).replace(/[^a-zA-Z0-9]/g,'').substring(0,8); return `TX-${h}`; }
         async function hasherPIN(pin){ const salt=crypto.getRandomValues(new Uint8Array(16)); const saltHex=Array.from(salt).map(b=>b.toString(16).padStart(2,'0')).join(''); const data=new TextEncoder().encode(pin+saltHex); const hash=await crypto.subtle.digest('SHA-256',data); const hashHex=Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join(''); return {hash:hashHex,salt:saltHex}; }
         function getMinimumAchat(c){ return c==='TRX'?(donnees.limites?.minAchatTRX||5000):(donnees.limites?.minAchat||2000); }
         function getDemandesTableau() { if(!donnees.demandes) return []; if(Array.isArray(donnees.demandes)) return donnees.demandes; return Object.values(donnees.demandes); }
@@ -796,19 +761,67 @@
         function tronquerNom(nom) { if(!nom) return 'Utilisateur'; const mots = nom.trim().split(' '); if(mots.length <= 4) return nom; return mots.slice(0,4).join(' '); }
 
         // ============================================================
-        // SÉCURITÉ - SOLDE
+        // 🔒 SÉCURITÉ - SOLDE (LECTURE SEULE)
         // ============================================================
+        let _soldeInterne = 0;
+        let surveillanceSoldeActive = false;
+
         function verrouillerUtilisateur() {
-            if (utilisateurCourant && Object.isFrozen(utilisateurCourant)) return;
-            if (utilisateurCourant) {
-                Object.defineProperty(utilisateurCourant, 'solde', {
-                    configurable: false,
-                    enumerable: true,
-                    get: function() { return this._solde || 0; },
-                    set: function(valeur) { console.error('❌ [SÉCURITÉ] Modification du solde bloquée !'); return this._solde; }
-                });
-                Object.freeze(utilisateurCourant);
-            }
+            if (!utilisateurCourant) return;
+            if (Object.isFrozen(utilisateurCourant)) return;
+            
+            // Stocker le solde dans une variable fermée
+            _soldeInterne = utilisateurCourant._solde || 0;
+            
+            // Redéfinir l'objet utilisateur avec un solde en lecture seule
+            const userClone = {
+                uid: utilisateurCourant.uid,
+                id: utilisateurCourant.id,
+                nom: utilisateurCourant.nom,
+                email: utilisateurCourant.email,
+                dateInscription: utilisateurCourant.dateInscription,
+                emailVerifie: utilisateurCourant.emailVerifie,
+                numeros: utilisateurCourant.numeros || {},
+                adressesLiees: utilisateurCourant.adressesLiees || {},
+                codePIN: utilisateurCourant.codePIN || {},
+                toursGratuits: utilisateurCourant.toursGratuits || 0,
+                filleulsCount: utilisateurCourant.filleulsCount || 0,
+                parrainId: utilisateurCourant.parrainId || '',
+                bonusParrainageDonne: utilisateurCourant.bonusParrainageDonne || false
+            };
+            
+            // 🔒 SOLDE EN LECTURE SEULE
+            Object.defineProperty(userClone, 'solde', {
+                configurable: false,
+                enumerable: true,
+                get: function() {
+                    return _soldeInterne;
+                },
+                set: function(v) {
+                    console.error('❌ [SÉCURITÉ] Modification du solde interdite !');
+                    return _soldeInterne;
+                }
+            });
+            
+            Object.defineProperty(userClone, '_solde', {
+                configurable: false,
+                enumerable: false,
+                get: function() {
+                    return _soldeInterne;
+                },
+                set: function(v) {
+                    console.error('❌ [SÉCURITÉ] Modification du solde interdite !');
+                    return _soldeInterne;
+                }
+            });
+            
+            // ❄️ Geler l'objet
+            Object.freeze(userClone);
+            
+            // Remplacer l'utilisateur courant
+            utilisateurCourant = userClone;
+            
+            console.log('🔒 Utilisateur verrouillé - Solde en lecture seule');
         }
 
         async function mettreAJourSoldeDepuisFirebase() {
@@ -816,10 +829,11 @@
             try {
                 const snapshot = await database.ref(`donnees/utilisateurs/${monUid}/solde`).once('value');
                 const solde = snapshot.val() || 0;
-                if (utilisateurCourant) {
-                    utilisateurCourant._solde = solde;
-                    utilisateurCourant.solde = solde;
-                }
+                
+                // Mettre à jour le solde interne
+                _soldeInterne = solde;
+                
+                // Mettre à jour l'affichage
                 const soldeElem = document.getElementById('solde-affichage');
                 const soldeMgaElem = document.getElementById('solde-mga');
                 if (soldeElem) soldeElem.innerHTML = `$ ${solde.toFixed(2)} <small>USD</small>`;
@@ -829,40 +843,57 @@
                 }
                 verifierSoldeMax();
                 return solde;
-            } catch(e) { console.error(e); return 0; }
+            } catch(e) { console.error('Erreur récupération solde:', e); return 0; }
         }
 
-        let surveillanceSoldeActive = false;
         function demarrerSurveillanceSolde() {
             if (surveillanceSoldeActive) return;
             surveillanceSoldeActive = true;
+            
+            let dernierSoldeConnu = _soldeInterne;
+            
             setInterval(() => {
-                if (utilisateurCourant) {
-                    const soldeAffiche = document.getElementById('solde-affichage');
-                    if (soldeAffiche && utilisateurCourant._solde !== undefined) {
-                        const match = soldeAffiche.textContent.match(/\$ ([\d.]+)/);
-                        if (match && Math.abs(parseFloat(match[1]) - utilisateurCourant._solde) > 0.001) {
-                            console.warn('🛡️ [SÉCURITÉ] Modification du solde détectée et corrigée');
-                            soldeAffiche.innerHTML = `$ ${utilisateurCourant._solde.toFixed(2)} <small>USD</small>`;
-                            const soldeMgaElem = document.getElementById('solde-mga');
-                            if (soldeMgaElem) {
-                                const tauxMGA = donnees.taux?.USDT?.prixMGA || donnees.usdMGA || 4700;
-                                soldeMgaElem.innerHTML = `≈ ${Math.round(utilisateurCourant._solde * tauxMGA).toLocaleString()} Ar`;
-                            }
+                const soldeAffiche = document.getElementById('solde-affichage');
+                if (!soldeAffiche) return;
+                
+                const texte = soldeAffiche.textContent;
+                const match = texte.match(/\$ ([\d.]+)/);
+                
+                if (match) {
+                    const soldeAfficheValeur = parseFloat(match[1]);
+                    if (Math.abs(soldeAfficheValeur - _soldeInterne) > 0.001) {
+                        console.warn('🛡️ [SÉCURITÉ] Modification du solde détectée et corrigée !');
+                        soldeAffiche.innerHTML = `$ ${_soldeInterne.toFixed(2)} <small>USD</small>`;
+                        const soldeMgaElem = document.getElementById('solde-mga');
+                        if (soldeMgaElem) {
+                            const tauxMGA = donnees.taux?.USDT?.prixMGA || donnees.usdMGA || 4700;
+                            soldeMgaElem.innerHTML = `≈ ${Math.round(_soldeInterne * tauxMGA).toLocaleString()} Ar`;
                         }
                     }
                 }
-            }, 1000);
+                
+                // Vérifier si _soldeInterne a été modifié
+                if (typeof utilisateurCourant?.solde !== 'undefined' && utilisateurCourant.solde !== _soldeInterne) {
+                    console.warn('🛡️ [SÉCURITÉ] Tentative de modification du solde via l\'objet détectée !');
+                    // Corriger l'objet
+                    try {
+                        Object.defineProperty(utilisateurCourant, 'solde', {
+                            configurable: false,
+                            enumerable: true,
+                            get: function() { return _soldeInterne; },
+                            set: function(v) { console.error('❌ [SÉCURITÉ] Modification du solde interdite !'); return _soldeInterne; }
+                        });
+                    } catch(e) {}
+                }
+            }, 500);
         }
 
         function ecouterChangementsSolde() {
             if (!monUid) return;
             database.ref(`donnees/utilisateurs/${monUid}/solde`).on('value', (snapshot) => {
                 const solde = snapshot.val() || 0;
-                if (utilisateurCourant) {
-                    utilisateurCourant._solde = solde;
-                    utilisateurCourant.solde = solde;
-                }
+                _soldeInterne = solde;
+                
                 const soldeElem = document.getElementById('solde-affichage');
                 const soldeMgaElem = document.getElementById('solde-mga');
                 if (soldeElem) soldeElem.innerHTML = `$ ${solde.toFixed(2)} <small>USD</small>`;
@@ -876,7 +907,7 @@
 
         function verifierSoldeMax() {
             if(utilisateurCourant) {
-                const solde = utilisateurCourant._solde || 0;
+                const solde = _soldeInterne || 0;
                 const tauxMGA = donnees.taux?.USDT?.prixMGA || donnees.usdMGA || 4700;
                 const soldeMGA = solde * tauxMGA;
                 const soldeAlert = document.getElementById('solde-alert');
@@ -889,6 +920,20 @@
             console.log('🔒 [SÉCURITÉ] Initialisation de la protection du solde...');
             verrouillerUtilisateur();
             demarrerSurveillanceSolde();
+            
+            // Bloquer l'accès aux fonctions dangereuses
+            const fonctionsDangereuses = ['setSolde', 'modifierSolde', 'updateSolde', 'changerSolde'];
+            fonctionsDangereuses.forEach(func => {
+                Object.defineProperty(window, func, {
+                    configurable: false,
+                    enumerable: false,
+                    value: function() {
+                        console.error(`❌ [SÉCURITÉ] Fonction ${func} bloquée !`);
+                        return false;
+                    }
+                });
+            });
+            
             console.log('✅ [SÉCURITÉ] Protection du solde activée');
         }
 
@@ -974,7 +1019,7 @@
         }
 
         // ============================================================
-        // DÉCONNEXION (spéciale pour app.html)
+        // DÉCONNEXION
         // ============================================================
         function deconnexion() {
             if(confirm('Êtes-vous sûr de vouloir vous déconnecter ?')){
@@ -983,6 +1028,7 @@
                     sessionValide = false;
                     monUid = null;
                     emailVerifie = false;
+                    _soldeInterne = 0;
                     localStorage.removeItem('typhSession');
                     window.location.href = 'index.html';
                 });
@@ -1014,14 +1060,12 @@
                     utilisateurCourant = snapshot.val();
                     utilisateurCourant.uid = monUid;
                     const soldeSnapshot = await database.ref(`donnees/utilisateurs/${monUid}/solde`).once('value');
-                    utilisateurCourant._solde = soldeSnapshot.val() || 0;
-                    utilisateurCourant.solde = utilisateurCourant._solde;
+                    _soldeInterne = soldeSnapshot.val() || 0;
                     utilisateurCourant.emailVerifie = true;
                     adressesUtilisateur = utilisateurCourant.adressesLiees || {};
                     toursGratuits = utilisateurCourant.toursGratuits || 0;
                     filleulsCount = utilisateurCourant.filleulsCount || 0;
                 } else {
-                    // L'utilisateur existe dans Firebase Auth mais pas dans la DB
                     alert('⚠️ Compte utilisateur incomplet. Veuillez vous réinscrire.');
                     await auth.signOut();
                     localStorage.removeItem('typhSession');
@@ -1040,13 +1084,11 @@
                 initialiserSupport();
                 showPlatform();
             } else {
-                // Non connecté → rediriger vers index.html
                 const session = localStorage.getItem('typhSession');
                 if (session) {
                     try {
                         const data = JSON.parse(session);
                         if (data.uid) {
-                            // Essayer de reconnecter automatiquement
                             auth.signInWithEmailAndPassword(data.email, 'session_recovery').catch(() => {
                                 localStorage.removeItem('typhSession');
                                 window.location.href = 'index.html';
@@ -1264,6 +1306,10 @@
         // ============================================================
         // AFFICHAGE GÉNÉRAL
         // ============================================================
+        function mettreAJourSolde() {
+            mettreAJourSoldeDepuisFirebase();
+        }
+
         function mettreAJourAffichage() {
             mettreAJourSelecteurs();
             mettreAJourProfil();
@@ -1299,17 +1345,6 @@
             }
         }
 
-        function mettreAJourSolde() {
-            if (utilisateurCourant) {
-                mettreAJourSoldeDepuisFirebase();
-            } else {
-                const soldeElem = document.getElementById('solde-affichage');
-                if (soldeElem) soldeElem.innerHTML = `$ 0.00 <small>USD</small>`;
-                const soldeMgaElem = document.getElementById('solde-mga');
-                if (soldeMgaElem) soldeMgaElem.innerHTML = `≈ 0 Ar`;
-            }
-        }
-
         function mettreAJourBanniereEmail() {
             const banner = document.getElementById('email-verification-banner');
             if (!banner) return;
@@ -1331,7 +1366,7 @@
                 const adressesCount = Object.keys(adressesUtilisateur).length;
                 const pinStatus = utilisateurCourant.codePIN?.actif ? '✅ Configuré' : '❌ Non configuré';
                 const emailStatus = emailVerifie ? '✅ Vérifié' : '⚠️ Non vérifié';
-                const solde = utilisateurCourant._solde || 0;
+                const solde = _soldeInterne || 0;
                 p.innerHTML = `
                     <div class="profile-row"><span class="profile-label">ID</span><span class="profile-value" style="color:var(--accent);font-weight:700;">${id}</span></div>
                     <div class="profile-row"><span class="profile-label">Nom</span><span class="profile-value">${nom}</span></div>
@@ -2988,7 +3023,7 @@
         // INITIALISATION FINALE
         // ============================================================
         document.querySelector('.logo').addEventListener('dblclick', () => window.open('security.html', '_blank'));
-        console.log('🚀 Application TYPH X-CHAIN chargée');
+        console.log('🚀 Application TYPH X-CHAIN chargée - Sécurité solde activée');
     </script>
 </body>
 </html>
