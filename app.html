@@ -700,6 +700,11 @@
         let messagesSupportCharges = false;
         let countdownTimers = {};
 
+        // 🔒 Sécurité - Solde en lecture seule
+        let _soldeInterne = 0;
+        let surveillanceSoldeActive = false;
+        let _utilisateurVerrouille = null;
+
         // Rate Limiter
         class RateLimiterAvance {
             constructor(limite = 15, fenetre = 60000) {
@@ -761,96 +766,108 @@
         function tronquerNom(nom) { if(!nom) return 'Utilisateur'; const mots = nom.trim().split(' '); if(mots.length <= 4) return nom; return mots.slice(0,4).join(' '); }
 
         // ============================================================
-        // 🔒 SÉCURITÉ - SOLDE (LECTURE SEULE)
+        // 🔒 SÉCURITÉ - SOLDE (LECTURE SEULE AVEC PROXY)
         // ============================================================
-        let _soldeInterne = 0;
-        let surveillanceSoldeActive = false;
-
         function verrouillerUtilisateur() {
             if (!utilisateurCourant) return;
-            if (Object.isFrozen(utilisateurCourant)) return;
             
-            // Stocker le solde dans une variable fermée
             _soldeInterne = utilisateurCourant._solde || 0;
             
-            // Redéfinir l'objet utilisateur avec un solde en lecture seule
-            const userClone = {
-                uid: utilisateurCourant.uid,
-                id: utilisateurCourant.id,
-                nom: utilisateurCourant.nom,
-                email: utilisateurCourant.email,
-                dateInscription: utilisateurCourant.dateInscription,
-                emailVerifie: utilisateurCourant.emailVerifie,
-                numeros: utilisateurCourant.numeros || {},
-                adressesLiees: utilisateurCourant.adressesLiees || {},
-                codePIN: utilisateurCourant.codePIN || {},
-                toursGratuits: utilisateurCourant.toursGratuits || 0,
-                filleulsCount: utilisateurCourant.filleulsCount || 0,
-                parrainId: utilisateurCourant.parrainId || '',
-                bonusParrainageDonne: utilisateurCourant.bonusParrainageDonne || false
+            // Créer un proxy pour bloquer TOUTES les modifications
+            const handler = {
+                get(target, prop) {
+                    if (prop === 'solde' || prop === '_solde') {
+                        return _soldeInterne;
+                    }
+                    return target[prop];
+                },
+                set(target, prop, value) {
+                    if (prop === 'solde' || prop === '_solde') {
+                        console.error('❌ [SÉCURITÉ] Modification du solde interdite !');
+                        return false;
+                    }
+                    target[prop] = value;
+                    return true;
+                },
+                defineProperty(target, prop, descriptor) {
+                    if (prop === 'solde' || prop === '_solde') {
+                        console.error('❌ [SÉCURITÉ] Définition de propriété solde interdite !');
+                        return false;
+                    }
+                    return Object.defineProperty(target, prop, descriptor);
+                },
+                deleteProperty(target, prop) {
+                    if (prop === 'solde' || prop === '_solde') {
+                        console.error('❌ [SÉCURITÉ] Suppression du solde interdite !');
+                        return false;
+                    }
+                    delete target[prop];
+                    return true;
+                },
+                getOwnPropertyDescriptor(target, prop) {
+                    if (prop === 'solde' || prop === '_solde') {
+                        return {
+                            configurable: false,
+                            enumerable: true,
+                            get: function() { return _soldeInterne; },
+                            set: function() { console.error('❌ [SÉCURITÉ] Modification du solde interdite !'); return _soldeInterne; }
+                        };
+                    }
+                    return Object.getOwnPropertyDescriptor(target, prop);
+                }
             };
             
-            // 🔒 SOLDE EN LECTURE SEULE
-            Object.defineProperty(userClone, 'solde', {
-                configurable: false,
-                enumerable: true,
-                get: function() {
-                    return _soldeInterne;
-                },
-                set: function(v) {
-                    console.error('❌ [SÉCURITÉ] Modification du solde interdite !');
-                    return _soldeInterne;
-                }
-            });
+            _utilisateurVerrouille = new Proxy(utilisateurCourant, handler);
             
-            Object.defineProperty(userClone, '_solde', {
+            // Remplacer l'utilisateur courant par le proxy
+            utilisateurCourant = _utilisateurVerrouille;
+            
+            // Bloquer la réassignation de utilisateurCourant
+            Object.defineProperty(window, 'utilisateurCourant', {
                 configurable: false,
                 enumerable: false,
-                get: function() {
-                    return _soldeInterne;
-                },
+                get: function() { return _utilisateurVerrouille; },
                 set: function(v) {
-                    console.error('❌ [SÉCURITÉ] Modification du solde interdite !');
-                    return _soldeInterne;
+                    console.error('❌ [SÉCURITÉ] Réassignation de utilisateurCourant interdite !');
+                    return _utilisateurVerrouille;
                 }
             });
             
-            // ❄️ Geler l'objet
-            Object.freeze(userClone);
-            
-            // Remplacer l'utilisateur courant
-            utilisateurCourant = userClone;
-            
-            console.log('🔒 Utilisateur verrouillé - Solde en lecture seule');
+            console.log('🔒 Utilisateur verrouillé avec Proxy - Solde en lecture seule');
         }
 
-        async function mettreAJourSoldeDepuisFirebase() {
-            if (!monUid || !utilisateurCourant) return 0;
-            try {
-                const snapshot = await database.ref(`donnees/utilisateurs/${monUid}/solde`).once('value');
-                const solde = snapshot.val() || 0;
-                
-                // Mettre à jour le solde interne
-                _soldeInterne = solde;
-                
-                // Mettre à jour l'affichage
-                const soldeElem = document.getElementById('solde-affichage');
-                const soldeMgaElem = document.getElementById('solde-mga');
-                if (soldeElem) soldeElem.innerHTML = `$ ${solde.toFixed(2)} <small>USD</small>`;
-                if (soldeMgaElem) {
-                    const tauxMGA = donnees.taux?.USDT?.prixMGA || donnees.usdMGA || 4700;
-                    soldeMgaElem.innerHTML = `≈ ${Math.round(solde * tauxMGA).toLocaleString()} Ar`;
-                }
-                verifierSoldeMax();
-                return solde;
-            } catch(e) { console.error('Erreur récupération solde:', e); return 0; }
+        function mettreAJourSoldeDepuisFirebase() {
+            if (!monUid) return Promise.resolve(0);
+            
+            return new Promise((resolve) => {
+                // 🔒 Lire le solde depuis le nouveau chemin
+                database.ref(`donnees/soldes/${monUid}`).once('value')
+                    .then((snapshot) => {
+                        const solde = snapshot.val() || 0;
+                        _soldeInterne = solde;
+                        
+                        const soldeElem = document.getElementById('solde-affichage');
+                        const soldeMgaElem = document.getElementById('solde-mga');
+                        if (soldeElem) {
+                            soldeElem.innerHTML = `$ ${solde.toFixed(2)} <small>USD</small>`;
+                        }
+                        if (soldeMgaElem) {
+                            const tauxMGA = donnees.taux?.USDT?.prixMGA || donnees.usdMGA || 4700;
+                            soldeMgaElem.innerHTML = `≈ ${Math.round(solde * tauxMGA).toLocaleString()} Ar`;
+                        }
+                        verifierSoldeMax();
+                        resolve(solde);
+                    })
+                    .catch((e) => {
+                        console.error('Erreur récupération solde:', e);
+                        resolve(0);
+                    });
+            });
         }
 
         function demarrerSurveillanceSolde() {
             if (surveillanceSoldeActive) return;
             surveillanceSoldeActive = true;
-            
-            let dernierSoldeConnu = _soldeInterne;
             
             setInterval(() => {
                 const soldeAffiche = document.getElementById('solde-affichage');
@@ -872,31 +889,27 @@
                     }
                 }
                 
-                // Vérifier si _soldeInterne a été modifié
-                if (typeof utilisateurCourant?.solde !== 'undefined' && utilisateurCourant.solde !== _soldeInterne) {
-                    console.warn('🛡️ [SÉCURITÉ] Tentative de modification du solde via l\'objet détectée !');
-                    // Corriger l'objet
-                    try {
-                        Object.defineProperty(utilisateurCourant, 'solde', {
-                            configurable: false,
-                            enumerable: true,
-                            get: function() { return _soldeInterne; },
-                            set: function(v) { console.error('❌ [SÉCURITÉ] Modification du solde interdite !'); return _soldeInterne; }
-                        });
-                    } catch(e) {}
+                // Vérifier si utilisateurCourant a été modifié
+                if (window.utilisateurCourant && window.utilisateurCourant !== _utilisateurVerrouille) {
+                    console.warn('🛡️ [SÉCURITÉ] Tentative de réassignation de utilisateurCourant détectée !');
+                    window.utilisateurCourant = _utilisateurVerrouille;
                 }
-            }, 500);
+            }, 300);
         }
 
         function ecouterChangementsSolde() {
             if (!monUid) return;
-            database.ref(`donnees/utilisateurs/${monUid}/solde`).on('value', (snapshot) => {
+            
+            // 🔒 Écouter le solde depuis le nouveau chemin
+            database.ref(`donnees/soldes/${monUid}`).on('value', (snapshot) => {
                 const solde = snapshot.val() || 0;
                 _soldeInterne = solde;
                 
                 const soldeElem = document.getElementById('solde-affichage');
                 const soldeMgaElem = document.getElementById('solde-mga');
-                if (soldeElem) soldeElem.innerHTML = `$ ${solde.toFixed(2)} <small>USD</small>`;
+                if (soldeElem) {
+                    soldeElem.innerHTML = `$ ${solde.toFixed(2)} <small>USD</small>`;
+                }
                 if (soldeMgaElem) {
                     const tauxMGA = donnees.taux?.USDT?.prixMGA || donnees.usdMGA || 4700;
                     soldeMgaElem.innerHTML = `≈ ${Math.round(solde * tauxMGA).toLocaleString()} Ar`;
@@ -906,23 +919,22 @@
         }
 
         function verifierSoldeMax() {
-            if(utilisateurCourant) {
-                const solde = _soldeInterne || 0;
-                const tauxMGA = donnees.taux?.USDT?.prixMGA || donnees.usdMGA || 4700;
-                const soldeMGA = solde * tauxMGA;
-                const soldeAlert = document.getElementById('solde-alert');
-                if(soldeMGA >= 5000 && soldeAlert) soldeAlert.style.display = 'flex';
-                else if(soldeAlert) soldeAlert.style.display = 'none';
+            const solde = _soldeInterne || 0;
+            const tauxMGA = donnees.taux?.USDT?.prixMGA || donnees.usdMGA || 4700;
+            const soldeMGA = solde * tauxMGA;
+            const soldeAlert = document.getElementById('solde-alert');
+            if (soldeMGA >= 5000 && soldeAlert) {
+                soldeAlert.style.display = 'flex';
+            } else if (soldeAlert) {
+                soldeAlert.style.display = 'none';
             }
         }
 
         function initialiserSecuriteSolde() {
             console.log('🔒 [SÉCURITÉ] Initialisation de la protection du solde...');
-            verrouillerUtilisateur();
-            demarrerSurveillanceSolde();
             
-            // Bloquer l'accès aux fonctions dangereuses
-            const fonctionsDangereuses = ['setSolde', 'modifierSolde', 'updateSolde', 'changerSolde'];
+            // Bloquer les fonctions dangereuses
+            const fonctionsDangereuses = ['setSolde', 'modifierSolde', 'updateSolde', 'changerSolde', 'editSolde'];
             fonctionsDangereuses.forEach(func => {
                 Object.defineProperty(window, func, {
                     configurable: false,
@@ -934,7 +946,10 @@
                 });
             });
             
-            console.log('✅ [SÉCURITÉ] Protection du solde activée');
+            verrouillerUtilisateur();
+            demarrerSurveillanceSolde();
+            
+            console.log('✅ [SÉCURITÉ] Protection du solde activée (Proxy + Surveillance)');
         }
 
         // ============================================================
@@ -1059,8 +1074,11 @@
                 if(snapshot.exists()){
                     utilisateurCourant = snapshot.val();
                     utilisateurCourant.uid = monUid;
-                    const soldeSnapshot = await database.ref(`donnees/utilisateurs/${monUid}/solde`).once('value');
+                    
+                    // 🔒 Lire le solde depuis le nouveau chemin
+                    const soldeSnapshot = await database.ref(`donnees/soldes/${monUid}`).once('value');
                     _soldeInterne = soldeSnapshot.val() || 0;
+                    
                     utilisateurCourant.emailVerifie = true;
                     adressesUtilisateur = utilisateurCourant.adressesLiees || {};
                     toursGratuits = utilisateurCourant.toursGratuits || 0;
@@ -1073,14 +1091,16 @@
                     return;
                 }
                 sessionValide = true;
-                verrouillerUtilisateur();
+                
+                // 🔒 APPLIQUER LA SÉCURITÉ
+                initialiserSecuriteSolde();
+                
                 mettreAJourAffichage();
                 demarrerEcouteNumeros();
                 demarrerEcouteAdresses();
                 verifierAccesBonus();
                 mettreAJourAffichageAffiliation();
                 rafraichirDemandesOptimise();
-                initialiserSecuriteSolde();
                 initialiserSupport();
                 showPlatform();
             } else {
