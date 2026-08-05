@@ -417,7 +417,6 @@
         // FONCTION UTILITAIRE - GÉNÉRER ID
         // ============================================================
         function genererIDStable(email, nom) {
-            // Génère un ID unique basé sur l'email et le nom
             const base = email + nom + Date.now().toString();
             const hash = btoa(base).replace(/[^a-zA-Z0-9]/g, '').substring(0, 8);
             return `TX-${hash}`;
@@ -587,7 +586,7 @@
         }
 
         // ============================================================
-        // CONNEXION / INSCRIPTION
+        // CONNEXION
         // ============================================================
         async function connexion() {
             if (!rateLimiters.auth.peutExecuter('connexion')) {
@@ -620,7 +619,7 @@
                 hideAuthModal();
                 resetTurnstileWidgets();
 
-                // ✅ REDIRECTION VERS app.html
+                // REDIRECTION VERS app.html
                 const sessionData = {
                     uid: result.user.uid,
                     email: result.user.email,
@@ -640,6 +639,9 @@
             }
         }
 
+        // ============================================================
+        // INSCRIPTION - NOUVEAUX NOEUDS AUTH + FINANCES ⭐
+        // ============================================================
         async function inscription() {
             if (!rateLimiters.auth.peutExecuter('inscription')) {
                 afficherErreur('⏳ Trop de tentatives. Veuillez attendre 60 secondes.');
@@ -669,53 +671,48 @@
                 const uc = await auth.createUserWithEmailAndPassword(email, password);
                 const uid = uc.user.uid;
                 
-                // Envoyer l'email de vérification
                 await uc.user.sendEmailVerification();
                 await uc.user.updateProfile({ displayName: nom });
 
                 // 2. GÉNÉRER UN ID UNIQUE
                 const idUtilisateur = genererIDStable(email, nom);
 
-                // 3. CRÉER L'OBJET UTILISATEUR COMPLET
-                const nouvelUtilisateur = {
+                // 3. CRÉER L'OBJET AUTH (sans solde)
+                const authData = {
                     id: idUtilisateur,
                     nom: nom,
                     email: email,
                     dateInscription: new Date().toISOString(),
                     numeros: {},
                     adressesLiees: {},
-                    codePIN: { hash: null, salt: null, actif: false, tentativeEchouees: 0, bloque: false },
+                    codePIN: {
+                        hash: null,
+                        salt: null,
+                        actif: false,
+                        tentativeEchouees: 0,
+                        bloque: false
+                    },
                     toursGratuits: 0,
                     filleulsCount: 0,
                     parrainId: parrainId || '',
                     bonusParrainageDonne: false,
-                    emailVerifie: false,
-                    solde: 0
+                    emailVerifie: false
                 };
 
-                console.log('📝 Création utilisateur:', JSON.stringify(nouvelUtilisateur, null, 2));
+                // 4. ⭐ ÉCRIRE DANS LE NOUVEAU NOEUD "auth"
+                await database.ref(`donnees/auth/${uid}`).set(authData);
 
-                // 4. ✅ ÉCRIRE TOUT L'OBJET AVEC set()
-                await database.ref(`donnees/utilisateurs/${uid}`).set(nouvelUtilisateur);
+                // 5. ⭐ CRÉER LE SOLDE DANS "finances" (admin seulement)
+                await database.ref(`donnees/finances/${uid}/solde`).set(0);
 
-                // 5. VÉRIFIER QUE L'ÉCRITURE A RÉUSSI
-                const verification = await database.ref(`donnees/utilisateurs/${uid}`).once('value');
+                // 6. VÉRIFICATION
+                const verification = await database.ref(`donnees/auth/${uid}`).once('value');
                 
                 if (verification.exists()) {
-                    console.log('✅ Utilisateur créé avec succès');
-                    console.log('📋 ID:', verification.val().id);
-                    console.log('📋 Date:', verification.val().dateInscription);
+                    console.log('✅ Utilisateur créé avec succès dans auth');
+                    console.log('✅ Solde initialisé à 0 dans finances');
                 } else {
-                    console.error('❌ Échec de la vérification');
-                    
-                    // FALLBACK : Essayer un chemin alternatif
-                    try {
-                        await database.ref(`utilisateurs/${uid}`).set(nouvelUtilisateur);
-                        console.log('✅ Fallback réussi');
-                    } catch (fallbackError) {
-                        console.error('❌ Fallback échoué:', fallbackError);
-                        throw new Error('Impossible de créer le profil utilisateur');
-                    }
+                    throw new Error('Échec de la création du profil');
                 }
 
                 hideAuthModal();
@@ -862,7 +859,6 @@
             if (fbUser) {
                 await fbUser.reload();
                 if (fbUser.emailVerified) {
-                    // ✅ Déjà connecté et email vérifié → rediriger vers app.html
                     const sessionData = {
                         uid: fbUser.uid,
                         email: fbUser.email,
@@ -871,7 +867,6 @@
                     localStorage.setItem('typhSession', JSON.stringify(sessionData));
                     window.location.href = 'app.html';
                 } else {
-                    // Email non vérifié → afficher bannière
                     afficherBanniereEmailNonVerifie(fbUser.email);
                 }
             }
@@ -888,7 +883,7 @@
                     loader.classList.remove('active');
                 }, 2000);
             }
-            console.log('🚀 Page d\'accueil chargée - Version divisée');
+            console.log('🚀 Page d\'accueil chargée - Version avec auth/finances');
         });
     </script>
 </body>

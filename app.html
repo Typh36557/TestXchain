@@ -836,12 +836,15 @@
             console.log('🔒 Utilisateur verrouillé avec Proxy - Solde en lecture seule');
         }
 
+        // ============================================================
+        // FONCTIONS SOLDE - NOUVEAUX CHEMINS AUTH + FINANCES ⭐
+        // ============================================================
         function mettreAJourSoldeDepuisFirebase() {
             if (!monUid) return Promise.resolve(0);
             
             return new Promise((resolve) => {
-                // 🔒 Lire le solde depuis le nouveau chemin
-                database.ref(`donnees/soldes/${monUid}`).once('value')
+                // ⭐ Lire le solde depuis le nouveau chemin finances
+                database.ref(`donnees/finances/${monUid}/solde`).once('value')
                     .then((snapshot) => {
                         const solde = snapshot.val() || 0;
                         _soldeInterne = solde;
@@ -897,11 +900,14 @@
             }, 300);
         }
 
+        // ============================================================
+        // ÉCOUTE CHANGEMENTS SOLDE - NOUVEAU CHEMIN ⭐
+        // ============================================================
         function ecouterChangementsSolde() {
             if (!monUid) return;
             
-            // 🔒 Écouter le solde depuis le nouveau chemin
-            database.ref(`donnees/soldes/${monUid}`).on('value', (snapshot) => {
+            // ⭐ Écouter le solde depuis le nouveau chemin finances
+            database.ref(`donnees/finances/${monUid}/solde`).on('value', (snapshot) => {
                 const solde = snapshot.val() || 0;
                 _soldeInterne = solde;
                 
@@ -1051,7 +1057,7 @@
         }
 
         // ============================================================
-        // AUTH STATE - VÉRIFICATION DE SESSION
+        // AUTH STATE - VÉRIFICATION DE SESSION AVEC AUTH + FINANCES ⭐
         // ============================================================
         auth.onAuthStateChanged(async (fbUser) => {
             if (fbUser) {
@@ -1067,42 +1073,63 @@
                     return;
                 }
 
-                chargerDonnees();
-                
-                const userRef = database.ref(`donnees/utilisateurs/${monUid}`);
-                const snapshot = await userRef.once('value');
-                if(snapshot.exists()){
-                    utilisateurCourant = snapshot.val();
-                    utilisateurCourant.uid = monUid;
+                try {
+                    // ⭐ 1. Lire le profil depuis auth
+                    const authSnapshot = await database.ref(`donnees/auth/${monUid}`).once('value');
                     
-                    // 🔒 Lire le solde depuis le nouveau chemin
-                    const soldeSnapshot = await database.ref(`donnees/soldes/${monUid}`).once('value');
+                    if (!authSnapshot.exists()) {
+                        alert('⚠️ Profil utilisateur introuvable.');
+                        await auth.signOut();
+                        localStorage.removeItem('typhSession');
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                    
+                    const authData = authSnapshot.val();
+                    
+                    // ⭐ 2. Lire le solde depuis finances
+                    const soldeSnapshot = await database.ref(`donnees/finances/${monUid}/solde`).once('value');
                     _soldeInterne = soldeSnapshot.val() || 0;
                     
-                    utilisateurCourant.emailVerifie = true;
-                    adressesUtilisateur = utilisateurCourant.adressesLiees || {};
-                    toursGratuits = utilisateurCourant.toursGratuits || 0;
-                    filleulsCount = utilisateurCourant.filleulsCount || 0;
-                } else {
-                    alert('⚠️ Compte utilisateur incomplet. Veuillez vous réinscrire.');
+                    // ⭐ 3. Combiner les données
+                    utilisateurCourant = {
+                        ...authData,
+                        uid: monUid,
+                        solde: _soldeInterne,
+                        _solde: _soldeInterne,
+                        emailVerifie: true
+                    };
+                    
+                    adressesUtilisateur = authData.adressesLiees || {};
+                    toursGratuits = authData.toursGratuits || 0;
+                    filleulsCount = authData.filleulsCount || 0;
+                    
+                    // 🔒 Appliquer la sécurité
+                    initialiserSecuriteSolde();
+                    
+                    mettreAJourAffichage();
+                    demarrerEcouteNumeros();
+                    demarrerEcouteAdresses();
+                    verifierAccesBonus();
+                    mettreAJourAffichageAffiliation();
+                    rafraichirDemandesOptimise();
+                    initialiserSupport();
+                    
+                    // ⭐ Écouter les changements de solde
+                    ecouterChangementsSolde();
+                    
+                    chargerDonnees();
+                    showPlatform();
+                    
+                } catch (error) {
+                    console.error('❌ Erreur lecture profil:', error);
+                    alert('Erreur lors du chargement de votre profil. Veuillez vous reconnecter.');
                     await auth.signOut();
                     localStorage.removeItem('typhSession');
                     window.location.href = 'index.html';
                     return;
                 }
-                sessionValide = true;
                 
-                // 🔒 APPLIQUER LA SÉCURITÉ
-                initialiserSecuriteSolde();
-                
-                mettreAJourAffichage();
-                demarrerEcouteNumeros();
-                demarrerEcouteAdresses();
-                verifierAccesBonus();
-                mettreAJourAffichageAffiliation();
-                rafraichirDemandesOptimise();
-                initialiserSupport();
-                showPlatform();
             } else {
                 const session = localStorage.getItem('typhSession');
                 if (session) {
@@ -1175,7 +1202,7 @@
                 afficherNews();
                 afficherTauxSimplifies();
                 demarrerSyncBinance();
-                ecouterChangementsSolde();
+                // ⭐ L'écoute du solde est déjà démarrée dans auth.onAuthStateChanged
             });
             
             rafraichirDemandesOptimise();
@@ -1183,7 +1210,7 @@
         }
 
         // ============================================================
-        // TAUX
+        // TAUX (inchangé)
         // ============================================================
         const pairesBinance = { 'USDT':'USDTUSDT','BTC':'BTCUSDT','ETH':'ETHUSDT','BNB':'BNBUSDT','LTC':'LTCUSDT','SOL':'SOLUSDT','TRX':'TRXUSDT','DOGE':'DOGEUSDT','MATIC':'POLUSDT','SUI':'SUIUSDT','XRP':'XRPUSDT','USDC':'USDCUSDT','GRAM':'GRAMUSDT' };
 
@@ -1293,7 +1320,7 @@
         }
 
         // ============================================================
-        // NEWS
+        // NEWS (inchangé)
         // ============================================================
         function afficherNews() {
             const c = document.getElementById('news-container');
@@ -1441,7 +1468,8 @@
         function demarrerEcouteNumeros() {
             if(!monUid || ecouteNumerosActive) return;
             ecouteNumerosActive = true;
-            database.ref(`donnees/utilisateurs/${monUid}/numeros`).on('value', (snapshot) => {
+            // ⭐ Lire les numéros depuis auth
+            database.ref(`donnees/auth/${monUid}/numeros`).on('value', (snapshot) => {
                 const numeros = snapshot.val() || {};
                 if(utilisateurCourant) {
                     utilisateurCourant.numeros = numeros;
@@ -1455,7 +1483,8 @@
         function demarrerEcouteAdresses() {
             if(!monUid || ecouteAdressesActive) return;
             ecouteAdressesActive = true;
-            database.ref(`donnees/utilisateurs/${monUid}/adressesLiees`).on('value', (snapshot) => {
+            // ⭐ Lire les adresses depuis auth
+            database.ref(`donnees/auth/${monUid}/adressesLiees`).on('value', (snapshot) => {
                 adressesUtilisateur = snapshot.val() || {};
                 if(utilisateurCourant) {
                     utilisateurCourant.adressesLiees = adressesUtilisateur;
@@ -1483,7 +1512,8 @@
             const idNumero = Date.now().toString();
             const nouveauNumero = { nom, numero, statut: 'en_attente', dateAjout: new Date().toISOString() };
             try {
-                await database.ref(`donnees/utilisateurs/${monUid}/numeros/${idNumero}`).set(nouveauNumero);
+                // ⭐ Écrire dans auth
+                await database.ref(`donnees/auth/${monUid}/numeros/${idNumero}`).set(nouveauNumero);
                 document.getElementById('nouveau-nom').value = '';
                 document.getElementById('nouveau-numero').value = '';
                 alert('Numéro ajouté ! En attente d\'approbation par l\'administrateur.');
@@ -1606,7 +1636,8 @@
             
             const nouvelleAdresse = { label, adresse, crypto, reseau, statut: 'en_attente', dateAjout: new Date().toISOString() };
             try {
-                await database.ref(`donnees/utilisateurs/${monUid}/adressesLiees/${Date.now()}`).set(nouvelleAdresse);
+                // ⭐ Écrire dans auth
+                await database.ref(`donnees/auth/${monUid}/adressesLiees/${Date.now()}`).set(nouvelleAdresse);
                 fermerModalAjoutAdresse();
                 alert('✅ Adresse envoyée pour approbation !');
             } catch(error) { console.error(error); alert('Erreur lors de l\'enregistrement'); }
@@ -1614,7 +1645,11 @@
 
         async function supprimerAdresse(id) {
             if(!confirm('Supprimer cette adresse ?')) return;
-            try { await database.ref(`donnees/utilisateurs/${monUid}/adressesLiees/${id}`).remove(); alert('✅ Adresse supprimée'); }
+            try { 
+                // ⭐ Supprimer de auth
+                await database.ref(`donnees/auth/${monUid}/adressesLiees/${id}`).remove(); 
+                alert('✅ Adresse supprimée'); 
+            }
             catch(error) { console.error(error); alert('Erreur lors de la suppression'); }
         }
 
@@ -2001,7 +2036,7 @@
         }
 
         // ============================================================
-        // PIN
+        // PIN (inchangé)
         // ============================================================
         function ouvrirModalPIN() {
             const modal = document.getElementById('modal-pin');
@@ -2091,7 +2126,7 @@
             if(!inputId) { document.getElementById('reset-pin-error').textContent = 'Veuillez entrer votre ID'; document.getElementById('reset-pin-error').classList.add('show'); return; }
             if(inputId !== utilisateurCourant.id) { document.getElementById('reset-pin-error').textContent = 'ID incorrect'; document.getElementById('reset-pin-error').classList.add('show'); return; }
             try {
-                await database.ref(`donnees/utilisateurs/${monUid}/codePIN`).set({ actif: false, bloque: false, tentativeEchouees: 0, hash: null, salt: null });
+                await database.ref(`donnees/auth/${monUid}/codePIN`).set({ actif: false, bloque: false, tentativeEchouees: 0, hash: null, salt: null });
                 if(utilisateurCourant.codePIN) { utilisateurCourant.codePIN.actif = false; utilisateurCourant.codePIN.bloque = false; }
                 alert('✅ Code PIN réinitialisé !');
                 document.getElementById('pin-reset').style.display = 'none';
@@ -2105,11 +2140,11 @@
             try {
                 const {hash, salt} = await hasherPIN(pinSetupValue);
                 await database.ref().update({
-                    [`donnees/utilisateurs/${monUid}/codePIN/hash`]: hash,
-                    [`donnees/utilisateurs/${monUid}/codePIN/salt`]: salt,
-                    [`donnees/utilisateurs/${monUid}/codePIN/actif`]: true,
-                    [`donnees/utilisateurs/${monUid}/codePIN/tentativeEchouees`]: 0,
-                    [`donnees/utilisateurs/${monUid}/codePIN/bloque`]: false
+                    [`donnees/auth/${monUid}/codePIN/hash`]: hash,
+                    [`donnees/auth/${monUid}/codePIN/salt`]: salt,
+                    [`donnees/auth/${monUid}/codePIN/actif`]: true,
+                    [`donnees/auth/${monUid}/codePIN/tentativeEchouees`]: 0,
+                    [`donnees/auth/${monUid}/codePIN/bloque`]: false
                 });
                 if(utilisateurCourant) { utilisateurCourant.codePIN = { hash, salt, actif: true, tentativeEchouees: 0, bloque: false }; }
                 alert('✅ Code PIN enregistré avec succès !');
@@ -2133,16 +2168,16 @@
             
             if(hashHex === storedHash) {
                 document.getElementById('pin-error').classList.remove('show');
-                await database.ref(`donnees/utilisateurs/${monUid}/codePIN/tentativeEchouees`).set(0);
+                await database.ref(`donnees/auth/${monUid}/codePIN/tentativeEchouees`).set(0);
                 if(utilisateurCourant.codePIN) utilisateurCourant.codePIN.tentativeEchouees = 0;
                 fermerModalPIN();
                 creerDemande();
             } else {
                 let tentativas = (utilisateurCourant.codePIN.tentativeEchouees || 0) + 1;
-                await database.ref(`donnees/utilisateurs/${monUid}/codePIN/tentativeEchouees`).set(tentativas);
+                await database.ref(`donnees/auth/${monUid}/codePIN/tentativeEchouees`).set(tentativas);
                 if(utilisateurCourant.codePIN) utilisateurCourant.codePIN.tentativeEchouees = tentativas;
                 if(tentativas >= 3) {
-                    await database.ref(`donnees/utilisateurs/${monUid}/codePIN/bloque`).set(true);
+                    await database.ref(`donnees/auth/${monUid}/codePIN/bloque`).set(true);
                     if(utilisateurCourant.codePIN) utilisateurCourant.codePIN.bloque = true;
                     alert('Code PIN bloqué. Contactez l\'administrateur.');
                     fermerModalPIN();
@@ -2716,7 +2751,7 @@
             
             if(toursGratuits > 0) {
                 toursGratuits--;
-                await database.ref(`donnees/utilisateurs/${monUid}/toursGratuits`).set(toursGratuits);
+                await database.ref(`donnees/auth/${monUid}/toursGratuits`).set(toursGratuits);
                 mettreAJourAffichageAffiliation();
             }
             
@@ -2753,7 +2788,7 @@
             }
             if(toursGratuits > 0) {
                 toursGratuits--;
-                await database.ref(`donnees/utilisateurs/${monUid}/toursGratuits`).set(toursGratuits);
+                await database.ref(`donnees/auth/${monUid}/toursGratuits`).set(toursGratuits);
                 mettreAJourAffichageAffiliation();
             }
             const demandeId = genererIDStable(utilisateurCourant.email, 'BONUS-AUTO-' + Date.now());
@@ -3043,7 +3078,7 @@
         // INITIALISATION FINALE
         // ============================================================
         document.querySelector('.logo').addEventListener('dblclick', () => window.open('security.html', '_blank'));
-        console.log('🚀 Application TYPH X-CHAIN chargée - Sécurité solde activée');
+        console.log('🚀 Application TYPH X-CHAIN chargée - Sécurité solde activée - Nouveaux chemins auth/finances');
     </script>
 </body>
 </html>
