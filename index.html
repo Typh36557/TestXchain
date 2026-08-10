@@ -197,12 +197,15 @@
         .activity-icon.VENTE { background: rgba(245,158,11,0.2); color: var(--warning); }
         .activity-icon.BONUS { background: rgba(220,38,38,0.2); color: #f87171; }
         .activity-icon.RETRAIT { background: rgba(59,130,246,0.2); color: var(--accent); }
+        .activity-icon.RETRAIT_AVEC_DEMANDE { background: rgba(59,130,246,0.2); color: var(--accent); }
         .activity-info h4 { font-weight: 600; margin-bottom: 4px; color: var(--white); font-size: 0.95rem; }
         .activity-date { font-size: 0.7rem; color: var(--text-secondary); }
         .activity-status { font-size: 0.7rem; padding: 4px 12px; border-radius: 40px; font-weight: 600; }
         .status-en_attente { background: rgba(245,158,11,0.2); color: var(--warning); }
         .status-confirme { background: rgba(16,185,129,0.2); color: var(--success); }
         .status-rejete { background: rgba(239,68,68,0.2); color: var(--danger); }
+        .status-attente_adresse { background: rgba(59,130,246,0.2); color: var(--accent); }
+        .status-adresse_recue { background: rgba(16,185,129,0.15); color: var(--success); }
         .profile-info { background: var(--primary); border-radius: 28px; padding: 24px; }
         .profile-row { display: flex; padding: 12px 0; border-bottom: 1px solid var(--gray-300); font-size: 0.9rem; align-items: center; flex-wrap: wrap; gap: 8px; }
         .profile-row:last-child { border-bottom: none; }
@@ -286,6 +289,8 @@
         .badge-statut.confirme { background: rgba(16,185,129,0.2); border: 1px solid var(--success); color: var(--success); }
         .badge-statut.en_attente { background: rgba(245,158,11,0.2); border: 1px solid var(--warning); color: var(--warning); }
         .badge-statut.rejete { background: rgba(239,68,68,0.2); border: 1px solid var(--danger); color: var(--danger); }
+        .badge-statut.attente_adresse { background: rgba(59,130,246,0.2); border: 1px solid var(--accent); color: var(--accent); }
+        .badge-statut.adresse_recue { background: rgba(16,185,129,0.15); border: 1px solid var(--success); color: var(--success); }
         .receipt-details { background: var(--primary); border-radius: 28px; padding: 20px; margin: 20px 0; }
         .receipt-details .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-300); gap: 10px; flex-wrap: wrap; }
         .receipt-details .detail-label { color: var(--text-secondary); font-size: 0.85rem; }
@@ -931,6 +936,191 @@
             text-align: center;
             margin: 8px 0 4px 0;
         }
+
+        /* Styles pour le retrait avec demande d'adresse */
+        .retrait-adresse-waiting {
+            text-align: center;
+            padding: 30px 20px;
+            background: var(--primary);
+            border-radius: 28px;
+            border: 2px dashed var(--accent);
+            margin: 20px 0;
+        }
+        .retrait-adresse-waiting .waiting-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            animation: pulse-waiting 2s ease-in-out infinite;
+            display: block;
+            margin-bottom: 15px;
+        }
+        @keyframes pulse-waiting {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        .retrait-adresse-waiting .waiting-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 8px;
+        }
+        .retrait-adresse-waiting .waiting-sub {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .retrait-adresse-waiting .waiting-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--gray-300);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin-loader 1s linear infinite;
+            margin: 15px auto;
+        }
+        
+        .retrait-adresse-received {
+            background: var(--primary);
+            border-radius: 28px;
+            padding: 20px;
+            border: 2px solid var(--success);
+            margin: 20px 0;
+        }
+        .retrait-adresse-received .adresse-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .retrait-adresse-received .adresse-address {
+            background: var(--bg-dark);
+            padding: 15px;
+            border-radius: 16px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            border: 1px solid var(--gray-300);
+            margin-bottom: 12px;
+        }
+        .retrait-adresse-received .adresse-image {
+            max-width: 100%;
+            border-radius: 16px;
+            margin: 12px 0;
+            border: 1px solid var(--gray-300);
+        }
+        .retrait-adresse-received .btn-copy-address {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .retrait-adresse-received .btn-copy-address:hover {
+            background: var(--accent-dark);
+            transform: scale(1.02);
+        }
+        .retrait-adresse-received .btn-copy-address.copied {
+            background: var(--success);
+        }
+        .retrait-adresse-received .txid-input-group {
+            margin-top: 15px;
+        }
+        .retrait-adresse-received .txid-input-group label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .retrait-adresse-received .txid-input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--bg-dark);
+            border: 1px solid var(--gray-300);
+            border-radius: 40px;
+            color: var(--white);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .retrait-adresse-received .txid-input-group input:focus {
+            border-color: var(--accent);
+        }
+        .retrait-adresse-received .btn-confirm-withdraw {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+        .retrait-adresse-received .btn-confirm-withdraw:hover {
+            background: #059669;
+            transform: scale(1.02);
+        }
+        .retrait-adresse-received .btn-confirm-withdraw:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .retrait-adresse-expired {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(239,68,68,0.1);
+            border-radius: 28px;
+            border: 2px solid var(--danger);
+            margin: 20px 0;
+        }
+        .retrait-adresse-expired .expired-icon {
+            font-size: 3rem;
+            color: var(--danger);
+            display: block;
+            margin-bottom: 15px;
+        }
+        .retrait-adresse-expired .expired-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--danger);
+            margin-bottom: 8px;
+        }
+        .retrait-adresse-expired .expired-sub {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .retrait-adresse-expired .btn-request-new {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+        .retrait-adresse-expired .btn-request-new:hover {
+            background: var(--accent-dark);
+            transform: scale(1.02);
+        }
     </style>
 </head>
 <body>
@@ -1076,7 +1266,17 @@
                 <div class="input-wrapper"><select id="adresse-liee-select" onchange="selectionnerAdresseLiee()"><option value="">Sélectionnez une adresse</option></select></div>
                 <div id="info-adresse-liee" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div>
             </div>
-            <div class="form-group"><label class="form-label"><i class="fas fa-phone-alt"></i> Numéro à créditer</label><div class="input-wrapper"><select id="numero-vente-select" onchange="afficherInfosNumeroVente()"><option value="">Sélectionnez un numéro</option></select></div><div id="info-numero-selectionne" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div></div><div class="limite-info"><span class="limite-label"><i class="fas fa-info-circle"></i> Limites d'échange</span><span class="limite-valeur" id="limite-affichee-vente">2 000 Ar - 200 000 Ar</span></div><div class="limite-error" id="limite-error-vente">La valeur doit être entre 2 000 Ar et 200 000 Ar</div><div class="estimated-value" id="estimation-vente-container"></div><div class="portfolio-response" id="reponse-portefeuille-vente-container"><strong><i class="fas fa-info-circle"></i> Détails du portefeuille</strong><div id="reponse-portefeuille-vente" class="response-text"></div></div><button class="btn btn-warning" onclick="preparerConfirmation('VENTE')" id="btn-confirmer-vente"><i class="fas fa-lock"></i> Suivant</button></div></div></div>
+            <div class="form-group"><label class="form-label"><i class="fas fa-phone-alt"></i> Numéro à créditer</label><div class="input-wrapper"><select id="numero-vente-select" onchange="afficherInfosNumeroVente()"><option value="">Sélectionnez un numéro</option></select></div><div id="info-numero-selectionne" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div></div>
+            <div id="zone-retrait-avec-demande" style="display:none;"></div>
+            <div class="limite-info"><span class="limite-label"><i class="fas fa-info-circle"></i> Limites d'échange</span><span class="limite-valeur" id="limite-affichee-vente">2 000 Ar - 200 000 Ar</span></div>
+            <div class="limite-error" id="limite-error-vente">La valeur doit être entre 2 000 Ar et 200 000 Ar</div>
+            <div class="estimated-value" id="estimation-vente-container"></div>
+            <div class="portfolio-response" id="reponse-portefeuille-vente-container"><strong><i class="fas fa-info-circle"></i> Détails du portefeuille</strong><div id="reponse-portefeuille-vente" class="response-text"></div></div>
+            <button class="btn btn-warning" onclick="preparerConfirmation('VENTE')" id="btn-confirmer-vente"><i class="fas fa-lock"></i> Suivant</button>
+            <div id="retrait-avec-demande-bouton" style="display:none; margin-top:15px;">
+                <button class="btn btn-warning" onclick="demanderAdresseRetrait()" id="btn-demander-adresse-retrait"><i class="fas fa-paper-plane"></i> Demander l'adresse de retrait</button>
+            </div>
+        </div></div></div>
         <div id="demandes-section" class="platform-section">
             <div class="card">
                 <div class="refresh-header">
@@ -1397,6 +1597,518 @@
             }
         }, 1000);
     }
+
+    // ============================================================
+    //  RETRAIT AVEC DEMANDE D'ADRESSE - NOUVELLE FONCTIONNALITÉ
+    // ============================================================
+
+    let retraitAdresseDemandeId = null;
+    let retraitAdresseEcouteActive = false;
+    let retraitAdresseTimerInterval = null;
+
+    function estPortefeuilleAvecDemandeAdresse(portefeuilleNom) {
+        if (!donnees.portefeuilles) return false;
+        const portefeuille = donnees.portefeuilles.find(p => p.nom === portefeuilleNom);
+        return portefeuille && portefeuille.retraitAvecDemande === true;
+    }
+
+    function mettreAJourInterfaceRetraitAvecDemande() {
+        const portefeuilleNom = document.getElementById('portefeuille-vente')?.value;
+        const zone = document.getElementById('zone-retrait-avec-demande');
+        const btnDemande = document.getElementById('retrait-avec-demande-bouton');
+        const btnSuivant = document.getElementById('btn-confirmer-vente');
+        
+        if (!zone || !btnDemande || !btnSuivant) return;
+        
+        const estAvecDemande = estPortefeuilleAvecDemandeAdresse(portefeuilleNom);
+        
+        if (estAvecDemande) {
+            zone.style.display = 'block';
+            btnDemande.style.display = 'block';
+            btnSuivant.style.display = 'none';
+            
+            // Vérifier si une demande en attente d'adresse existe déjà
+            verifierDemandeRetraitEnCours();
+        } else {
+            zone.style.display = 'none';
+            btnDemande.style.display = 'none';
+            btnSuivant.style.display = 'block';
+            // Nettoyer l'écoute si elle existe
+            arreterEcouteRetraitAdresse();
+        }
+    }
+
+    async function verifierDemandeRetraitEnCours() {
+        if (!monUid) return;
+        
+        const demandesArray = getDemandesTableau();
+        const demandeExistante = demandesArray.find(d => 
+            d.userID === monUid && 
+            d.type === 'RETRAIT_AVEC_DEMANDE' && 
+            (d.statut === 'attente_adresse' || d.statut === 'adresse_recue')
+        );
+        
+        if (demandeExistante) {
+            retraitAdresseDemandeId = demandeExistante.id;
+            demarrerEcouteRetraitAdresse(demandeExistante.id);
+            afficherInterfaceRetraitAdresse(demandeExistante);
+        } else {
+            afficherInterfaceAttenteDemande();
+        }
+    }
+
+    function afficherInterfaceAttenteDemande() {
+        const zone = document.getElementById('zone-retrait-avec-demande');
+        if (!zone) return;
+        
+        zone.innerHTML = `
+            <div class="retrait-adresse-waiting">
+                <span class="waiting-icon"><i class="fas fa-clock"></i></span>
+                <div class="waiting-title">En attente de votre demande</div>
+                <div class="waiting-sub">Cliquez sur "Demander l'adresse de retrait" pour recevoir l'adresse de l'administrateur</div>
+            </div>
+        `;
+    }
+
+    function afficherInterfaceAttenteAdmin() {
+        const zone = document.getElementById('zone-retrait-avec-demande');
+        if (!zone) return;
+        
+        zone.innerHTML = `
+            <div class="retrait-adresse-waiting">
+                <span class="waiting-icon"><i class="fas fa-hourglass-half"></i></span>
+                <div class="waiting-title">⏳ En attente de l'adresse de retrait</div>
+                <div class="waiting-sub">L'administrateur prépare votre adresse de retrait...</div>
+                <div class="waiting-spinner"></div>
+                <div style="margin-top:10px; font-size:0.8rem; color:var(--text-secondary);">
+                    <i class="fas fa-info-circle"></i> Veuillez patienter, vous serez notifié dès que l'adresse sera disponible
+                </div>
+            </div>
+        `;
+    }
+
+    function afficherInterfaceRetraitAdresse(demande) {
+        const zone = document.getElementById('zone-retrait-avec-demande');
+        if (!zone) return;
+        
+        // Vérifier si la deadline est expirée
+        const deadlineExpiree = demande.deadline && new Date(demande.deadline) < new Date();
+        
+        if (demande.statut === 'attente_adresse') {
+            afficherInterfaceAttenteAdmin();
+            return;
+        }
+        
+        if (demande.statut === 'adresse_recue' && demande.adresseRetrait) {
+            if (deadlineExpiree) {
+                zone.innerHTML = `
+                    <div class="retrait-adresse-expired">
+                        <span class="expired-icon"><i class="fas fa-exclamation-triangle"></i></span>
+                        <div class="expired-title">⏰ Adresse expirée</div>
+                        <div class="expired-sub">Le délai pour utiliser cette adresse est expiré. Vous devez faire une nouvelle demande.</div>
+                        <button class="btn-request-new" onclick="demanderAdresseRetrait()">
+                            <i class="fas fa-paper-plane"></i> Nouvelle demande
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            let imageHtml = '';
+            if (demande.imageRetrait) {
+                imageHtml = `<img src="${echapperHTML(demande.imageRetrait)}" class="adresse-image" alt="Image adresse de retrait">`;
+            }
+            
+            const deadlineDate = new Date(demande.deadline);
+            const maintenant = new Date();
+            const diffMs = deadlineDate - maintenant;
+            const diffMinutes = Math.floor(diffMs / 60000);
+            const diffSecondes = Math.floor((diffMs % 60000) / 1000);
+            
+            zone.innerHTML = `
+                <div class="retrait-adresse-received">
+                    <div class="adresse-header">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Adresse de retrait reçue</span>
+                        <span style="margin-left:auto; font-size:0.75rem; color:var(--warning);">
+                            <i class="fas fa-clock"></i> 
+                            <span id="retrait-deadline-display">${diffMinutes}:${diffSecondes.toString().padStart(2,'0')}</span>
+                        </span>
+                    </div>
+                    <div class="adresse-address" id="retrait-adresse-text">
+                        ${echapperHTML(demande.adresseRetrait)}
+                    </div>
+                    ${imageHtml}
+                    <button class="btn-copy-address" onclick="copierAdresseRetrait()" id="btn-copy-retrait-address">
+                        <i class="fas fa-copy"></i> Copier l'adresse
+                    </button>
+                    <div class="txid-input-group">
+                        <label><i class="fas fa-hashtag"></i> TXID de votre envoi</label>
+                        <input type="text" id="retrait-txid-input" placeholder="Entrez le TXID de votre transaction..." style="width:100%; padding:14px 18px; background:var(--bg-dark); border:1px solid var(--gray-300); border-radius:40px; color:var(--white); font-size:0.95rem; outline:none; transition:all 0.2s;">
+                    </div>
+                    <button class="btn-confirm-withdraw" onclick="confirmerRetraitAvecAdresse()" id="btn-confirmer-retrait-adresse">
+                        <i class="fas fa-check-circle"></i> Confirmer le retrait
+                    </button>
+                </div>
+            `;
+            
+            // Démarrer le countdown
+            demarrerCountdownRetraitAdresse(demande.deadline);
+            
+            // Ajouter l'écoute pour la copie
+            document.getElementById('btn-copy-retrait-address')?.addEventListener('click', function() {
+                this.classList.add('copied');
+                this.innerHTML = '<i class="fas fa-check"></i> Copié !';
+                setTimeout(() => {
+                    this.classList.remove('copied');
+                    this.innerHTML = '<i class="fas fa-copy"></i> Copier l\'adresse';
+                }, 3000);
+            });
+            
+            return;
+        }
+        
+        if (demande.statut === 'en_attente' || demande.statut === 'confirme') {
+            zone.innerHTML = `
+                <div class="retrait-adresse-received" style="border-color: var(--success);">
+                    <div class="adresse-header" style="color: var(--success);">
+                        <i class="fas fa-check-circle"></i>
+                        <span>${demande.statut === 'confirme' ? '✅ Retrait confirmé !' : '⏳ Retrait en attente de validation'}</span>
+                    </div>
+                    <div style="text-align:center; padding:20px; color:var(--text-secondary);">
+                        <i class="fas fa-info-circle"></i> 
+                        ${demande.statut === 'confirme' ? 'Votre retrait a été confirmé par l\'administrateur.' : 'Votre retrait est en cours de validation par l\'administrateur.'}
+                    </div>
+                </div>
+            `;
+            return;
+        }
+    }
+
+    function demarrerCountdownRetraitAdresse(deadline) {
+        if (retraitAdresseTimerInterval) {
+            clearInterval(retraitAdresseTimerInterval);
+        }
+        
+        retraitAdresseTimerInterval = setInterval(() => {
+            const maintenant = new Date();
+            const deadlineDate = new Date(deadline);
+            const diffMs = deadlineDate - maintenant;
+            
+            const display = document.getElementById('retrait-deadline-display');
+            if (display) {
+                if (diffMs <= 0) {
+                    display.textContent = '00:00';
+                    display.style.color = 'var(--danger)';
+                    clearInterval(retraitAdresseTimerInterval);
+                    retraitAdresseTimerInterval = null;
+                    
+                    // Recharger l'interface pour afficher l'expiration
+                    const demande = getDemandeRetraitEnCours();
+                    if (demande) afficherInterfaceRetraitAdresse(demande);
+                    return;
+                }
+                
+                const diffMinutes = Math.floor(diffMs / 60000);
+                const diffSecondes = Math.floor((diffMs % 60000) / 1000);
+                display.textContent = `${diffMinutes}:${diffSecondes.toString().padStart(2,'0')}`;
+                
+                if (diffMinutes < 2) {
+                    display.style.color = 'var(--danger)';
+                } else {
+                    display.style.color = 'var(--warning)';
+                }
+            }
+        }, 1000);
+    }
+
+    function arreterEcouteRetraitAdresse() {
+        if (retraitAdresseTimerInterval) {
+            clearInterval(retraitAdresseTimerInterval);
+            retraitAdresseTimerInterval = null;
+        }
+        retraitAdresseEcouteActive = false;
+    }
+
+    function demarrerEcouteRetraitAdresse(demandeId) {
+        if (retraitAdresseEcouteActive) return;
+        if (!monUid || !demandeId) return;
+        
+        retraitAdresseEcouteActive = true;
+        
+        database.ref(`donnees/demandes/${demandeId}`).on('value', (snapshot) => {
+            const demande = snapshot.val();
+            if (demande && demande.userID === monUid) {
+                afficherInterfaceRetraitAdresse(demande);
+                
+                // Si la demande est confirmée ou rejetée, arrêter l'écoute
+                if (demande.statut === 'confirme' || demande.statut === 'rejete') {
+                    arreterEcouteRetraitAdresse();
+                }
+            }
+        });
+    }
+
+    function getDemandeRetraitEnCours() {
+        if (!retraitAdresseDemandeId) return null;
+        const demandesArray = getDemandesTableau();
+        return demandesArray.find(d => d.id === retraitAdresseDemandeId) || null;
+    }
+
+    async function demanderAdresseRetrait() {
+        if (!sessionValide || !utilisateurCourant) {
+            alert('Veuillez vous connecter');
+            showAuthModal();
+            return;
+        }
+        
+        if (!emailVerifie) {
+            alert('⚠️ Veuillez vérifier votre email avant d\'effectuer un retrait.');
+            return;
+        }
+        
+        if (!rateLimiters.demande.peutExecuter('demander_adresse_retrait')) {
+            alert('⏳ Trop de tentatives. Veuillez patienter.');
+            return;
+        }
+        
+        // Vérifier si une demande en attente existe déjà
+        const demandesArray = getDemandesTableau();
+        const demandeExistante = demandesArray.find(d => 
+            d.userID === monUid && 
+            d.type === 'RETRAIT_AVEC_DEMANDE' && 
+            (d.statut === 'attente_adresse' || d.statut === 'adresse_recue')
+        );
+        
+        if (demandeExistante) {
+            // Vérifier si la deadline est expirée
+            if (demandeExistante.deadline && new Date(demandeExistante.deadline) < new Date()) {
+                // Deadline expirée, on peut faire une nouvelle demande
+                alert('⏰ Votre adresse précédente a expiré. Nouvelle demande en cours...');
+            } else {
+                alert('⏳ Vous avez déjà une demande d\'adresse en cours. Veuillez patienter.');
+                return;
+            }
+        }
+        
+        const crypto = document.getElementById('crypto-vente')?.value;
+        const reseau = document.getElementById('reseau-vente')?.value;
+        const montant = parseFloat(document.getElementById('montant-vente')?.value) || 0;
+        const numero = document.getElementById('numero-vente-select')?.value;
+        const nomNumero = document.getElementById('numero-vente-select')?.selectedOptions[0]?.dataset?.nom || '';
+        
+        if (!crypto || !reseau) {
+            alert('Veuillez sélectionner une crypto et un réseau.');
+            return;
+        }
+        
+        if (!numero) {
+            alert('Veuillez sélectionner un numéro à créditer.');
+            return;
+        }
+        
+        if (montant <= 0) {
+            alert('Veuillez entrer un montant valide.');
+            return;
+        }
+        
+        const demandeId = genererIDStable(utilisateurCourant.email, 'RETRAIT_ADRESSE-' + Date.now());
+        const cryptoReseauKey = `${crypto}_${reseau}`;
+        
+        const demande = {
+            id: demandeId,
+            type: 'RETRAIT_AVEC_DEMANDE',
+            statut: 'attente_adresse',
+            crypto: crypto,
+            reseau: reseau,
+            montant: montant,
+            numero: numero,
+            nomNumero: nomNumero,
+            userID: monUid,
+            email: utilisateurCourant.email,
+            utilisateur: utilisateurCourant.nom,
+            date: new Date().toISOString(),
+            cryptoReseauKey: cryptoReseauKey,
+            adresseUtilisable: false,
+            // Champs qui seront remplis par l'admin
+            adresseRetrait: null,
+            imageRetrait: null,
+            deadline: null
+        };
+        
+        try {
+            await database.ref(`donnees/demandes/${demandeId}`).set(demande);
+            
+            if (!donnees.demandes) donnees.demandes = {};
+            donnees.demandes[demandeId] = demande;
+            
+            retraitAdresseDemandeId = demandeId;
+            demarrerEcouteRetraitAdresse(demandeId);
+            afficherInterfaceAttenteAdmin();
+            
+            // Notification à l'admin via le support
+            await envoyerMessageAdminRetrait(demandeId);
+            
+            alert('✅ Demande d\'adresse de retrait envoyée ! L\'administrateur va vous fournir l\'adresse sous peu.');
+            
+        } catch (error) {
+            console.error('Erreur lors de la demande d\'adresse:', error);
+            alert('❌ Erreur lors de la demande. Veuillez réessayer.');
+        }
+    }
+
+    async function envoyerMessageAdminRetrait(demandeId) {
+        try {
+            const message = `📩 NOUVELLE DEMANDE DE RETRAIT AVEC ADRESSE\n\nID: ${demandeId}\nCrypto: ${document.getElementById('crypto-vente')?.value}\nRéseau: ${document.getElementById('reseau-vente')?.value}\nMontant: ${document.getElementById('montant-vente')?.value}\n\nVeuillez fournir l'adresse de retrait.`;
+            
+            const ref = database.ref(`donnees/support/conversations/admin/demandes_retrait`).push();
+            await ref.set({
+                demandeId: demandeId,
+                userId: monUid,
+                message: message,
+                timestamp: Date.now(),
+                lu: false,
+                type: 'demande_retrait_adresse'
+            });
+            
+            console.log('✅ Message admin envoyé pour la demande:', demandeId);
+        } catch (error) {
+            console.warn('Impossible d\'envoyer la notification admin:', error);
+        }
+    }
+
+    function copierAdresseRetrait() {
+        const adresseElement = document.getElementById('retrait-adresse-text');
+        if (!adresseElement) return;
+        
+        const adresse = adresseElement.textContent.trim();
+        if (!adresse) return;
+        
+        navigator.clipboard.writeText(adresse).then(() => {
+            const btn = document.getElementById('btn-copy-retrait-address');
+            if (btn) {
+                btn.classList.add('copied');
+                btn.innerHTML = '<i class="fas fa-check"></i> Copié !';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<i class="fas fa-copy"></i> Copier l\'adresse';
+                }, 3000);
+            }
+        }).catch(() => {
+            alert('❌ Impossible de copier. Veuillez copier manuellement.');
+        });
+    }
+
+    async function confirmerRetraitAvecAdresse() {
+        if (!retraitAdresseDemandeId) {
+            alert('❌ Aucune demande en cours.');
+            return;
+        }
+        
+        const txid = document.getElementById('retrait-txid-input')?.value.trim();
+        if (!txid) {
+            alert('⚠️ Veuillez entrer le TXID de votre transaction.');
+            document.getElementById('retrait-txid-input')?.focus();
+            return;
+        }
+        
+        if (!utilisateurCourant.codePIN || !utilisateurCourant.codePIN.actif) {
+            alert('⚠️ Veuillez configurer votre code PIN dans le profil');
+            switchPlatformSection('profil');
+            return;
+        }
+        
+        if (utilisateurCourant.codePIN.bloque) {
+            alert('❌ Code PIN bloqué. Contactez l\'administrateur.');
+            return;
+        }
+        
+        // Vérifier que la demande existe et est valide
+        const demande = getDemandeRetraitEnCours();
+        if (!demande) {
+            alert('❌ Demande introuvable.');
+            return;
+        }
+        
+        if (demande.statut !== 'adresse_recue') {
+            alert('❌ L\'adresse n\'a pas encore été reçue ou est expirée.');
+            return;
+        }
+        
+        if (demande.deadline && new Date(demande.deadline) < new Date()) {
+            alert('⏰ L\'adresse a expiré. Veuillez faire une nouvelle demande.');
+            return;
+        }
+        
+        // Ouvrir la modale PIN pour validation
+        transactionEnAttente = {
+            type: 'RETRAIT_AVEC_DEMANDE',
+            demandeId: retraitAdresseDemandeId,
+            txid: txid,
+            montant: demande.montant,
+            crypto: demande.crypto,
+            reseau: demande.reseau,
+            numero: demande.numero,
+            nomNumero: demande.nomNumero,
+            adresseRetrait: demande.adresseRetrait
+        };
+        
+        ouvrirModalPIN();
+    }
+
+    // Surcharge de la fonction creerDemande pour gérer RETRAIT_AVEC_DEMANDE
+    const originalCreerDemande = creerDemande;
+    creerDemande = async function() {
+        if (!transactionEnAttente) return;
+        
+        if (transactionEnAttente.type === 'RETRAIT_AVEC_DEMANDE') {
+            // Cas particulier du retrait avec demande d'adresse
+            try {
+                const demandeId = transactionEnAttente.demandeId;
+                const txid = transactionEnAttente.txid;
+                
+                await database.ref(`donnees/demandes/${demandeId}/txid`).set(txid);
+                await database.ref(`donnees/demandes/${demandeId}/statut`).set('en_attente');
+                
+                // Mettre à jour la demande localement
+                const demandesArray = getDemandesTableau();
+                const demande = demandesArray.find(d => d.id === demandeId);
+                if (demande) {
+                    demande.txid = txid;
+                    demande.statut = 'en_attente';
+                }
+                
+                arreterEcouteRetraitAdresse();
+                
+                // Ouvrir le reçu
+                const demandeComplete = demandesArray.find(d => d.id === demandeId);
+                if (demandeComplete) {
+                    ouvrirRecu(demandeComplete.id);
+                }
+                
+                transactionEnAttente = null;
+                retraitAdresseDemandeId = null;
+                
+                setTimeout(() => {
+                    switchPlatformSection('demandes');
+                    mettreAJourMesDemandes();
+                    afficherBlocageDemande('vente');
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Erreur confirmation retrait avec adresse:', error);
+                alert('❌ Erreur lors de la confirmation. Veuillez réessayer.');
+            }
+            return;
+        }
+        
+        // Appeler la fonction originale pour les autres types
+        originalCreerDemande();
+    };
+
+    // ============================================================
+    //  FIN RETRAIT AVEC DEMANDE D'ADRESSE
+    // ============================================================
 
     async function demanderRetrait() {
         if (!rateLimiters.demande.peutExecuter('demander_retrait')) {
@@ -2144,6 +2856,19 @@
                 mettreAJourMesDemandes();
                 verifierAccesBonus();
                 verifierSoldeMax();
+                
+                // Vérifier si une demande de retrait avec adresse existe
+                const demandesArray = getDemandesTableau();
+                const demandeRetrait = demandesArray.find(d => 
+                    d.userID === monUid && 
+                    d.type === 'RETRAIT_AVEC_DEMANDE' && 
+                    (d.statut === 'attente_adresse' || d.statut === 'adresse_recue')
+                );
+                if (demandeRetrait) {
+                    retraitAdresseDemandeId = demandeRetrait.id;
+                    demarrerEcouteRetraitAdresse(demandeRetrait.id);
+                    afficherInterfaceRetraitAdresse(demandeRetrait);
+                }
             } else {
                 donnees.demandes = {};
                 mettreAJourMesDemandes();
@@ -2399,6 +3124,7 @@
             cacherBanniereNumeroManquant();
             mettreAJourAffichage();
             document.getElementById('support-header-btn').style.display = 'none';
+            arreterEcouteRetraitAdresse();
         }
     });
 
@@ -2457,11 +3183,35 @@
         document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); 
         document.getElementById(`${s}-section`).classList.add('active'); 
         document.getElementById(`nav-${s}`).classList.add('active'); 
-        if(s==='vente'){ afficherReponseVente(); estimerVente(); afficherFraisReseauVente(); verifierLimitesVente(); mettreAJourListeNumerosVente(); mettreAJourChampAdresseVente(); } 
-        if(s==='achat'){ estimerAchat(); afficherFraisReseauAchat(); verifierLimitesAchat(); mettreAJourListeNumerosAchat(); mettreAJourLimiteAchat(); } 
+        if(s==='vente'){ 
+            afficherReponseVente(); 
+            estimerVente(); 
+            afficherFraisReseauVente(); 
+            verifierLimitesVente(); 
+            mettreAJourListeNumerosVente(); 
+            mettreAJourChampAdresseVente();
+            mettreAJourInterfaceRetraitAvecDemande();
+        } 
+        if(s==='achat'){ 
+            estimerAchat(); 
+            afficherFraisReseauAchat(); 
+            verifierLimitesAchat(); 
+            mettreAJourListeNumerosAchat(); 
+            mettreAJourLimiteAchat(); 
+        } 
         if(s==='demandes'&&utilisateurCourant) mettreAJourMesDemandes(); 
-        if(s==='profil') { mettreAJourNumerosUtilisateur(); verifierAccesBonus(); mettreAJourAffichageAffiliation(); }
-        if(s==='accueil') { afficherNews(); mettreAJourSolde(); verifierSoldeMax(); }
+        if(s==='profil') { 
+            mettreAJourNumerosUtilisateur(); 
+            verifierAccesBonus(); 
+            mettreAJourAffichageAffiliation();
+            // Vérifier si une demande de retrait avec adresse existe pour l'affichage dans les demandes
+            rafraichirDemandesOptimise();
+        }
+        if(s==='accueil') { 
+            afficherNews(); 
+            mettreAJourSolde(); 
+            verifierSoldeMax(); 
+        }
         if(s==='achat' || s==='vente') afficherBlocageDemande(s);
         if(s==='support') {
             initialiserSupport();
@@ -2491,6 +3241,7 @@
                 showLandingPage();
                 mettreAJourAffichage();
                 document.getElementById('support-header-btn').style.display = 'none';
+                arreterEcouteRetraitAdresse();
             });
         }
     }
@@ -2514,6 +3265,7 @@
         verifierSoldeMax();
         afficherBlocageDemande('achat');
         afficherBlocageDemande('vente');
+        mettreAJourInterfaceRetraitAvecDemande();
         
         if(utilisateurCourant && emailVerifie) {
             const numeros = utilisateurCourant.numeros || {};
@@ -2568,7 +3320,6 @@
             const pinStatus = utilisateurCourant.codePIN?.actif ? '✅ Configuré' : '❌ Non configuré';
             const solde = utilisateurCourant._solde || 0;
             
-            // Construction de l'affichage de l'email avec bouton de vérification
             let emailDisplay = email;
             if (!emailVerifie) {
                 emailDisplay = `
@@ -2582,7 +3333,6 @@
                 `;
             }
             
-            // Construction de l'affichage de l'ID avec bouton de génération auto
             let idDisplay = idEscape;
             if (id === 'Non attribué' || !id || id === 'undefined') {
                 idDisplay = `
@@ -2646,7 +3396,6 @@
         }
     }
 
-    // Nouvelle fonction pour renvoyer l'email depuis le profil
     async function renvoyerEmailDepuisProfil() {
         if (!auth.currentUser) {
             alert('❌ Aucun utilisateur connecté.');
@@ -2655,21 +3404,18 @@
         try {
             await auth.currentUser.sendEmailVerification();
             alert('📧 Un nouvel email de vérification a été envoyé !\n\n💡 Pensez à vérifier vos spams.');
-            // Rafraîchir le profil pour afficher le message
             setTimeout(() => mettreAJourProfil(), 1000);
         } catch(e) {
             alert('❌ Erreur lors de l\'envoi: ' + e.message);
         }
     }
 
-    // Nouvelle fonction pour générer un ID auto
     async function genererIDAuto() {
         if (!utilisateurCourant || !monUid) {
             alert('❌ Veuillez vous connecter d\'abord.');
             return;
         }
         
-        // Vérifier si l'utilisateur a déjà un ID
         if (utilisateurCourant.id && utilisateurCourant.id !== 'Non attribué' && utilisateurCourant.id !== 'undefined') {
             alert('⚠️ Vous avez déjà un ID. Vous ne pouvez pas le modifier.');
             return;
@@ -2678,16 +3424,11 @@
         try {
             const nouveauId = genererIDStable(utilisateurCourant.email, Date.now().toString());
             
-            // Sauvegarder l'ID dans Firebase
             await database.ref(`donnees/utilisateurs/${monUid}/id`).set(nouveauId);
             
-            // Mettre à jour l'objet utilisateur courant
             utilisateurCourant.id = nouveauId;
             
-            // Mettre à jour l'affichage du profil
             mettreAJourProfil();
-            
-            // Mettre à jour l'affichage de l'affiliation
             mettreAJourAffichageAffiliation();
             
             alert(`✅ Votre ID a été généré avec succès : ${nouveauId}`);
@@ -2698,7 +3439,6 @@
         }
     }
 
-    // Fonction pour mettre à jour l'affichage de l'affiliation
     function mettreAJourAffichageAffiliation() {
         const affiliateCard = document.getElementById('affiliate-card');
         if(!utilisateurCourant || !monUid) {
@@ -3291,10 +4031,24 @@
         }
         
         switchPlatformSection(s); 
-        if(s==='vente') afficherReponseVente(); 
+        if(s==='vente'){ 
+            afficherReponseVente(); 
+            estimerVente(); 
+            afficherFraisReseauVente(); 
+            verifierLimitesVente(); 
+            mettreAJourListeNumerosVente(); 
+            mettreAJourChampAdresseVente();
+            mettreAJourInterfaceRetraitAvecDemande();
+        } 
+        if(s==='achat'){ 
+            mettreAJourReseaux('achat'); 
+            estimerAchat(); 
+            afficherFraisReseauAchat(); 
+            verifierLimitesAchat(); 
+            mettreAJourListeNumerosAchat(); 
+            mettreAJourLimiteAchat(); 
+        } 
         if(s==='demandes') mettreAJourMesDemandes(); 
-        if(s==='achat'){ mettreAJourReseaux('achat'); estimerAchat(); afficherFraisReseauAchat(); verifierLimitesAchat(); mettreAJourListeNumerosAchat(); mettreAJourLimiteAchat(); } 
-        if(s==='vente'){ mettreAJourReseaux('vente'); estimerVente(); afficherFraisReseauVente(); verifierLimitesVente(); mettreAJourListeNumerosVente(); mettreAJourChampAdresseVente(); } 
     }
 
     function aNumeroApprouve() {
@@ -3319,13 +4073,27 @@
             const date = echapperHTML(new Date(d.date).toLocaleString());
             const statut = echapperHTML(d.statut);
             let montantAffiche = '';
+            let statutClass = statut;
             if(d.type==='ACHAT') montantAffiche = echapperHTML(d.montant.toLocaleString()) + ' Ar';
             else if(d.type==='VENTE') montantAffiche = d.montant.toFixed(4) + ' ' + crypto;
             else if(d.type==='RETRAIT') montantAffiche = '$' + d.montant.toFixed(2) + ' → ' + (d.nomReception || d.numero || '');
+            else if(d.type==='RETRAIT_AVEC_DEMANDE') {
+                if(statut === 'attente_adresse') montantAffiche = '⏳ Attente adresse';
+                else if(statut === 'adresse_recue') montantAffiche = '📩 Adresse reçue';
+                else if(statut === 'en_attente') montantAffiche = '⏳ En attente';
+                else if(statut === 'confirme') montantAffiche = '✅ Confirmé';
+                else montantAffiche = '❌ ' + statut;
+            }
             else if(d.type==='BONUS') montantAffiche = echapperHTML(d.lotGagne || d.montant || 'Gain');
             else montantAffiche = 'Gain';
-            const icon = d.type==='ACHAT'?'fa-arrow-down':(d.type==='VENTE'?'fa-arrow-up':(d.type==='RETRAIT'?'fa-arrow-up':'fa-gift'));
-            return `<li class="activity-item" onclick="ouvrirRecu('${id}')"><div class="activity-left"><div class="activity-icon ${type}"><i class="fas ${icon}"></i></div><div class="activity-info"><h4>${type} ${crypto}</h4><div class="activity-date">${date}</div></div></div><div><div class="activity-amount">${montantAffiche}</div><div class="activity-status status-${statut}">${statut}</div></div></li>`;
+            
+            let icon = 'fa-gift';
+            if(d.type==='ACHAT') icon = 'fa-arrow-down';
+            else if(d.type==='VENTE') icon = 'fa-arrow-up';
+            else if(d.type==='RETRAIT') icon = 'fa-arrow-up';
+            else if(d.type==='RETRAIT_AVEC_DEMANDE') icon = 'fa-hand-holding-usd';
+            
+            return `<li class="activity-item" onclick="ouvrirRecu('${id}')"><div class="activity-left"><div class="activity-icon ${type}"><i class="fas ${icon}"></i></div><div class="activity-info"><h4>${type} ${crypto}</h4><div class="activity-date">${date}</div></div></div><div><div class="activity-amount">${montantAffiche}</div><div class="activity-status status-${statutClass}">${statut}</div></div></li>`;
         }).join(''); 
         verifierAccesBonus();
     }
@@ -3340,7 +4108,25 @@
         if(monUid) {
             database.ref('donnees/demandes').orderByChild('userID').equalTo(monUid).once('value').then((snapshot) => {
                 const demandes = snapshot.val();
-                if(demandes) { donnees.demandes = demandes; mettreAJourMesDemandes(); verifierAccesBonus(); alert('✅ Demandes actualisées'); }
+                if(demandes) { 
+                    donnees.demandes = demandes; 
+                    mettreAJourMesDemandes(); 
+                    verifierAccesBonus(); 
+                    alert('✅ Demandes actualisées');
+                    
+                    // Vérifier les demandes de retrait avec adresse
+                    const demandesArray = getDemandesTableau();
+                    const demandeRetrait = demandesArray.find(d => 
+                        d.userID === monUid && 
+                        d.type === 'RETRAIT_AVEC_DEMANDE' && 
+                        (d.statut === 'attente_adresse' || d.statut === 'adresse_recue')
+                    );
+                    if (demandeRetrait) {
+                        retraitAdresseDemandeId = demandeRetrait.id;
+                        demarrerEcouteRetraitAdresse(demandeRetrait.id);
+                        afficherInterfaceRetraitAdresse(demandeRetrait);
+                    }
+                }
                 else { donnees.demandes = {}; mettreAJourMesDemandes(); alert('Aucune demande trouvée'); }
             }).catch(err => { console.error(err); alert('Erreur lors du rafraîchissement. Vérifiez votre connexion.'); });
         } else { alert('Veuillez vous connecter'); }
@@ -3370,6 +4156,7 @@
         if(pv) document.getElementById('portefeuille-vente').value=pv; 
         afficherFraisReseauAchat(); afficherFraisReseauVente(); 
         mettreAJourChampAdresseVente();
+        mettreAJourInterfaceRetraitAvecDemande();
     }
     
     function mettreAJourReseaux(t){ 
@@ -3380,7 +4167,7 @@
         const rf=donnees.reseaux.filter(r=>r.crypto===c); 
         s.innerHTML=rf.map(r=>`<option value="${echapperHTML(r.nom)}" data-frais="${r.fraisReseau||0}">${echapperHTML(r.nom)}</option>`).join(''); 
         if(av&&Array.from(s.options).some(o=>o.value===av)) s.value=av; 
-        if(t==='achat'){ estimerAchat(); afficherFraisReseauAchat(); }else{ estimerVente(); afficherFraisReseauVente(); mettreAJourChampAdresseVente(); } 
+        if(t==='achat'){ estimerAchat(); afficherFraisReseauAchat(); }else{ estimerVente(); afficherFraisReseauVente(); mettreAJourChampAdresseVente(); mettreAJourInterfaceRetraitAvecDemande(); } 
     }
     
     function afficherFraisReseauAchat(){ 
@@ -3441,6 +4228,7 @@
         const s=document.getElementById('portefeuille-vente'); 
         const r=document.getElementById('reponse-portefeuille-vente'); 
         if(s&&r&&donnees.portefeuilles){ const p=donnees.portefeuilles.find(p=>p.nom===s.value); if(p) r.textContent=echapperHTML(p.reponse||'Aucune description'); } 
+        mettreAJourInterfaceRetraitAvecDemande();
     }
 
     function estimerAchat(){ 
@@ -3504,6 +4292,13 @@
             return;
         }
         
+        // Vérifier si c'est un portefeuille avec demande d'adresse
+        const portefeuilleNom = document.getElementById('portefeuille-vente')?.value;
+        if (type === 'VENTE' && estPortefeuilleAvecDemandeAdresse(portefeuilleNom)) {
+            alert('⚠️ Ce portefeuille nécessite une demande d\'adresse. Utilisez le bouton "Demander l\'adresse de retrait" ci-dessous.');
+            return;
+        }
+        
         if (!rateLimiters.demande.peutExecuter('preparer_' + type)) {
             alert('⏳ Trop de préparations de demande. Veuillez patienter.');
             return;
@@ -3528,8 +4323,8 @@
             const montant = parseFloat(document.getElementById('montant-vente').value);
             if(isNaN(montant) || montant <= 0){ alert('Montant invalide'); return; }
             
-            const portefeuilleNom = document.getElementById('portefeuille-vente')?.value;
-            const portefeuille = donnees.portefeuilles?.find(p => p.nom === portefeuilleNom);
+            const portefeuilleNomLocal = document.getElementById('portefeuille-vente')?.value;
+            const portefeuille = donnees.portefeuilles?.find(p => p.nom === portefeuilleNomLocal);
             if(portefeuille?.liaisonRequise) {
                 if(!adresseLieeSelectionnee) { alert('Veuillez sélectionner votre adresse de réception'); return; }
             }
@@ -3549,8 +4344,8 @@
                 montantRecu: montantRecuAchat
             };
         } else {
-            const portefeuilleNom = document.getElementById('portefeuille-vente')?.value;
-            const portefeuille = donnees.portefeuilles?.find(p => p.nom === portefeuilleNom);
+            const portefeuilleNomLocal = document.getElementById('portefeuille-vente')?.value;
+            const portefeuille = donnees.portefeuilles?.find(p => p.nom === portefeuilleNomLocal);
             const adresseUtilisee = (portefeuille?.liaisonRequise && adresseLieeSelectionnee) ? adresseLieeSelectionnee : null;
             
             transactionEnAttente = {
@@ -3559,7 +4354,7 @@
                 crypto: document.getElementById('crypto-vente').value,
                 reseau: document.getElementById('reseau-vente').value,
                 operateur: document.getElementById('operateur-vente').value,
-                portefeuille: portefeuilleNom,
+                portefeuille: portefeuilleNomLocal,
                 numero: document.getElementById('numero-vente-select').value,
                 nomNumero: document.getElementById('numero-vente-select').selectedOptions[0]?.dataset?.nom || '',
                 montantRecu: montantRecuVente,
@@ -3863,17 +4658,30 @@
         const d=demandesArray.find(d=>d.id===id); 
         if(!d) return; 
         let mp='',desc='',st='',cl=''; 
-        if(d.statut==='confirme'){ st='confirmée'; cl='confirme'; }else if(d.statut==='en_attente'){ st='en attente'; cl='en_attente'; }else if(d.statut==='rejete'){ st='rejetée'; cl='rejete'; } 
+        if(d.statut==='confirme'){ st='confirmée'; cl='confirme'; }else if(d.statut==='en_attente'){ st='en attente'; cl='en_attente'; }else if(d.statut==='rejete'){ st='rejetée'; cl='rejete'; }else if(d.statut==='attente_adresse'){ st='en attente d\'adresse'; cl='attente_adresse'; }else if(d.statut==='adresse_recue'){ st='adresse reçue'; cl='adresse_recue'; }
         
         if(d.type==='ACHAT'){ mp=(d.montantRecu||0).toFixed(4)+' '+d.crypto; desc=`Achat ${st} de ${parseFloat(d.montant).toLocaleString()} Ar`; }
         else if(d.type==='VENTE'){ mp=Math.round(d.montantRecu||0).toLocaleString()+' Ar'; desc=`Vente ${st} de ${d.montant} ${d.crypto}`; } 
         else if(d.type==='RETRAIT'){ mp='$'+d.montant.toFixed(2); desc=`Retrait ${st} de $${d.montant.toFixed(2)}`; }
+        else if(d.type==='RETRAIT_AVEC_DEMANDE'){ 
+            if(d.statut==='attente_adresse'){ mp='⏳ En attente'; desc='Demande d\'adresse de retrait en cours'; }
+            else if(d.statut==='adresse_recue'){ mp='📩 Adresse reçue'; desc='Adresse de retrait reçue, en attente de confirmation'; }
+            else if(d.statut==='en_attente'){ mp='⏳ En attente'; desc='Retrait en attente de validation'; }
+            else if(d.statut==='confirme'){ mp='✅ Confirmé'; desc='Retrait confirmé'; }
+            else { mp='❌ '+d.statut; desc='Retrait '+st; }
+            cl = d.statut;
+        }
         else if(d.type==='BONUS'){ mp=echapperHTML(d.lotGagne || d.montant || 'N/A'); desc=`Bonus de fidélité ${st}`; }
         
         let b='';
         if(d.type==='ACHAT') b=d.nomNumero?`${d.nomNumero} (${d.numero})`:d.adresse||'Non spécifié';
         else if(d.type==='VENTE') b=d.nomNumero?`${d.nomNumero} (${d.numero})`:d.numero||'Non spécifié';
         else if(d.type==='RETRAIT') b=`${d.nomReception || 'Non spécifié'} (${d.numero || 'N/A'})`;
+        else if(d.type==='RETRAIT_AVEC_DEMANDE') {
+            if(d.adresseRetrait) b = d.adresseRetrait;
+            else if(d.numero) b = d.numero;
+            else b = 'Non spécifié';
+        }
         else if(d.type==='BONUS') b=d.adresse || d.numero || 'Non spécifié';
 
         const mpEscape = echapperHTML(mp);
@@ -3898,6 +4706,51 @@
                 <div class="detail-row"><span class="detail-label">Nom du bénéficiaire</span><span class="detail-value">${echapperHTML(d.nomReception || 'Non spécifié')}</span></div>
                 <div class="detail-row"><span class="detail-label">Solde avant</span><span class="detail-value">$${(d.soldeAvant || 0).toFixed(2)}</span></div>
             `;
+        } else if(d.type === 'RETRAIT_AVEC_DEMANDE') {
+            let deadlineInfo = '';
+            if(d.deadline) {
+                const deadlineDate = new Date(d.deadline);
+                const maintenant = new Date();
+                const estExpire = deadlineDate < maintenant;
+                deadlineInfo = `
+                    <div class="detail-row">
+                        <span class="detail-label">⏰ Deadline</span>
+                        <span class="detail-value" style="color:${estExpire ? 'var(--danger)' : 'var(--warning)'}">
+                            ${deadlineDate.toLocaleString('fr-FR')}
+                            ${estExpire ? ' (⚠️ Expirée)' : ''}
+                        </span>
+                    </div>
+                `;
+            }
+            let adresseInfo = '';
+            if(d.adresseRetrait) {
+                adresseInfo = `
+                    <div class="detail-row">
+                        <span class="detail-label">📩 Adresse retrait</span>
+                        <span class="detail-value small" style="word-break:break-all;">${echapperHTML(d.adresseRetrait)}</span>
+                    </div>
+                `;
+            }
+            let imageInfo = '';
+            if(d.imageRetrait) {
+                imageInfo = `
+                    <div class="detail-row">
+                        <span class="detail-label">🖼️ Image</span>
+                        <span class="detail-value">
+                            <img src="${echapperHTML(d.imageRetrait)}" style="max-width:100%; border-radius:12px; max-height:150px; cursor:pointer;" onclick="window.open('${echapperHTML(d.imageRetrait)}','_blank')">
+                        </span>
+                    </div>
+                `;
+            }
+            typeInfoHtml = `
+                <div class="detail-row"><span class="detail-label">Crypto</span><span class="detail-value">${cryptoEscape}</span></div>
+                <div class="detail-row"><span class="detail-label">Réseau</span><span class="detail-value">${reseauEscape}</span></div>
+                <div class="detail-row"><span class="detail-label">Montant</span><span class="detail-value">${d.montant} ${cryptoEscape}</span></div>
+                ${adresseInfo}
+                ${imageInfo}
+                ${deadlineInfo}
+                <div class="detail-row"><span class="detail-label">Numéro crédité</span><span class="detail-value">${echapperHTML(d.numero || 'Non spécifié')}</span></div>
+            `;
         }
 
         document.getElementById('recu-content').innerHTML=`
@@ -3913,7 +4766,7 @@
                 <div class="detail-row"><span class="detail-label">Type</span><span class="detail-value">${typeEscape}</span></div>
                 ${typeInfoHtml}
                 <div class="detail-row"><span class="detail-label">${d.type==='BONUS'?'Info Réception':(d.type==='RETRAIT'?'Destination':'Bénéficiaire / Débiteur')}</span><span class="detail-value small">${benefEscape}</span></div>
-                <div class="detail-row"><span class="detail-label">TXID/Preuve</span><span class="detail-value small" style="cursor:pointer;" onclick="copierTexte('${txidEscape}')">${txidEscape ? txidEscape.substring(0,20)+'...' : 'Non fourni'} ${txidEscape?'<i class="fas fa-copy" style="margin-left:5px;"></i>':''}</span></div>
+                ${d.type !== 'RETRAIT_AVEC_DEMANDE' ? `<div class="detail-row"><span class="detail-label">TXID/Preuve</span><span class="detail-value small" style="cursor:pointer;" onclick="copierTexte('${txidEscape}')">${txidEscape ? txidEscape.substring(0,20)+'...' : 'Non fourni'} ${txidEscape?'<i class="fas fa-copy" style="margin-left:5px;"></i>':''}</span></div>` : ''}
                 <div class="detail-row"><span class="detail-label">Vous recevez</span><span class="detail-value" style="font-weight:700; color:var(--success); font-size:2.5rem;">${mpEscape}</span></div>
             </div>
         `; 
@@ -4970,7 +5823,7 @@
             return;
         }
 
-        const SW_VERSION = '3.3.5';
+        const SW_VERSION = '3.3.9';
 
         const storedVersion = localStorage.getItem('sw_version');
         if (storedVersion !== SW_VERSION) {
@@ -5135,7 +5988,7 @@
     document.querySelector('.logo').addEventListener('dblclick',()=>window.open('security.html','_blank'));
     
     window.addEventListener('load',function(){ 
-        console.log('🚀 Page index chargée - Version avec support manuel, adresses approuvées et countdown'); 
+        console.log('🚀 Page index chargée - Version avec support manuel, adresses approuvées, countdown et retrait avec demande d\'adresse'); 
         
         const loader = document.getElementById('loading-overlay');
         if(loader) {
@@ -5148,6 +6001,14 @@
         if (utilisateurCourant) {
             initialiserSecuriteSolde();
             initialiserSupport();
+        }
+        
+        // Ajouter l'écoute sur le select portefeuille pour détecter le mode retrait avec demande
+        const portefeuilleVente = document.getElementById('portefeuille-vente');
+        if (portefeuilleVente) {
+            portefeuilleVente.addEventListener('change', function() {
+                mettreAJourInterfaceRetraitAvecDemande();
+            });
         }
     });
     </script>
