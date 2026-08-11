@@ -25,6 +25,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -41,7 +42,6 @@
         .header-content { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
         .logo { display: flex; align-items: center; gap: 8px; font-size: 1.6rem; font-weight: 700; background: linear-gradient(135deg, #FFFFFF, #3B82F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; letter-spacing: -0.5px; }
         .logo-img { height: 3.2rem; width: auto; display: inline-block; background: transparent; -webkit-background-clip: unset; -webkit-text-fill-color: unset; }
-        .logo span { background: inherit; -webkit-background-clip: inherit; -webkit-text-fill-color: inherit; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px 20px 40px 20px; width: 100%; flex: 1; }
         .hero-section { text-align: center; padding: 40px 20px 60px; background: linear-gradient(135deg, var(--bg-card), var(--bg-dark)); border-radius: var(--radius-xl); margin-bottom: 40px; border: 1px solid rgba(59,130,246,0.2); }
         .hero-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 20px; background: linear-gradient(135deg, var(--white), var(--accent-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -77,24 +77,24 @@
         .terms-link { text-align: center; margin-top: 15px; font-size: 0.85rem; }
         .terms-link a { color: var(--text-secondary); text-decoration: none; font-weight: bold; transition: var(--transition); }
         .terms-link a:hover { color: var(--accent); text-decoration: underline; }
+        .error-message { color: var(--danger); margin: 10px 0; display: none; font-size: 0.85rem; }
+        .error-message.show { display: block; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(12px); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
         .modal.active { display: flex; }
         .modal-content { background: var(--bg-card); border-radius: 40px; padding: 28px; max-width: 100%; width: 100%; max-width: 500px; border: 1px solid rgba(59,130,246,0.3); animation: modalSlide 0.3s ease; max-height: 85vh; overflow-y: auto; }
         @keyframes modalSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .modal-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 20px; color: var(--white); display: flex; align-items: center; gap: 12px; }
         .modal-input { width: 100%; padding: 16px; margin: 10px 0; background: var(--primary); border: 1px solid var(--gray-300); border-radius: 50px; color: var(--white); font-size: 1rem; }
+        .modal-input:focus { outline: none; border-color: var(--accent); }
         .btn { border: none; padding: 14px 24px; border-radius: 50px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
         .btn i { font-size: 1.1rem; }
         .btn-success { background: linear-gradient(135deg, var(--success), #059669); color: white; }
         .btn-success:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16,185,129,0.3); }
-        .btn-warning { background: linear-gradient(135deg, var(--warning), #D97706); color: white; }
-        .btn-warning:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245,158,11,0.3); }
         .btn-cancel { background: var(--gray-300); flex: 1; color: white; }
         .btn-confirm { background: var(--success); flex: 1; color: white; }
-        .error-message { color: var(--danger); margin: 10px 0; display: none; font-size: 0.85rem; }
-        .error-message.show { display: block; }
+        .modal-buttons { display: flex; gap: 12px; margin-top: 24px; }
         .cf-turnstile { display: flex; justify-content: center; margin: 15px 0; }
-        .parrain-msg-success { background: rgba(16,185,129,0.2); color: #10B981; padding: 10px; border-radius: 16px; margin-top: 10px; font-size: 0.8rem; text-align: center; }
+        .info-message { background: var(--primary); padding: 12px; border-radius: 16px; margin: 10px 0; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
         #auth-error-banner {
             background: rgba(239,68,68,0.12);
             border: 2px solid #EF4444;
@@ -108,70 +108,19 @@
         #auth-error-banner .banner-icon { color: #EF4444; font-size: 1.5rem; margin-bottom: 8px; }
         #auth-error-banner .banner-text { color: #F87171; font-weight: 500; font-size: 0.95rem; }
         #auth-error-banner .banner-sub { color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px; }
-        #auth-error-banner .btn-resend-email {
-            background: #3B82F6;
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 40px;
-            margin-top: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
+        #auth-error-banner .btn-resend-email { background: #3B82F6; color: white; border: none; padding: 10px 24px; border-radius: 40px; margin-top: 12px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         #auth-error-banner .btn-resend-email:hover { background: #2563EB; transform: scale(1.02); }
-        #auth-error-banner .btn-logout-error {
-            background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid var(--gray-300);
-            padding: 8px 18px;
-            border-radius: 40px;
-            margin-top: 10px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.8rem;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-left: 8px;
-        }
+        #auth-error-banner .btn-logout-error { background: transparent; color: var(--text-secondary); border: 1px solid var(--gray-300); padding: 8px 18px; border-radius: 40px; margin-top: 10px; cursor: pointer; font-weight: 500; font-size: 0.8rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; }
         #auth-error-banner .btn-logout-error:hover { background: rgba(239,68,68,0.2); border-color: #EF4444; color: #EF4444; }
-        #numero-missing-banner {
-            background: rgba(59,130,246,0.08);
-            border: 2px solid #3B82F6;
-            border-radius: 16px;
-            padding: 18px 20px;
-            margin: 20px auto;
-            max-width: 600px;
-            text-align: center;
-            display: none;
-        }
-        #numero-missing-banner .banner-icon { color: #3B82F6; font-size: 1.5rem; margin-bottom: 8px; }
-        #numero-missing-banner .banner-text { color: #60A5FA; font-weight: 500; font-size: 0.95rem; }
-        #numero-missing-banner .banner-sub { color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px; }
-        #numero-missing-banner .btn-add-number {
-            background: #3B82F6;
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 40px;
-            margin-top: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        #numero-missing-banner .btn-add-number:hover { background: #2563EB; transform: scale(1.02); }
-        #modal-motdepasse-oublie .modal-content { max-width: 500px; }
-        .modal-buttons { display: flex; gap: 12px; margin-top: 24px; }
+        .parrain-msg-success { background: rgba(16,185,129,0.2); color: #10B981; padding: 10px; border-radius: 16px; margin-top: 10px; font-size: 0.8rem; text-align: center; }
+        .btn-verify-email-small { background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 40px; font-weight: 600; cursor: pointer; font-size: 0.75rem; transition: all 0.2s; }
+        .btn-verify-email-small:hover { background: var(--accent-dark); transform: scale(1.02); }
+        .btn-generate-id { background: var(--success); color: white; border: none; padding: 6px 16px; border-radius: 40px; font-weight: 600; cursor: pointer; font-size: 0.75rem; transition: all 0.2s; }
+        .btn-generate-id:hover { background: #059669; transform: scale(1.02); }
+        .profile-row { display: flex; padding: 12px 0; border-bottom: 1px solid var(--gray-300); font-size: 0.9rem; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .profile-row:last-child { border-bottom: none; }
+        .profile-label { width: 140px; font-weight: 600; color: var(--text-secondary); flex-shrink: 0; }
+        .profile-value { flex: 1; color: var(--white); word-break: break-word; }
         #loading-overlay {
             position: fixed;
             top: 0;
@@ -201,24 +150,47 @@
         }
         #loading-overlay .loader-text { color: var(--text-primary); font-size: 1.2rem; font-weight: 500; }
         #loading-overlay .loader-sub { color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; }
-        @media (max-width: 768px) { .hero-title { font-size: 2rem; } .modal-content { padding: 20px; } }
-        @media (max-width: 480px) { .btn-hero { padding: 14px 28px; font-size: 1rem; } .hero-title { font-size: 1.8rem; } }
+        #numero-missing-banner {
+            background: rgba(59,130,246,0.08);
+            border: 2px solid #3B82F6;
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+            display: none;
+        }
+        #numero-missing-banner .banner-icon { color: #3B82F6; font-size: 1.5rem; margin-bottom: 8px; }
+        #numero-missing-banner .banner-text { color: #60A5FA; font-weight: 500; font-size: 0.95rem; }
+        #numero-missing-banner .banner-sub { color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px; }
+        #numero-missing-banner .btn-add-number { background: #3B82F6; color: white; border: none; padding: 10px 24px; border-radius: 40px; margin-top: 12px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        #numero-missing-banner .btn-add-number:hover { background: #2563EB; transform: scale(1.02); }
+        @media (max-width: 768px) { .hero-title { font-size: 2rem; } }
     </style>
 </head>
 <body>
     <div id="loading-overlay">
         <div style="text-align:center;">
             <div class="loader-spinner"></div>
-            <p class="loader-text">Chargement...</p>
+            <p class="loader-text">Connexion en cours...</p>
             <p class="loader-sub">Veuillez patienter</p>
         </div>
     </div>
 
     <div class="app-header">
         <div class="header-content">
-            <div class="logo" onclick="window.location.reload()">
+            <div class="logo" onclick="window.location.href='index.html'">
                 <img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/logo.png" alt="Logo" class="logo-img">
                 <span>TYPH X-CHAIN</span>
+            </div>
+            <div id="support-header-btn" style="display:none;">
+                <button onclick="window.location.href='dashboard.html#support'" title="Support" 
+                        style="background: transparent; border: none; padding: 8px; cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s ease;"
+                        onmouseenter="this.style.background='rgba(0, 212, 255, 0.12)'; this.querySelector('i').style.color='#00D4FF';"
+                        onmouseleave="this.style.background='transparent'; this.querySelector('i').style.color='#94A3B8';">
+                    <i class="fas fa-headset" style="font-size: 1.5rem; color: #94A3B8; transition: all 0.3s ease;"></i>
+                    <span class="support-dot offline" id="support-header-dot" style="position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg-dark, #0A0F1F); background: #EF4444;"></span>
+                </button>
             </div>
         </div>
     </div>
@@ -238,7 +210,7 @@
                 <div class="banner-text" id="auth-error-text">⚠️ Votre email n'est pas vérifié.</div>
                 <div class="banner-sub" id="auth-error-sub">Vérifiez votre boîte mail ou cliquez ci-dessous pour renvoyer le lien.</div>
                 <div>
-                    <button class="btn-resend-email" onclick="renvoyerEmailDepuisAccueil()">
+                    <button class="btn-resend-email" onclick="renvoyerEmailVerification()">
                         <i class="fas fa-envelope"></i> Renvoyer l'email
                     </button>
                     <button class="btn-logout-error" onclick="deconnexion()">
@@ -251,7 +223,7 @@
                 <div class="banner-icon"><i class="fas fa-phone"></i></div>
                 <div class="banner-text">Ajoutez un numéro pour commencer</div>
                 <div class="banner-sub">Vous devez ajouter et faire approuver un numéro avant d'utiliser la plateforme.</div>
-                <button class="btn-add-number" onclick="redirigerVersDashboard('profil')">
+                <button class="btn-add-number" onclick="window.location.href='dashboard.html#profil'">
                     <i class="fas fa-plus"></i> Ajouter un numéro
                 </button>
             </div>
@@ -278,30 +250,9 @@
             <div id="testimonials" class="testimonials-section">
                 <h2 class="section-title">Ce que disent nos clients</h2>
                 <div class="testimonials-grid">
-                    <div class="testimonial-card">
-                        <div class="testimonial-header">
-                            <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
-                            <div><div class="testimonial-name">Tantely Hervée</div><div class="testimonial-date">Il y a 2 jours</div></div>
-                        </div>
-                        <div class="testimonial-text">"Atokisana à 100% no sady rapide !"</div>
-                        <div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="testimonial-header">
-                            <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
-                            <div><div class="testimonial-name">Santatra Cedrick</div><div class="testimonial-date">Il y a 5 jours</div></div>
-                        </div>
-                        <div class="testimonial-text">"Mahay mandray olona sady manoro sy manampy"</div>
-                        <div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="testimonial-header">
-                            <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
-                            <div><div class="testimonial-name">Mahefa Rakotonirina</div><div class="testimonial-date">Il y a 1 semaine</div></div>
-                        </div>
-                        <div class="testimonial-text">"Efa 02 taona niarahana fa milam sady atokisana hatrany foana."</div>
-                        <div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    </div>
+                    <div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Tantely Hervée</div><div class="testimonial-date">Il y a 2 jours</div></div></div><div class="testimonial-text">"Atokisana à 100% no sady rapide !"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div>
+                    <div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Santatra Cedrick</div><div class="testimonial-date">Il y a 5 jours</div></div></div><div class="testimonial-text">"Mahay mandray olona sady manoro sy manampy"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div></div>
+                    <div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Mahefa Rakotonirina</div><div class="testimonial-date">Il y a 1 semaine</div></div></div><div class="testimonial-text">"Efa 02 taona niarahana fa milam sady atokisana hatrany foana."</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div>
                 </div>
                 <div style="text-align:center;margin-top:30px;">
                     <a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a>
@@ -389,515 +340,488 @@
     </div>
 
     <script>
-    // ============================================================
-    //  CONFIGURATION FIREBASE
-    // ============================================================
-    const _firebase = "eyJhcGlLZXkiOiJBSXphU3lBQzZ4UVhXZ181RXBsTERQUXVfN1J1dVEwTnJDVVNRMmciLCJhdXRoRG9tYWluIjoidHlwaHhjaGFpbi5maXJlYmFzZWFwcC5jb20iLCJkYXRhYmFzZVVSTCI6Imh0dHBzOi8vdHlwaHhjaGFpbi1kZWZhdWx0LXJ0ZGIuZmlyZWJhc2Vpby5jb20iLCJwcm9qZWN0SWQiOiJ0eXBoeGNoYWluIiwic3RvcmFnZUJ1Y2tldCI6InR5cGh4Y2hhaW4uZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiMTAzNjc3MTg3NDQxNiIsImFwcElkIjoiMToxMDM2NzcxODc0NDE2OndlYjphZWNhOWFjMzQ3ZjZiYmNjOTg4NmI1IiwibWVhc3VyZW1lbnRJZCI6IkctREhNWTRNU1A5WSJ9";
-    const firebaseConfig = JSON.parse(atob(_firebase));
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-    const auth = firebase.auth();
+        // ============================================================
+        //  FIREBASE CONFIG
+        // ============================================================
+        const _firebase = "eyJhcGlLZXkiOiJBSXphU3lBQzZ4UVhXZ181RXBsTERQUXVfN1J1dVEwTnJDVVNRMmciLCJhdXRoRG9tYWluIjoidHlwaHhjaGFpbi5maXJlYmFzZWFwcC5jb20iLCJkYXRhYmFzZVVSTCI6Imh0dHBzOi8vdHlwaHhjaGFpbi1kZWZhdWx0LXJ0ZGIuZmlyZWJhc2Vpby5jb20iLCJwcm9qZWN0SWQiOiJ0eXBoeGNoYWluIiwic3RvcmFnZUJ1Y2tldCI6InR5cGh4Y2hhaW4uZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiMTAzNjc3MTg3NDQxNiIsImFwcElkIjoiMToxMDM2NzcxODc0NDE2OndlYjphZWNhOWFjMzQ3ZjZiYmNjOTg4NmI1IiwibWVhc3VyZW1lbnRJZCI6IkctREhNWTRNU1A5WSJ9";
+        const firebaseConfig = JSON.parse(atob(_firebase));
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
 
-    let monUid = null;
-    let utilisateurCourant = null;
-    let sessionValide = false;
-    let modeAuth = 'connexion';
-    let turnstileInscriptionToken = null;
-    let turnstileConnexionToken = null;
-    let emailVerifie = false;
+        // ============================================================
+        //  VARIABLES GLOBALES
+        // ============================================================
+        let monUid = null;
+        let utilisateurCourant = null;
+        let sessionValide = false;
+        let emailVerifie = false;
+        let modeAuth = 'connexion';
+        let turnstileInscriptionToken = null;
+        let turnstileConnexionToken = null;
+        let toursGratuits = 0;
+        let filleulsCount = 0;
 
-    const sessionUtilisateur = localStorage.getItem('typhSession');
-    if(sessionUtilisateur){ try{ const s=JSON.parse(sessionUtilisateur); monUid = s.uid; }catch(e){} }
-
-    // ============================================================
-    //  RATE LIMITER
-    // ============================================================
-    class RateLimiterAvance {
-        constructor(limite = 15, fenetre = 60000) {
-            this.limite = limite;
-            this.fenetre = fenetre;
-            this.requetes = {};
-            this.chargerDepuisLocal();
-        }
-        chargerDepuisLocal() {
-            try {
-                const data = localStorage.getItem('rate_limiter');
-                if (data) {
-                    const parsed = JSON.parse(data);
-                    this.requetes = parsed.requetes || {};
-                    const maintenant = Date.now();
-                    for (let [action, timestamps] of Object.entries(this.requetes)) {
-                        this.requetes[action] = timestamps.filter(t => t > maintenant - this.fenetre);
-                    }
-                }
-            } catch(e) {}
-        }
-        sauvegarderLocal() {
-            try {
-                localStorage.setItem('rate_limiter', JSON.stringify({ requetes: this.requetes }));
-            } catch(e) {}
-        }
-        peutExecuter(action = 'default') {
-            const maintenant = Date.now();
-            if (!this.requetes[action]) this.requetes[action] = [];
-            this.requetes[action] = this.requetes[action].filter(t => t > maintenant - this.fenetre);
-            if (this.requetes[action].length >= this.limite) return false;
-            this.requetes[action].push(maintenant);
-            this.sauvegarderLocal();
-            return true;
-        }
-    }
-
-    const rateLimiters = {
-        auth: new RateLimiterAvance(5, 60000),
-        default: new RateLimiterAvance(15, 60000)
-    };
-
-    // ============================================================
-    //  FONCTIONS TURNSTILE
-    // ============================================================
-    function onInscriptionTurnstileSuccess(token) {
-        turnstileInscriptionToken = token;
-        const statusDiv = document.getElementById('turnstile-inscription-status');
-        if(statusDiv) {
-            statusDiv.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i> Vérification humaine réussie';
-            statusDiv.style.color = '#10B981';
-        }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = false;
-    }
-    function onInscriptionTurnstileExpired() {
-        turnstileInscriptionToken = null;
-        const statusDiv = document.getElementById('turnstile-inscription-status');
-        if(statusDiv) {
-            statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Validation expirée, veuillez refaire la vérification';
-            statusDiv.style.color = '#F59E0B';
-        }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = true;
-    }
-    function onInscriptionTurnstileError(error) {
-        turnstileInscriptionToken = null;
-        const statusDiv = document.getElementById('turnstile-inscription-status');
-        if(statusDiv) {
-            statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erreur de vérification, veuillez réessayer';
-            statusDiv.style.color = '#EF4444';
-        }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = true;
-    }
-    function onConnexionTurnstileSuccess(token) {
-        turnstileConnexionToken = token;
-        const statusDiv = document.getElementById('turnstile-connexion-status');
-        if(statusDiv) {
-            statusDiv.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i> Vérification humaine réussie';
-            statusDiv.style.color = '#10B981';
-        }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = false;
-    }
-    function onConnexionTurnstileExpired() {
-        turnstileConnexionToken = null;
-        const statusDiv = document.getElementById('turnstile-connexion-status');
-        if(statusDiv) {
-            statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Validation expirée, veuillez refaire la vérification';
-            statusDiv.style.color = '#F59E0B';
-        }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = true;
-    }
-    function onConnexionTurnstileError(error) {
-        turnstileConnexionToken = null;
-        const statusDiv = document.getElementById('turnstile-connexion-status');
-        if(statusDiv) {
-            statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erreur de vérification, veuillez réessayer';
-            statusDiv.style.color = '#EF4444';
-        }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = true;
-    }
-    function resetTurnstileWidgets() {
-        turnstileInscriptionToken = null;
-        turnstileConnexionToken = null;
-        const statusInscription = document.getElementById('turnstile-inscription-status');
-        if(statusInscription) statusInscription.innerHTML = '';
-        const statusConnexion = document.getElementById('turnstile-connexion-status');
-        if(statusConnexion) statusConnexion.innerHTML = '';
-        if(typeof turnstile !== 'undefined') {
-            const inscWidget = document.querySelector('#inscription-form .cf-turnstile');
-            if(inscWidget && inscWidget.querySelector('iframe')) turnstile.reset(inscWidget);
-            const connWidget = document.querySelector('#turnstile-connexion-container .cf-turnstile');
-            if(connWidget && connWidget.querySelector('iframe')) turnstile.reset(connWidget);
-        }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = true;
-    }
-
-    // ============================================================
-    //  FONCTIONS AUTH
-    // ============================================================
-    window.switchAuthMode = function(m) {
-        modeAuth = m;
-        const connexionForm = document.getElementById('connexion-form');
-        const inscriptionForm = document.getElementById('inscription-form');
-        const turnstileConnexionContainer = document.getElementById('turnstile-connexion-container');
-        const btnConnexion = document.getElementById('btn-connexion-mode');
-        const btnInscription = document.getElementById('btn-inscription-mode');
-        const btnAuth = document.getElementById('btn-auth');
-        if(m === 'connexion') {
-            connexionForm.style.display = 'block';
-            inscriptionForm.style.display = 'none';
-            turnstileConnexionContainer.style.display = 'block';
-            btnConnexion.className = 'btn btn-success';
-            btnInscription.className = 'btn';
-            btnAuth.innerHTML = '<i class="fas fa-check"></i> Se connecter';
-            btnAuth.disabled = true;
-            resetTurnstileWidgets();
-        } else {
-            connexionForm.style.display = 'none';
-            inscriptionForm.style.display = 'block';
-            turnstileConnexionContainer.style.display = 'none';
-            btnConnexion.className = 'btn';
-            btnInscription.className = 'btn btn-success';
-            btnAuth.innerHTML = '<i class="fas fa-user-plus"></i> S\'inscrire';
-            btnAuth.disabled = true;
-            resetTurnstileWidgets();
-        }
-    };
-
-    function afficherErreur(m){ 
-        document.getElementById('erreur-texte').textContent=m; 
-        document.getElementById('erreur-auth').classList.add('show'); 
-    }
-
-    async function connexion() {
-        if (!rateLimiters.auth.peutExecuter('connexion')) {
-            afficherErreur('⏳ Trop de tentatives de connexion. Veuillez attendre 60 secondes.');
-            return;
-        }
-        const email = document.getElementById('email-connexion').value.trim();
-        const password = document.getElementById('password-connexion').value.trim();
-        if(!email || !password) { afficherErreur('Email et mot de passe requis'); return; }
-        if(!turnstileConnexionToken) {
-            afficherErreur('Veuillez valider le captcha (case "Je ne suis pas un robot")');
-            return;
-        }
-        try {
-            const result = await auth.signInWithEmailAndPassword(email, password);
-            await result.user.reload();
-            if (!result.user.emailVerified) {
-                afficherBanniereEmailNonVerifie(email);
-                monUid = result.user.uid;
-                utilisateurCourant = {
-                    email: email,
-                    nom: result.user.displayName || 'Utilisateur',
-                    uid: monUid,
-                    emailVerifie: false
-                };
-                sessionValide = false;
-                hideAuthModal();
-                resetTurnstileWidgets();
-                return;
+        // ============================================================
+        //  RATE LIMITER
+        // ============================================================
+        class RateLimiterAvance {
+            constructor(limite = 15, fenetre = 60000) {
+                this.limite = limite;
+                this.fenetre = fenetre;
+                this.requetes = {};
+                this.chargerDepuisLocal();
             }
-            hideAuthModal();
-            cacherBanniereEmailNonVerifie();
-            resetTurnstileWidgets();
-            window.location.href = 'dashboard.html';
-        } catch(error) { 
-            afficherErreur(error.message);
-            if(typeof turnstile !== 'undefined') {
-                const connWidget = document.querySelector('#turnstile-connexion-container .cf-turnstile');
-                if(connWidget) turnstile.reset(connWidget);
-            }
-            turnstileConnexionToken = null;
-            const btnAuth = document.getElementById('btn-auth');
-            if(btnAuth) btnAuth.disabled = true;
-        }
-    }
-
-    async function inscription() {
-        if (!rateLimiters.auth.peutExecuter('inscription')) {
-            afficherErreur('⏳ Trop de tentatives d\'inscription. Veuillez attendre 60 secondes.');
-            return;
-        }
-        const nom = document.getElementById('nom-inscription').value.trim();
-        const email = document.getElementById('email-inscription').value.trim();
-        const password = document.getElementById('password-inscription').value.trim();
-        const parrainId = document.getElementById('parrain-id')?.value.trim() || '';
-        if (!email.endsWith('@gmail.com')) {
-            afficherErreur('⚠️ Seules les adresses Gmail sont autorisées (@gmail.com)');
-            return;
-        }
-        if(!nom || !email || !password) { afficherErreur('Tous les champs sont requis'); return; }
-        if(password.length < 6) { afficherErreur('Mot de passe trop court (6 caractères minimum)'); return; }
-        if(!turnstileInscriptionToken) {
-            afficherErreur('Veuillez valider le captcha (case "Je ne suis pas un robot")');
-            return;
-        }
-        try {
-            const uc = await auth.createUserWithEmailAndPassword(email, password);
-            await uc.user.sendEmailVerification();
-            await uc.user.updateProfile({displayName: nom});
-            await database.ref(`donnees/utilisateurs/${uc.user.uid}/emailVerifie`).set(false);
-            await database.ref(`donnees/utilisateurs/${uc.user.uid}/email`).set(email);
-            let parrainValide = false;
-            if(parrainId) {
+            chargerDepuisLocal() {
                 try {
-                    await database.ref(`donnees/utilisateurs/${uc.user.uid}/parrainId`).set(parrainId);
-                    parrainValide = true;
-                } catch(e) {
-                    console.warn("Impossible de valider le parrainage avec certitude via les règles de sécurité strictes.");
-                }
+                    const data = localStorage.getItem('rate_limiter');
+                    if (data) {
+                        const parsed = JSON.parse(data);
+                        this.requetes = parsed.requetes || {};
+                        const maintenant = Date.now();
+                        for (let [action, timestamps] of Object.entries(this.requetes)) {
+                            this.requetes[action] = timestamps.filter(t => t > maintenant - this.fenetre);
+                        }
+                    }
+                } catch(e) {}
             }
-            hideAuthModal();
+            sauvegarderLocal() {
+                try {
+                    localStorage.setItem('rate_limiter', JSON.stringify({ requetes: this.requetes }));
+                } catch(e) {}
+            }
+            peutExecuter(action = 'default') {
+                const maintenant = Date.now();
+                if (!this.requetes[action]) this.requetes[action] = [];
+                this.requetes[action] = this.requetes[action].filter(t => t > maintenant - this.fenetre);
+                if (this.requetes[action].length >= this.limite) return false;
+                this.requetes[action].push(maintenant);
+                this.sauvegarderLocal();
+                return true;
+            }
+        }
+        const rateLimiters = {
+            auth: new RateLimiterAvance(5, 60000),
+            default: new RateLimiterAvance(15, 60000)
+        };
+
+        // ============================================================
+        //  FONCTIONS D'AUTHENTIFICATION
+        // ============================================================
+        function showAuthModal() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refId = urlParams.get('ref');
+            const parrainInput = document.getElementById('parrain-id');
+            if(refId && parrainInput) {
+                parrainInput.value = refId;
+                setTimeout(() => {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'parrain-msg-success';
+                    msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> Code parrain détecté automatiquement !';
+                    const parent = parrainInput.parentElement;
+                    if(parent && !parent.querySelector('.parrain-msg')) {
+                        msgDiv.classList.add('parrain-msg');
+                        parent.appendChild(msgDiv);
+                        setTimeout(() => msgDiv.remove(), 3000);
+                    }
+                }, 500);
+            } else if(parrainInput) {
+                parrainInput.value = '';
+            }
+            document.getElementById('modal-auth').classList.add('active');
+            switchAuthMode('connexion');
+        }
+
+        function hideAuthModal() {
+            document.getElementById('modal-auth').classList.remove('active');
+            document.getElementById('erreur-auth').classList.remove('show');
             resetTurnstileWidgets();
-            await auth.signOut();
-            alert(`✅ Inscription réussie !\n\n📧 Un email de vérification a été envoyé à ${email}.\n\n⚠️ Vous devez vérifier votre email avant de pouvoir accéder à la plateforme.` + 
-                  (parrainValide ? '\n\n✅ Code parrain enregistré.' : ''));
-            setTimeout(() => showAuthModal(), 1000);
-        } catch(error) { 
-            afficherErreur(error.message);
+        }
+
+        function afficherErreur(m) {
+            document.getElementById('erreur-texte').textContent = m;
+            document.getElementById('erreur-auth').classList.add('show');
+        }
+
+        function scrollToTestimonials() {
+            document.getElementById('testimonials').scrollIntoView({behavior:'smooth'});
+        }
+
+        function switchAuthMode(m) {
+            modeAuth = m;
+            const connexionForm = document.getElementById('connexion-form');
+            const inscriptionForm = document.getElementById('inscription-form');
+            const turnstileConnexionContainer = document.getElementById('turnstile-connexion-container');
+            const btnConnexion = document.getElementById('btn-connexion-mode');
+            const btnInscription = document.getElementById('btn-inscription-mode');
+            const btnAuth = document.getElementById('btn-auth');
+            
+            if(m === 'connexion') {
+                connexionForm.style.display = 'block';
+                inscriptionForm.style.display = 'none';
+                turnstileConnexionContainer.style.display = 'block';
+                btnConnexion.className = 'btn btn-success';
+                btnInscription.className = 'btn';
+                btnAuth.innerHTML = '<i class="fas fa-check"></i> Se connecter';
+                btnAuth.disabled = true;
+                resetTurnstileWidgets();
+            } else {
+                connexionForm.style.display = 'none';
+                inscriptionForm.style.display = 'block';
+                turnstileConnexionContainer.style.display = 'none';
+                btnConnexion.className = 'btn';
+                btnInscription.className = 'btn btn-success';
+                btnAuth.innerHTML = '<i class="fas fa-user-plus"></i> S\'inscrire';
+                btnAuth.disabled = true;
+                resetTurnstileWidgets();
+            }
+        }
+
+        function resetTurnstileWidgets() {
+            turnstileInscriptionToken = null;
+            turnstileConnexionToken = null;
+            const statusInscription = document.getElementById('turnstile-inscription-status');
+            if(statusInscription) statusInscription.innerHTML = '';
+            const statusConnexion = document.getElementById('turnstile-connexion-status');
+            if(statusConnexion) statusConnexion.innerHTML = '';
             if(typeof turnstile !== 'undefined') {
                 const inscWidget = document.querySelector('#inscription-form .cf-turnstile');
-                if(inscWidget) turnstile.reset(inscWidget);
+                if(inscWidget && inscWidget.querySelector('iframe')) turnstile.reset(inscWidget);
+                const connWidget = document.querySelector('#turnstile-connexion-container .cf-turnstile');
+                if(connWidget && connWidget.querySelector('iframe')) turnstile.reset(connWidget);
             }
-            turnstileInscriptionToken = null;
             const btnAuth = document.getElementById('btn-auth');
             if(btnAuth) btnAuth.disabled = true;
         }
-    }
 
-    function authentifier() { 
-        if(modeAuth === 'connexion') connexion(); 
-        else inscription(); 
-    }
-
-    function showAuthModal(){ 
-        const urlParams = new URLSearchParams(window.location.search);
-        const refId = urlParams.get('ref');
-        const parrainInput = document.getElementById('parrain-id');
-        if(refId && parrainInput) {
-            parrainInput.value = refId;
-            setTimeout(() => {
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'parrain-msg-success';
-                msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> Code parrain détecté automatiquement !';
-                const parent = parrainInput.parentElement;
-                if(parent && !parent.querySelector('.parrain-msg')) {
-                    msgDiv.classList.add('parrain-msg');
-                    parent.appendChild(msgDiv);
-                    setTimeout(() => msgDiv.remove(), 3000);
-                }
-            }, 500);
-        } else if(parrainInput) {
-            parrainInput.value = '';
-        }
-        document.getElementById('modal-auth').classList.add('active'); 
-        switchAuthMode('connexion');
-    }
-    
-    function hideAuthModal(){ 
-        document.getElementById('modal-auth').classList.remove('active'); 
-        document.getElementById('erreur-auth').classList.remove('show');
-        resetTurnstileWidgets();
-    }
-
-    function afficherBanniereEmailNonVerifie(email) {
-        const banner = document.getElementById('auth-error-banner');
-        const text = document.getElementById('auth-error-text');
-        const sub = document.getElementById('auth-error-sub');
-        if(banner && text && sub) {
-            banner.style.display = 'block';
-            text.textContent = `⚠️ Votre email "${email}" n'est pas vérifié.`;
-            sub.textContent = 'Vérifiez votre boîte mail ou cliquez ci-dessous pour renvoyer le lien.';
-        }
-    }
-
-    function cacherBanniereEmailNonVerifie() {
-        const banner = document.getElementById('auth-error-banner');
-        if(banner) banner.style.display = 'none';
-    }
-
-    function afficherBanniereNumeroManquant() {
-        const banner = document.getElementById('numero-missing-banner');
-        if(banner) banner.style.display = 'block';
-    }
-
-    function cacherBanniereNumeroManquant() {
-        const banner = document.getElementById('numero-missing-banner');
-        if(banner) banner.style.display = 'none';
-    }
-
-    async function renvoyerEmailDepuisAccueil() {
-        if (!auth.currentUser) {
-            alert('❌ Aucun utilisateur connecté.');
-            return;
-        }
-        try {
-            await auth.currentUser.sendEmailVerification();
-            alert('📧 Un nouvel email de vérification a été envoyé !\n\n💡 Pensez à vérifier vos spams.');
-            const banner = document.getElementById('auth-error-banner');
-            if(banner) {
-                banner.style.display = 'none';
-                setTimeout(() => {
-                    auth.currentUser.reload().then(() => {
-                        if (!auth.currentUser.emailVerified) {
-                            const banner = document.getElementById('auth-error-banner');
-                            if(banner) banner.style.display = 'block';
-                        }
-                    });
-                }, 3000);
+        function onInscriptionTurnstileSuccess(token) {
+            turnstileInscriptionToken = token;
+            const statusDiv = document.getElementById('turnstile-inscription-status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i> Vérification humaine réussie';
+                statusDiv.style.color = '#10B981';
             }
-        } catch(e) {
-            alert('❌ Erreur lors de l\'envoi: ' + e.message);
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = false;
         }
-    }
 
-    function deconnexion(){
-        if(confirm('Êtes-vous sûr de vouloir vous déconnecter ?')){
-            auth.signOut().then(()=>{
+        function onInscriptionTurnstileExpired() {
+            turnstileInscriptionToken = null;
+            const statusDiv = document.getElementById('turnstile-inscription-status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Validation expirée, veuillez refaire la vérification';
+                statusDiv.style.color = '#F59E0B';
+            }
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = true;
+        }
+
+        function onInscriptionTurnstileError(error) {
+            turnstileInscriptionToken = null;
+            const statusDiv = document.getElementById('turnstile-inscription-status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erreur de vérification, veuillez réessayer';
+                statusDiv.style.color = '#EF4444';
+            }
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = true;
+        }
+
+        function onConnexionTurnstileSuccess(token) {
+            turnstileConnexionToken = token;
+            const statusDiv = document.getElementById('turnstile-connexion-status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i> Vérification humaine réussie';
+                statusDiv.style.color = '#10B981';
+            }
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = false;
+        }
+
+        function onConnexionTurnstileExpired() {
+            turnstileConnexionToken = null;
+            const statusDiv = document.getElementById('turnstile-connexion-status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Validation expirée, veuillez refaire la vérification';
+                statusDiv.style.color = '#F59E0B';
+            }
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = true;
+        }
+
+        function onConnexionTurnstileError(error) {
+            turnstileConnexionToken = null;
+            const statusDiv = document.getElementById('turnstile-connexion-status');
+            if(statusDiv) {
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erreur de vérification, veuillez réessayer';
+                statusDiv.style.color = '#EF4444';
+            }
+            const btnAuth = document.getElementById('btn-auth');
+            if(btnAuth) btnAuth.disabled = true;
+        }
+
+        async function connexion() {
+            if (!rateLimiters.auth.peutExecuter('connexion')) {
+                afficherErreur('⏳ Trop de tentatives de connexion. Veuillez attendre 60 secondes.');
+                return;
+            }
+            const email = document.getElementById('email-connexion').value.trim();
+            const password = document.getElementById('password-connexion').value.trim();
+            if(!email || !password) { afficherErreur('Email et mot de passe requis'); return; }
+            if(!turnstileConnexionToken) {
+                afficherErreur('Veuillez valider le captcha (case "Je ne suis pas un robot")');
+                return;
+            }
+            try {
+                const result = await auth.signInWithEmailAndPassword(email, password);
+                await result.user.reload();
+                if (!result.user.emailVerified) {
+                    afficherBanniereEmailNonVerifie(email);
+                    monUid = result.user.uid;
+                    utilisateurCourant = { email: email, nom: result.user.displayName || 'Utilisateur', uid: monUid, _solde: 0, emailVerifie: false };
+                    sessionValide = false;
+                    hideAuthModal();
+                    resetTurnstileWidgets();
+                    return;
+                }
+                hideAuthModal();
+                cacherBanniereEmailNonVerifie();
+                resetTurnstileWidgets();
+                window.location.href = 'dashboard.html';
+            } catch(error) {
+                afficherErreur(error.message);
+                if(typeof turnstile !== 'undefined') {
+                    const connWidget = document.querySelector('#turnstile-connexion-container .cf-turnstile');
+                    if(connWidget) turnstile.reset(connWidget);
+                }
+                turnstileConnexionToken = null;
+                const btnAuth = document.getElementById('btn-auth');
+                if(btnAuth) btnAuth.disabled = true;
+            }
+        }
+
+        async function inscription() {
+            if (!rateLimiters.auth.peutExecuter('inscription')) {
+                afficherErreur('⏳ Trop de tentatives d\'inscription. Veuillez attendre 60 secondes.');
+                return;
+            }
+            const nom = document.getElementById('nom-inscription').value.trim();
+            const email = document.getElementById('email-inscription').value.trim();
+            const password = document.getElementById('password-inscription').value.trim();
+            const parrainId = document.getElementById('parrain-id')?.value.trim() || '';
+            
+            if (!email.endsWith('@gmail.com')) {
+                afficherErreur('⚠️ Seules les adresses Gmail sont autorisées (@gmail.com)');
+                return;
+            }
+            if(!nom || !email || !password) { afficherErreur('Tous les champs sont requis'); return; }
+            if(password.length < 6) { afficherErreur('Mot de passe trop court (6 caractères minimum)'); return; }
+            if(!turnstileInscriptionToken) {
+                afficherErreur('Veuillez valider le captcha (case "Je ne suis pas un robot")');
+                return;
+            }
+            try {
+                const uc = await auth.createUserWithEmailAndPassword(email, password);
+                await uc.user.sendEmailVerification();
+                await uc.user.updateProfile({displayName: nom});
+                await database.ref(`donnees/utilisateurs/${uc.user.uid}/emailVerifie`).set(false);
+                await database.ref(`donnees/utilisateurs/${uc.user.uid}/email`).set(email);
+                if(parrainId) {
+                    try { await database.ref(`donnees/utilisateurs/${uc.user.uid}/parrainId`).set(parrainId); } catch(e) {}
+                }
+                hideAuthModal();
+                resetTurnstileWidgets();
+                await auth.signOut();
+                alert(`✅ Inscription réussie !\n\n📧 Un email de vérification a été envoyé à ${email}.\n\n⚠️ Vous devez vérifier votre email avant de pouvoir accéder à la plateforme.`);
+                setTimeout(() => showAuthModal(), 1000);
+            } catch(error) {
+                afficherErreur(error.message);
+                if(typeof turnstile !== 'undefined') {
+                    const inscWidget = document.querySelector('#inscription-form .cf-turnstile');
+                    if(inscWidget) turnstile.reset(inscWidget);
+                }
+                turnstileInscriptionToken = null;
+                const btnAuth = document.getElementById('btn-auth');
+                if(btnAuth) btnAuth.disabled = true;
+            }
+        }
+
+        function authentifier() {
+            if(modeAuth === 'connexion') connexion();
+            else inscription();
+        }
+
+        function afficherBanniereEmailNonVerifie(email) {
+            const banner = document.getElementById('auth-error-banner');
+            const text = document.getElementById('auth-error-text');
+            const sub = document.getElementById('auth-error-sub');
+            if(banner && text && sub) {
+                banner.style.display = 'block';
+                text.textContent = `⚠️ Votre email "${email}" n'est pas vérifié.`;
+                sub.textContent = 'Vérifiez votre boîte mail ou cliquez ci-dessous pour renvoyer le lien.';
+            }
+        }
+
+        function cacherBanniereEmailNonVerifie() {
+            const banner = document.getElementById('auth-error-banner');
+            if(banner) banner.style.display = 'none';
+        }
+
+        async function renvoyerEmailVerification() {
+            if (!auth.currentUser) {
+                alert('❌ Aucun utilisateur connecté.');
+                return;
+            }
+            try {
+                await auth.currentUser.sendEmailVerification();
+                alert('📧 Un nouvel email de vérification a été envoyé !\n\n💡 Pensez à vérifier vos spams.');
+            } catch(e) {
+                alert('❌ Erreur lors de l\'envoi: ' + e.message);
+            }
+        }
+
+        function deconnexion() {
+            if(confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                auth.signOut().then(() => {
+                    utilisateurCourant = null;
+                    sessionValide = false;
+                    monUid = null;
+                    emailVerifie = false;
+                    localStorage.removeItem('typhSession');
+                    cacherBanniereEmailNonVerifie();
+                    document.getElementById('support-header-btn').style.display = 'none';
+                });
+            }
+        }
+
+        // ============================================================
+        //  MOT DE PASSE OUBLIÉ
+        // ============================================================
+        function ouvrirModalMotDePasseOublie() {
+            document.getElementById('modal-motdepasse-oublie').classList.add('active');
+            document.getElementById('etape-1-mdp').style.display = 'block';
+            document.getElementById('etape-2-mdp').style.display = 'none';
+            document.getElementById('erreur-recuperation').classList.remove('show');
+            document.getElementById('erreur-nouveau-mdp').classList.remove('show');
+        }
+
+        function fermerModalMotDePasseOublie() {
+            document.getElementById('modal-motdepasse-oublie').classList.remove('active');
+        }
+
+        function retourEtape1() {
+            document.getElementById('etape-1-mdp').style.display = 'block';
+            document.getElementById('etape-2-mdp').style.display = 'none';
+            document.getElementById('erreur-recuperation').classList.remove('show');
+            document.getElementById('erreur-nouveau-mdp').classList.remove('show');
+        }
+
+        function reinitialiserMotDePasse() {
+            alert("Veuillez utiliser le lien de réinitialisation envoyé par email.");
+        }
+
+        async function verifierEmailEtNumero() {
+            const email = document.getElementById('email-recuperation').value.trim();
+            const numero = document.getElementById('numero-recuperation').value.trim();
+            const erreurDiv = document.getElementById('erreur-recuperation');
+            if(!email || !numero) {
+                erreurDiv.textContent = 'Veuillez entrer votre email et numéro';
+                erreurDiv.classList.add('show');
+                return;
+            }
+            try {
+                await auth.sendPasswordResetEmail(email);
+                alert(`Si ces informations correspondent à un compte, un lien de réinitialisation a été envoyé à ${email}.`);
+                fermerModalMotDePasseOublie();
+            } catch(error) {
+                console.error(error);
+                erreurDiv.textContent = 'Erreur lors de la demande. Veuillez réessayer.';
+                erreurDiv.classList.add('show');
+            }
+        }
+
+        // ============================================================
+        //  AUTH STATE LISTENER
+        // ============================================================
+        auth.onAuthStateChanged(async(fbUser) => {
+            const loader = document.getElementById('loading-overlay');
+            if(loader) loader.classList.remove('active');
+
+            if(fbUser) {
+                monUid = fbUser.uid;
+                await fbUser.reload();
+                emailVerifie = fbUser.emailVerified;
+                if (!emailVerifie) {
+                    afficherBanniereEmailNonVerifie(fbUser.email);
+                    utilisateurCourant = { email: fbUser.email, nom: fbUser.displayName || 'Utilisateur', uid: monUid, _solde: 0, emailVerifie: false };
+                    sessionValide = false;
+                    return;
+                }
+                cacherBanniereEmailNonVerifie();
+                const userRef = database.ref(`donnees/utilisateurs/${monUid}`);
+                const snapshot = await userRef.once('value');
+                if(snapshot.exists()) {
+                    utilisateurCourant = snapshot.val();
+                    utilisateurCourant.uid = monUid;
+                    utilisateurCourant.emailVerifie = true;
+                    const soldeSnapshot = await database.ref(`donnees/utilisateurs/${monUid}/solde`).once('value');
+                    utilisateurCourant._solde = soldeSnapshot.val() || 0;
+                } else {
+                    const nouvelUtilisateur = {
+                        id: `TX-${btoa(fbUser.email).replace(/[^a-zA-Z0-9]/g,'').substring(0,6)}-${Date.now().toString(36)}`,
+                        nom: fbUser.displayName || fbUser.email.split('@')[0],
+                        email: fbUser.email,
+                        dateInscription: new Date().toISOString(),
+                        numeros: {},
+                        adressesLiees: {},
+                        codePIN: { hash: null, salt: null, actif: false, tentativeEchouees: 0, bloque: false },
+                        toursGratuits: 0,
+                        filleulsCount: 0,
+                        parrainId: '',
+                        bonusParrainageDonne: false,
+                        emailVerifie: true,
+                        solde: 0
+                    };
+                    await userRef.set(nouvelUtilisateur);
+                    utilisateurCourant = nouvelUtilisateur;
+                    utilisateurCourant.uid = monUid;
+                    utilisateurCourant._solde = 0;
+                    utilisateurCourant.emailVerifie = true;
+                }
+                sessionValide = true;
+                localStorage.setItem('typhSession', JSON.stringify({ email: fbUser.email, nom: utilisateurCourant.nom, uid: monUid }));
+                document.getElementById('support-header-btn').style.display = 'flex';
+            } else {
                 utilisateurCourant = null;
                 sessionValide = false;
                 monUid = null;
                 emailVerifie = false;
                 localStorage.removeItem('typhSession');
                 cacherBanniereEmailNonVerifie();
-                cacherBanniereNumeroManquant();
-                window.location.href = 'index.html';
-            });
-        }
-    }
-
-    function redirigerVersDashboard(section) {
-        window.location.href = `dashboard.html?section=${section}`;
-    }
-
-    // ============================================================
-    //  MOT DE PASSE OUBLIÉ
-    // ============================================================
-    function ouvrirModalMotDePasseOublie() {
-        document.getElementById('modal-motdepasse-oublie').classList.add('active');
-        document.getElementById('etape-1-mdp').style.display = 'block';
-        document.getElementById('etape-2-mdp').style.display = 'none';
-        document.getElementById('erreur-recuperation').classList.remove('show');
-        document.getElementById('erreur-nouveau-mdp').classList.remove('show');
-    }
-    function fermerModalMotDePasseOublie() {
-        document.getElementById('modal-motdepasse-oublie').classList.remove('active');
-    }
-    function retourEtape1() {
-        document.getElementById('etape-1-mdp').style.display = 'block';
-        document.getElementById('etape-2-mdp').style.display = 'none';
-        document.getElementById('erreur-recuperation').classList.remove('show');
-        document.getElementById('erreur-nouveau-mdp').classList.remove('show');
-    }
-    async function verifierEmailEtNumero() {
-        const email = document.getElementById('email-recuperation').value.trim();
-        const numero = document.getElementById('numero-recuperation').value.trim();
-        const erreurDiv = document.getElementById('erreur-recuperation');
-        if(!email || !numero) {
-            erreurDiv.textContent = 'Veuillez entrer votre email et numéro';
-            erreurDiv.classList.add('show');
-            return;
-        }
-        try {
-            await auth.sendPasswordResetEmail(email);
-            alert(`Si ces informations correspondent à un compte, un lien de réinitialisation a été envoyé à ${email}.`);
-            fermerModalMotDePasseOublie();
-        } catch(error) {
-            console.error(error);
-            erreurDiv.textContent = 'Erreur lors de la demande. Veuillez réessayer.';
-            erreurDiv.classList.add('show');
-        }
-    }
-    async function reinitialiserMotDePasse() {
-        alert("Veuillez utiliser le lien de réinitialisation envoyé par email.");
-    }
-
-    function scrollToTestimonials(){ 
-        document.getElementById('testimonials').scrollIntoView({behavior:'smooth'}); 
-    }
-
-    // ============================================================
-    //  AUTH STATE LISTENER
-    // ============================================================
-    auth.onAuthStateChanged(async(fbUser)=>{
-        const loader = document.getElementById('loading-overlay');
-        if(loader) loader.classList.remove('active');
-
-        if(fbUser){
-            monUid = fbUser.uid;
-            await fbUser.reload();
-            emailVerifie = fbUser.emailVerified;
-            
-            if (!emailVerifie) {
-                afficherBanniereEmailNonVerifie(fbUser.email);
-                utilisateurCourant = {
-                    email: fbUser.email,
-                    nom: fbUser.displayName || 'Utilisateur',
-                    uid: monUid,
-                    emailVerifie: false
-                };
-                sessionValide = false;
-                return;
+                document.getElementById('support-header-btn').style.display = 'none';
             }
-            
-            cacherBanniereEmailNonVerifie();
-            sessionValide = true;
-            
-            const sessionData = { email: fbUser.email, nom: fbUser.displayName, uid: monUid };
-            localStorage.setItem('typhSession', JSON.stringify(sessionData));
-            
-            const snapshot = await database.ref(`donnees/utilisateurs/${monUid}`).once('value');
-            if(!snapshot.exists()){
-                const nouvelUtilisateur = {
-                    id: 'TX-' + Date.now().toString(36).toUpperCase(),
-                    nom: fbUser.displayName || fbUser.email.split('@')[0],
-                    email: fbUser.email,
-                    dateInscription: new Date().toISOString(),
-                    numeros: {},
-                    adressesLiees: {},
-                    codePIN: { hash: null, salt: null, actif: false, tentativeEchouees: 0, bloque: false },
-                    toursGratuits: 0,
-                    filleulsCount: 0,
-                    parrainId: '',
-                    bonusParrainageDonne: false,
-                    emailVerifie: true,
-                    solde: 0
-                };
-                await database.ref(`donnees/utilisateurs/${monUid}`).set(nouvelUtilisateur);
-            }
-            
-            window.location.href = 'dashboard.html';
-        } else {
-            const path = window.location.pathname;
-            if(path.includes('dashboard.html')){
-                window.location.href = 'index.html';
-            }
-        }
-    });
+        });
 
-    // ============================================================
-    //  INIT
-    // ============================================================
-    window.addEventListener('load', function(){ 
-        console.log('🚀 index.html chargé - Landing Page & Auth');
-        const loader = document.getElementById('loading-overlay');
-        if(loader) {
-            loader.classList.add('active');
-            setTimeout(() => {
-                loader.classList.remove('active');
-            }, 1500);
-        }
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        if(urlParams.get('ref')){
-            const parrainInput = document.getElementById('parrain-id');
-            if(parrainInput && !parrainInput.value) {
-                parrainInput.value = urlParams.get('ref');
+        // ============================================================
+        //  INITIALISATION
+        // ============================================================
+        window.addEventListener('load', function() {
+            console.log('🚀 Index page chargée');
+            const loader = document.getElementById('loading-overlay');
+            if(loader) {
+                loader.classList.add('active');
+                setTimeout(() => loader.classList.remove('active'), 2000);
             }
-        }
-    });
+            const sessionData = localStorage.getItem('typhSession');
+            if(sessionData) {
+                try {
+                    const s = JSON.parse(sessionData);
+                    if(s.uid && s.email) {
+                        document.getElementById('support-header-btn').style.display = 'flex';
+                    }
+                } catch(e) {}
+            }
+        });
     </script>
 </body>
 </html>
