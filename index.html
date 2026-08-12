@@ -138,7 +138,7 @@
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(19, 27, 47, 0.95); backdrop-filter: blur(10px); border-top: 1px solid rgba(59,130,246,0.2); padding: 8px 0; z-index: 100; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); display: none; }
         .bottom-nav.visible { display: block; }
         .nav-menu { display: flex; justify-content: space-around; align-items: center; max-width: 600px; margin: 0 auto; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; padding: 8px 0; color: var(--text-secondary); font-size: 0.75rem; flex: 1; cursor: pointer; gap: 4px; transition: var(--transition); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; padding: 8px 0; color: var(--text-secondary); font-size: 0.75rem; flex: 1; cursor: pointer; gap: 4px; transition: var(--transition); -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
         .nav-item i { font-size: 1.4rem; }
         .nav-item.active { color: var(--accent); }
         .nav-item:hover { color: var(--accent-light); }
@@ -170,15 +170,17 @@
         .form-group { margin-bottom: 16px; }
         .form-label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
         .input-wrapper { display: flex; border: 1px solid var(--gray-300); border-radius: 40px; background: var(--primary); transition: var(--transition); }
-        .input-wrapper:focus-within { border-color: var(--accent); }
+        .input-wrapper:focus-within { border-color: var(--accent); transform: scale(1.01); box-shadow: 0 0 20px rgba(59, 130, 246, 0.15); }
         .input-wrapper input, .input-wrapper select { flex: 1; padding: 14px 18px; border: none; background: transparent; font-size: 0.95rem; outline: none; color: var(--white); border-radius: 40px; }
         .input-wrapper select option { background: var(--bg-card); }
-        .btn { border: none; padding: 14px 24px; border-radius: 50px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+        .btn { border: none; padding: 14px 24px; border-radius: 50px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
         .btn i { font-size: 1.1rem; }
         .btn-success { background: linear-gradient(135deg, var(--success), #059669); color: white; }
         .btn-success:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16,185,129,0.3); }
+        .btn-success:active { transform: scale(0.96) !important; }
         .btn-warning { background: linear-gradient(135deg, var(--warning), #D97706); color: white; }
         .btn-warning:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245,158,11,0.3); }
+        .btn-warning:active { transform: scale(0.96) !important; }
         .btn-refresh-small { background: var(--accent); padding: 10px 20px; font-size: 0.85rem; width: auto; }
         .btn-copy { background: var(--accent); color: white; padding: 12px 20px; border-radius: 40px; font-size: 0.9rem; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; width: 100%; margin-top: 12px; }
         .btn-disabled { background: var(--gray-300); cursor: not-allowed; opacity: 0.6; transform: none !important; }
@@ -254,8 +256,8 @@
         }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(12px); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
         .modal.active { display: flex; }
-        .modal-content { background: var(--bg-card); border-radius: 40px; padding: 28px; max-width: 100%; width: 100%; max-width: 500px; border: 1px solid rgba(59,130,246,0.3); animation: modalSlide 0.3s ease; max-height: 85vh; overflow-y: auto; }
-        @keyframes modalSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-content { background: var(--bg-card); border-radius: 40px; padding: 28px; max-width: 100%; width: 100%; max-width: 500px; border: 1px solid rgba(59,130,246,0.3); animation: modalFadeIn 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); max-height: 85vh; overflow-y: auto; }
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.92) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         .modal-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 20px; color: var(--white); display: flex; align-items: center; gap: 12px; }
         .modal-input { width: 100%; padding: 16px; margin: 10px 0; background: var(--primary); border: 1px solid var(--gray-300); border-radius: 50px; color: var(--white); font-size: 1rem; }
         .error-message { color: var(--danger); margin: 10px 0; display: none; font-size: 0.85rem; }
@@ -279,8 +281,8 @@
         .pin-digit { width: 55px; height: 55px; background: var(--bg-dark); border: 2px solid var(--gray-300); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 700; color: var(--white); cursor: pointer; transition: all 0.2s; }
         .pin-digit.filled { border-color: var(--success); background: var(--gray-200); }
         .pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
-        .pin-key { background: var(--primary); border: 1px solid var(--gray-300); border-radius: 20px; padding: 18px; font-size: 1.5rem; font-weight: 600; color: var(--white); text-align: center; cursor: pointer; transition: all 0.2s; }
-        .pin-key:active { transform: scale(0.95); background: var(--accent); }
+        .pin-key { background: var(--primary); border: 1px solid var(--gray-300); border-radius: 20px; padding: 18px; font-size: 1.5rem; font-weight: 600; color: var(--white); text-align: center; cursor: pointer; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+        .pin-key:active { transform: scale(0.93) !important; background: var(--accent); }
         .pin-key.special { background: var(--warning); font-size: 1rem; }
         .frais-info { background: var(--gray-200); border-radius: 16px; padding: 12px; margin: 10px 0; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
         .frais-valeur { font-weight: 600; color: var(--warning); }
@@ -885,11 +887,18 @@
             position: relative;
             overflow: hidden;
             gap: 12px;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
         }
         .retrait-option-btn:hover {
             border-color: var(--accent);
             background: rgba(59,130,246,0.1);
             transform: translateX(4px);
+        }
+        .retrait-option-btn:active {
+            transform: scale(0.97) !important;
         }
         .retrait-option-btn .option-left {
             display: flex;
@@ -927,9 +936,6 @@
             color: var(--accent);
             transform: translateX(4px);
         }
-        .retrait-option-btn:active {
-            transform: scale(0.98);
-        }
         .retrait-modal-subtitle {
             color: var(--text-secondary);
             font-size: 0.85rem;
@@ -937,7 +943,7 @@
             margin: 8px 0 4px 0;
         }
 
-        /* Nouveaux styles pour le retrait avec demande d'adresse - POPUP */
+        /* Styles pour le retrait avec demande d'adresse - NOUVELLE VERSION POPUP */
         .retrait-adresse-popup-waiting {
             text-align: center;
             padding: 30px 20px;
@@ -1165,6 +1171,95 @@
             cursor: not-allowed;
         }
         .btn-refresh-popup i { font-size: 0.8rem; }
+
+        /* ============================================================
+           AMÉLIORATION DE LA FLUIDITÉ DES BOUTONS
+           ============================================================ */
+        button, 
+        .btn, 
+        .nav-item,
+        .retrait-option-btn,
+        .pin-key,
+        .rate-card,
+        .feature-card,
+        .news-item,
+        .activity-item,
+        .modal-content,
+        .carousel-banner-slide {
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        button:active, 
+        .btn:active,
+        .nav-item:active,
+        .retrait-option-btn:active,
+        .pin-key:active {
+            transform: scale(0.95) !important;
+            transition-duration: 0.05s !important;
+        }
+
+        button, .btn, .nav-item, .pin-key {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:hover:not(:disabled):not(.btn-disabled):not(.btn-wheel-disabled),
+        button:hover:not(:disabled):not(.btn-disabled):not(.btn-wheel-disabled) {
+            transform: translateY(-2px);
+        }
+
+        .btn:active:not(:disabled):not(.btn-disabled):not(.btn-wheel-disabled),
+        button:active:not(:disabled):not(.btn-disabled):not(.btn-wheel-disabled) {
+            transform: scale(0.96) !important;
+        }
+
+        .platform-section.active {
+            animation: fadeSlideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: cardFadeIn 0.4s ease-out;
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .platform-section,
+        .card,
+        .modal-content,
+        .btn,
+        .nav-item {
+            will-change: transform, opacity;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 <body>
@@ -1416,7 +1511,7 @@
             </div>
         </div>
     </div>
-    <div class="bottom-nav" id="bottom-nav"><div class="nav-menu"><div class="nav-item" onclick="switchPlatformSection('accueil')" id="nav-accueil"><i class="fas fa-home"></i><span>Accueil</span></div><div class="nav-item" onclick="verifierAvantAcces('achat')" id="nav-achat"><i class="fas fa-arrow-down"></i><span>Dépôt</span></div><div class="nav-item" onclick="verifierAvantAcces('vente')" id="nav-vente"><i class="fas fa-arrow-up"></i><span>Retrait</span></div><div class="nav-item" onclick="verifierAvantAcces('demandes')" id="nav-demandes"><i class="fas fa-clipboard-list"></i><span>Demandes</span></div><div class="nav-item" onclick="switchPlatformSection('profil')" id="nav-profil"><i class="fas fa-user-circle"></i><span>Profil</span></div></div></div>
+    <div class="bottom-nav" id="bottom-nav"><div class="nav-menu"><div class="nav-item" onclick="verifierAvantAcces('accueil', event)" id="nav-accueil"><i class="fas fa-home"></i><span>Accueil</span></div><div class="nav-item" onclick="verifierAvantAcces('achat', event)" id="nav-achat"><i class="fas fa-arrow-down"></i><span>Dépôt</span></div><div class="nav-item" onclick="verifierAvantAcces('vente', event)" id="nav-vente"><i class="fas fa-arrow-up"></i><span>Retrait</span></div><div class="nav-item" onclick="verifierAvantAcces('demandes', event)" id="nav-demandes"><i class="fas fa-clipboard-list"></i><span>Demandes</span></div><div class="nav-item" onclick="verifierAvantAcces('profil', event)" id="nav-profil"><i class="fas fa-user-circle"></i><span>Profil</span></div></div></div>
 
     <!-- MODALS -->
     <div id="modal-auth" class="modal"><div class="modal-content"><div class="modal-title"><i class="fas fa-sign-in-alt"></i> Bienvenue</div><div style="display:flex;gap:10px;margin-bottom:20px;"><button class="btn btn-success" style="flex:1;" onclick="switchAuthMode('connexion')" id="btn-connexion-mode">Connexion</button><button class="btn" style="flex:1;background:var(--gray-300);" onclick="switchAuthMode('inscription')" id="btn-inscription-mode">Inscription</button></div>
@@ -1673,6 +1768,8 @@
         return portefeuille && portefeuille.retraitAvecDemande === true;
     }
 
+    // Cette fonction est appelée quand l'utilisateur clique sur "Suivant" dans la section VENTE
+    // Elle est intégrée dans preparerConfirmation() pour le cas RETRAIT_AVEC_DEMANDE
     async function initierRetraitAvecDemande() {
         if (!sessionValide || !utilisateurCourant) { alert('Veuillez vous connecter'); showAuthModal(); return; }
         if (!emailVerifie) { alert('⚠️ Veuillez vérifier votre email avant d\'effectuer un retrait.'); return; }
@@ -1691,6 +1788,7 @@
             return;
         }
 
+        // Vérifier si une demande en attente d'adresse existe déjà
         const demandesArray = getDemandesTableau();
         const demandeExistante = demandesArray.find(d => 
             d.userID === monUid && 
@@ -1700,8 +1798,10 @@
 
         if (demandeExistante) {
             if (demandeExistante.deadline && new Date(demandeExistante.deadline) < new Date()) {
+                // Deadline expirée, on peut faire une nouvelle demande
                 alert('⏰ Votre adresse précédente a expiré. Nouvelle demande en cours...');
             } else {
+                // Réutiliser la demande existante
                 retraitAdresseDemandeId = demandeExistante.id;
                 retraitAdresseDemandeEnCours = demandeExistante;
                 ouvrirPopupRetraitAdresse(demandeExistante);
@@ -1758,10 +1858,14 @@
             retraitAdresseDemandeId = demandeId;
             retraitAdresseDemandeEnCours = demande;
             
+            // Ouvrir la popup avec l'état d'attente
             ouvrirPopupRetraitAdresse(demande);
             demarrerEcouteRetraitAdresse(demandeId);
             
+            // Notification à l'admin via le support
             await envoyerMessageAdminRetrait(demandeId);
+
+            // Ne pas afficher d'alerte ici car la popup l'indique déjà
 
         } catch (error) {
             console.error('Erreur lors de la demande d\'adresse:', error);
@@ -1775,6 +1879,7 @@
         
         if (!modal || !content) return;
         
+        // Générer le contenu en fonction du statut
         afficherContenuPopupRetrait(demande);
         
         modal.classList.add('active');
@@ -1783,12 +1888,14 @@
     function fermerPopupRetraitAdresse() {
         const modal = document.getElementById('modal-retrait-adresse');
         if (modal) modal.classList.remove('active');
+        // Ne pas arrêter l'écoute, elle continue en arrière-plan
     }
 
     function afficherContenuPopupRetrait(demande) {
         const content = document.getElementById('popup-retrait-adresse-content');
         if (!content) return;
 
+        // Vérifier si la deadline est expirée
         const deadlineExpiree = demande.deadline && new Date(demande.deadline) < new Date();
 
         if (demande.statut === 'attente_adresse') {
@@ -1871,6 +1978,7 @@
                 </div>
             `;
 
+            // Démarrer le countdown
             demarrerCountdownRetraitAdressePopup(demande.deadline);
             return;
         }
@@ -1910,6 +2018,7 @@
             return;
         }
 
+        // Fallback
         content.innerHTML = `
             <div class="retrait-adresse-popup-waiting">
                 <span class="waiting-icon"><i class="fas fa-clock"></i></span>
@@ -1936,6 +2045,7 @@
                     display.style.color = 'var(--danger)';
                     clearInterval(retraitAdresseTimerInterval);
                     retraitAdresseTimerInterval = null;
+                    // Recharger l'interface pour afficher l'expiration
                     if (retraitAdresseDemandeEnCours) {
                         afficherContenuPopupRetrait(retraitAdresseDemandeEnCours);
                     }
@@ -1979,12 +2089,15 @@
             const demande = snapshot.val();
             if (demande && demande.userID === monUid) {
                 retraitAdresseDemandeEnCours = demande;
+                // Si la popup est ouverte, mettre à jour le contenu
                 const modal = document.getElementById('modal-retrait-adresse');
                 if (modal && modal.classList.contains('active')) {
                     afficherContenuPopupRetrait(demande);
                 }
+                // Si la demande est confirmée ou rejetée, arrêter l'écoute
                 if (demande.statut === 'confirme' || demande.statut === 'rejete') {
                     arreterEcouteRetraitAdresse();
+                    // Si la popup est ouverte, fermer après un délai
                     if (modal && modal.classList.contains('active')) {
                         setTimeout(() => {
                             fermerPopupRetraitAdresse();
@@ -1995,6 +2108,7 @@
         });
     }
 
+    // Bouton actualiser de la popup
     async function actualiserPopupRetraitAdresse() {
         const btn = document.getElementById('btn-refresh-popup-retrait');
         if (btn) {
@@ -2084,6 +2198,7 @@
             return;
         }
 
+        // Ouvrir la modale PIN pour validation
         transactionEnAttente = {
             type: 'RETRAIT_AVEC_DEMANDE',
             demandeId: retraitAdresseDemandeId,
@@ -2122,6 +2237,7 @@
         }
     }
 
+    // Surcharge de la fonction creerDemande pour gérer RETRAIT_AVEC_DEMANDE
     const originalCreerDemande = creerDemande;
     creerDemande = async function() {
         if (!transactionEnAttente) return;
@@ -2165,6 +2281,7 @@
             return;
         }
         
+        // Appeler la fonction originale pour les autres types
         originalCreerDemande();
     };
 
@@ -3227,51 +3344,225 @@
         switchPlatformSection('accueil'); 
     }
 
-    function switchPlatformSection(s){ 
-        document.querySelectorAll('.platform-section').forEach(sec=>sec.classList.remove('active')); 
-        document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); 
-        document.getElementById(`${s}-section`).classList.add('active'); 
-        document.getElementById(`nav-${s}`).classList.add('active'); 
-        if(s==='vente'){ 
-            afficherReponseVente(); 
-            estimerVente(); 
-            afficherFraisReseauVente(); 
+    // ============================================================
+    // FONCTION PRINCIPALE switchPlatformSection AVEC FLUIDITÉ
+    // ============================================================
+    function switchPlatformSection(s) { 
+        // Désactiver temporairement les clics pour éviter les spams
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.style.pointerEvents = 'none';
+            item.style.opacity = '0.6';
+        });
+        
+        // Masquer toutes les sections
+        document.querySelectorAll('.platform-section').forEach(sec => {
+            sec.classList.remove('active');
+            sec.style.opacity = '0';
+            sec.style.transform = 'translateY(10px)';
+        });
+        
+        // Désactiver tous les nav items
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        
+        // Afficher la section cible avec animation
+        const targetSection = document.getElementById(`${s}-section`);
+        if (targetSection) {
+            targetSection.style.opacity = '0';
+            targetSection.style.transform = 'translateY(15px)';
+            targetSection.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+            targetSection.classList.add('active');
+            void targetSection.offsetHeight;
+            requestAnimationFrame(() => {
+                targetSection.style.opacity = '1';
+                targetSection.style.transform = 'translateY(0)';
+            });
+        }
+        
+        // Activer l'élément de navigation correspondant
+        const navItem = document.getElementById(`nav-${s}`);
+        if (navItem) {
+            setTimeout(() => {
+                navItem.classList.add('active');
+            }, 50);
+        }
+        
+        // Réactiver les clics après un délai
+        setTimeout(() => {
+            navItems.forEach(item => {
+                item.style.pointerEvents = 'auto';
+                item.style.opacity = '1';
+            });
+        }, 300);
+        
+        // ============================================================
+        // LOGIQUE MÉTIER - CORRECTION DU RÉSEAU POUR LA VENTE
+        // ============================================================
+        
+        if (s === 'vente') { 
+            // Force la mise à jour du réseau au chargement de la page Vente
+            mettreAJourReseaux('vente');
+            afficherFraisReseauVente();
+            estimerVente();
             verifierLimitesVente(); 
             mettreAJourListeNumerosVente(); 
             mettreAJourChampAdresseVente();
+            afficherReponseVente(); 
         } 
-        if(s==='achat'){ 
+        
+        if (s === 'achat') { 
             estimerAchat(); 
             afficherFraisReseauAchat(); 
             verifierLimitesAchat(); 
             mettreAJourListeNumerosAchat(); 
             mettreAJourLimiteAchat(); 
         } 
-        if(s==='demandes'&&utilisateurCourant) mettreAJourMesDemandes(); 
-        if(s==='profil') { 
+        
+        if (s === 'demandes' && utilisateurCourant) {
+            const list = document.getElementById('mes-demandes-liste');
+            if (list) {
+                list.style.opacity = '0.5';
+                mettreAJourMesDemandes();
+                setTimeout(() => {
+                    list.style.opacity = '1';
+                }, 200);
+            }
+        }
+        
+        if (s === 'profil') { 
             mettreAJourNumerosUtilisateur(); 
             verifierAccesBonus(); 
             mettreAJourAffichageAffiliation();
             rafraichirDemandesOptimise();
         }
-        if(s==='accueil') { 
+        
+        if (s === 'accueil') { 
             afficherNews(); 
             mettreAJourSolde(); 
             verifierSoldeMax(); 
         }
-        if(s==='achat' || s==='vente') afficherBlocageDemande(s);
-        if(s==='support') {
+        
+        if (s === 'achat' || s === 'vente') {
+            afficherBlocageDemande(s);
+        }
+        
+        if (s === 'support') {
             initialiserSupport();
-            if(monUid) {
+            if (monUid) {
                 marquerMessagesCommeLus();
             }
             setTimeout(() => {
                 const wrapper = document.getElementById('support-messages-wrapper');
-                if(wrapper) wrapper.scrollTop = wrapper.scrollHeight;
-            }, 300);
+                if (wrapper) {
+                    wrapper.scrollTop = wrapper.scrollHeight;
+                }
+            }, 350);
         }
     }
 
+    // ============================================================
+    // FONCTION verifierAvantAcces AVEC GESTION DE L'ÉVÉNEMENT
+    // ============================================================
+    function verifierAvantAcces(s, event) { 
+        // Si un événement est passé, prévenir le comportement par défaut
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        
+        if (!sessionValide || !utilisateurCourant) { 
+            showAuthModal(); 
+            return; 
+        } 
+        
+        if (!emailVerifie) {
+            alert('⚠️ Veuillez vérifier votre email avant d\'accéder à cette fonctionnalité.');
+            return;
+        }
+        
+        if (!aNumeroApprouve() && (s === 'achat' || s === 'vente' || s === 'demandes')) { 
+            alert('Vous devez avoir un numéro approuvé. Ajoutez un numéro dans votre profil et attendez la validation.'); 
+            switchPlatformSection('profil'); 
+            return; 
+        } 
+        if (s === 'achat' && donnees.pause?.achat) { 
+            alert('Service suspendu'); 
+            switchPlatformSection('accueil'); 
+            return; 
+        } 
+        if (s === 'vente' && donnees.pause?.vente) { 
+            alert('Service suspendu'); 
+            switchPlatformSection('accueil'); 
+            return; 
+        } 
+        
+        if (s === 'achat' || s === 'vente' || s === 'demandes') {
+            const demandeEnAttente = getDemandeEnAttente();
+            if (demandeEnAttente && (s === 'achat' || s === 'vente')) {
+                alert(`⛔ Vous avez déjà une demande en attente (${demandeEnAttente.type || 'demande'}). Veuillez attendre qu'elle soit traitée.`);
+                switchPlatformSection('demandes');
+                return;
+            }
+            afficherBlocageDemande(s);
+        }
+        
+        switchPlatformSection(s); 
+        
+        if (s === 'vente') { 
+            // Force la mise à jour du réseau également ici
+            mettreAJourReseaux('vente');
+            afficherFraisReseauVente();
+            estimerVente();
+            verifierLimitesVente(); 
+            mettreAJourListeNumerosVente(); 
+            mettreAJourChampAdresseVente();
+            afficherReponseVente(); 
+        } 
+        if (s === 'achat') { 
+            mettreAJourReseaux('achat'); 
+            estimerAchat(); 
+            afficherFraisReseauAchat(); 
+            verifierLimitesAchat(); 
+            mettreAJourListeNumerosAchat(); 
+            mettreAJourLimiteAchat(); 
+        } 
+        if (s === 'demandes') mettreAJourMesDemandes(); 
+    }
+
+    // ============================================================
+    // FONCTION mettreAJourReseaux AMÉLIORÉE
+    // ============================================================
+    function mettreAJourReseaux(t) { 
+        const c = document.getElementById(`crypto-${t}`)?.value; 
+        const s = document.getElementById(`reseau-${t}`); 
+        if (!s || !donnees.reseaux) return; 
+        
+        const av = s.value; 
+        const rf = donnees.reseaux.filter(r => r.crypto === c); 
+        
+        if (rf.length === 0) {
+            // Si aucun réseau n'est trouvé, on affiche un message
+            s.innerHTML = `<option value="">Aucun réseau disponible pour ${c}</option>`;
+        } else {
+            s.innerHTML = rf.map(r => `<option value="${echapperHTML(r.nom)}" data-frais="${r.fraisReseau || 0}">${echapperHTML(r.nom)}</option>`).join(''); 
+            if (av && Array.from(s.options).some(o => o.value === av)) {
+                s.value = av; 
+            }
+        }
+        
+        if (t === 'achat') { 
+            estimerAchat(); 
+            afficherFraisReseauAchat(); 
+        } else { 
+            estimerVente(); 
+            afficherFraisReseauVente(); 
+            mettreAJourChampAdresseVente(); 
+        } 
+    }
+
+    // ============================================================
+    // FONCTIONS RESTANTES (inchangées)
+    // ============================================================
     function deconnexion(){
         if(confirm('Êtes-vous sûr de vouloir vous déconnecter ?')){
             auth.signOut().then(()=>{
@@ -4054,48 +4345,6 @@
         }
     }
 
-    function verifierAvantAcces(s){ 
-        if(!sessionValide||!utilisateurCourant){ showAuthModal(); return; } 
-        
-        if (!emailVerifie) {
-            alert('⚠️ Veuillez vérifier votre email avant d\'accéder à cette fonctionnalité.');
-            return;
-        }
-        
-        if(!aNumeroApprouve()&&(s==='achat'||s==='vente'||s==='demandes')){ alert('Vous devez avoir un numéro approuvé. Ajoutez un numéro dans votre profil et attendez la validation.'); switchPlatformSection('profil'); return; } 
-        if(s==='achat'&&donnees.pause?.achat){ alert('Service suspendu'); switchPlatformSection('accueil'); return; } 
-        if(s==='vente'&&donnees.pause?.vente){ alert('Service suspendu'); switchPlatformSection('accueil'); return; } 
-        
-        if(s==='achat' || s==='vente' || s==='demandes') {
-            const demandeEnAttente = getDemandeEnAttente();
-            if(demandeEnAttente && (s==='achat' || s==='vente')) {
-                alert(`⛔ Vous avez déjà une demande en attente (${demandeEnAttente.type || 'demande'}). Veuillez attendre qu'elle soit traitée.`);
-                switchPlatformSection('demandes');
-                return;
-            }
-            afficherBlocageDemande(s);
-        }
-        
-        switchPlatformSection(s); 
-        if(s==='vente'){ 
-            afficherReponseVente(); 
-            estimerVente(); 
-            afficherFraisReseauVente(); 
-            verifierLimitesVente(); 
-            mettreAJourListeNumerosVente(); 
-            mettreAJourChampAdresseVente();
-        } 
-        if(s==='achat'){ 
-            mettreAJourReseaux('achat'); 
-            estimerAchat(); 
-            afficherFraisReseauAchat(); 
-            verifierLimitesAchat(); 
-            mettreAJourListeNumerosAchat(); 
-            mettreAJourLimiteAchat(); 
-        } 
-        if(s==='demandes') mettreAJourMesDemandes(); 
-    }
-
     function aNumeroApprouve() {
         const numeros = utilisateurCourant?.numeros || {};
         return Object.values(numeros).some(num => num.statut === 'approuve');
@@ -4188,17 +4437,6 @@
         if(pv) document.getElementById('portefeuille-vente').value=pv; 
         afficherFraisReseauAchat(); afficherFraisReseauVente(); 
         mettreAJourChampAdresseVente();
-    }
-    
-    function mettreAJourReseaux(t){ 
-        const c=document.getElementById(`crypto-${t}`)?.value; 
-        const s=document.getElementById(`reseau-${t}`); 
-        if(!s||!donnees.reseaux) return; 
-        const av=s.value; 
-        const rf=donnees.reseaux.filter(r=>r.crypto===c); 
-        s.innerHTML=rf.map(r=>`<option value="${echapperHTML(r.nom)}" data-frais="${r.fraisReseau||0}">${echapperHTML(r.nom)}</option>`).join(''); 
-        if(av&&Array.from(s.options).some(o=>o.value===av)) s.value=av; 
-        if(t==='achat'){ estimerAchat(); afficherFraisReseauAchat(); }else{ estimerVente(); afficherFraisReseauVente(); mettreAJourChampAdresseVente(); } 
     }
     
     function afficherFraisReseauAchat(){ 
@@ -4325,7 +4563,6 @@
         // Vérifier si c'est un portefeuille avec demande d'adresse
         const portefeuilleNom = document.getElementById('portefeuille-vente')?.value;
         if (type === 'VENTE' && estPortefeuilleAvecDemandeAdresse(portefeuilleNom)) {
-            // Nouveau comportement : on ne bloque pas, on lance initierRetraitAvecDemande()
             initierRetraitAvecDemande();
             return;
         }
