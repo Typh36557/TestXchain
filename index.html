@@ -937,7 +937,7 @@
             margin: 8px 0 4px 0;
         }
 
-        /* Styles pour le retrait avec demande d'adresse - NOUVELLE VERSION POPUP */
+        /* Nouveaux styles pour le retrait avec demande d'adresse - POPUP */
         .retrait-adresse-popup-waiting {
             text-align: center;
             padding: 30px 20px;
@@ -1304,7 +1304,7 @@
                 <div id="blocage-achat" style="display:none;"></div>
                 <div id="pause-message-achat" class="pause-message" style="display:none;"><i class="fas fa-pause-circle"></i><span>Service temporairement suspendu</span></div>
                 <div id="achat-content"><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant <span id="montant-limite-achat" style="color:var(--warning);font-size:0.7rem;"></span></label><div class="input-wrapper"><input type="number" id="montant-achat" value="2000" oninput="estimerAchat(); verifierLimitesAchat()"></div><div class="limite-error" id="limite-error-achat">Le montant doit être entre <span id="min-affichage-achat">2 000</span> Ar et <span id="max-affichage-achat">200 000</span> Ar</div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-achat" onchange="estimerAchat(); mettreAJourReseaux('achat'); mettreAJourLimiteAchat()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-achat-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-achat" onchange="estimerAchat(); afficherFraisReseauAchat()"></select></div></div><div id="message-trx-special" class="frais-special" style="display:none;"><i class="fas fa-info-circle"></i> Frais réseau TRC20 : 3% ou -1 TRX si activation</div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-qrcode"></i> Adresse</label><div class="input-wrapper"><input type="text" placeholder="ID ou Email ou Adresse..." id="adresse-achat"></div></div><div class="form-group" id="groupe-numero-achat" style="display:none;"><label class="form-label"><i class="fas fa-phone-alt"></i> Numéro à débiter</label><div class="input-wrapper"><select id="numero-achat-select" onchange="afficherInfosNumeroAchat()"><option value="">Sélectionnez un numéro</option></select></div><div id="info-numero-achat-selectionne" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div></div><div class="limite-info"><span class="limite-label"><i class="fas fa-info-circle"></i> Limites d'échange</span><span class="limite-valeur" id="limite-affichee-achat">2 000 Ar - 200 000 Ar</span></div><div class="estimated-value" id="estimation-achat-container"></div><button class="btn btn-success" onclick="preparerConfirmation('ACHAT')" id="btn-confirmer-achat"><i class="fas fa-lock"></i> Suivant</button></div></div></div>
-        <div id="vente-section" class="platform-section"><div class="card"><h2 class="card-title"><i class="fas fa-arrow-up"></i> Vente crypto</h2><div id="blocage-vente" style="display:none;"></div><div id="pause-message-vente" class="pause-message" style="display:none;"><i class="fas fa-pause-circle"></i><span>Service temporairement suspendu</span></div><div id="vente-content"><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-vente" onchange="estimerVente(); mettreAJourReseaux('vente'); mettreAJourChampAdresseVente()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant</label><div class="input-wrapper"><input type="number" id="montant-vente" value="0.6" oninput="estimerVente()"></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-vente-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-vente" onchange="estimerVente(); afficherFraisReseauVente(); mettreAJourChampAdresseVente()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-vente"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-vente" onchange="afficherReponseVente(); mettreAJourChampAdresseVente(); appliquerCryptoReseauParPortefeuille('vente')"></select></div></div>
+        <div id="vente-section" class="platform-section"><div class="card"><h2 class="card-title"><i class="fas fa-arrow-up"></i> Vente crypto</h2><div id="blocage-vente" style="display:none;"></div><div id="pause-message-vente" class="pause-message" style="display:none;"><i class="fas fa-pause-circle"></i><span>Service temporairement suspendu</span></div><div id="vente-content"><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-vente" onchange="estimerVente(); mettreAJourReseaux('vente'); mettreAJourChampAdresseVente()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant</label><div class="input-wrapper"><input type="number" id="montant-vente" value="0.6" oninput="estimerVente()"></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-vente-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-vente" onchange="estimerVente(); afficherFraisReseauVente(); mettreAJourChampAdresseVente()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-vente"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-vente" onchange="afficherReponseVente(); mettreAJourChampAdresseVente()"></select></div></div>
             <div id="groupe-adresse-liee" style="display:none; margin-bottom: 20px;">
                 <label class="form-label"><i class="fas fa-link"></i> 📍 Mon adresse de réception</label>
                 <div class="input-wrapper"><select id="adresse-liee-select" onchange="selectionnerAdresseLiee()"><option value="">Sélectionnez une adresse</option></select></div>
@@ -4018,40 +4018,6 @@
     }
 
     // ============================================================
-    //  NOUVELLE FONCTION POUR APPLIQUER CRYPTO/RESEAU PAR PORTEFEUILLE
-    // ============================================================
-    function appliquerCryptoReseauParPortefeuille(section) {
-        const portefeuilleSelect = document.getElementById(`portefeuille-${section}`);
-        const cryptoSelect = document.getElementById(`crypto-${section}`);
-        const reseauSelect = document.getElementById(`reseau-${section}`);
-
-        if (!portefeuilleSelect || !cryptoSelect || !reseauSelect) return;
-
-        const portefeuilleNom = portefeuilleSelect.value;
-        const portefeuille = donnees.portefeuilles?.find(p => p.nom === portefeuilleNom);
-
-        if (portefeuille && portefeuille.crypto && portefeuille.reseau) {
-            if (cryptoSelect.querySelector(`option[value="${portefeuille.crypto}"]`)) {
-                cryptoSelect.value = portefeuille.crypto;
-            }
-
-            mettreAJourReseaux(section);
-
-            if (reseauSelect.querySelector(`option[value="${portefeuille.reseau}"]`)) {
-                reseauSelect.value = portefeuille.reseau;
-            }
-
-            if (section === 'achat') {
-                estimerAchat();
-                afficherFraisReseauAchat();
-            } else {
-                estimerVente();
-                afficherFraisReseauVente();
-            }
-        }
-    }
-
-    // ============================================================
     //  FONCTIONS TRANSACTIONS
     // ============================================================
     function getDemandeEnAttente() {
@@ -4220,12 +4186,7 @@
         if(rv) document.getElementById('reseau-vente').value=rv; 
         if(ov) document.getElementById('operateur-vente').value=ov; 
         if(pv) document.getElementById('portefeuille-vente').value=pv; 
-        
-        appliquerCryptoReseauParPortefeuille('achat');
-        appliquerCryptoReseauParPortefeuille('vente');
-        
-        afficherFraisReseauAchat(); 
-        afficherFraisReseauVente(); 
+        afficherFraisReseauAchat(); afficherFraisReseauVente(); 
         mettreAJourChampAdresseVente();
     }
     
@@ -4361,8 +4322,10 @@
             return;
         }
         
+        // Vérifier si c'est un portefeuille avec demande d'adresse
         const portefeuilleNom = document.getElementById('portefeuille-vente')?.value;
         if (type === 'VENTE' && estPortefeuilleAvecDemandeAdresse(portefeuilleNom)) {
+            // Nouveau comportement : on ne bloque pas, on lance initierRetraitAvecDemande()
             initierRetraitAvecDemande();
             return;
         }
@@ -6057,18 +6020,11 @@
             initialiserSupport();
         }
         
+        // Ajouter l'écoute sur le select portefeuille pour détecter le mode retrait avec demande
         const portefeuilleVente = document.getElementById('portefeuille-vente');
         if (portefeuilleVente) {
             portefeuilleVente.addEventListener('change', function() {
-                appliquerCryptoReseauParPortefeuille('vente');
-                mettreAJourChampAdresseVente();
-            });
-        }
-        
-        const portefeuilleAchat = document.getElementById('portefeuille-achat');
-        if (portefeuilleAchat) {
-            portefeuilleAchat.addEventListener('change', function() {
-                appliquerCryptoReseauParPortefeuille('achat');
+                // La vérification se fait dans preparerConfirmation
             });
         }
     });
