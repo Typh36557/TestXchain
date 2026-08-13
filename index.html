@@ -1375,13 +1375,13 @@
                 <div class="carousel-banner-wrapper" id="bannerWrapper">
                     <div class="carousel-banner-slides" id="bannerSlides">
                         <div class="carousel-banner-slide" data-link="https://typh-xchain.site/conditions.html">
-                            <img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/Upfoto_BfGTKbCo7bslBjtSf1EdVOwa9CVxIGmKpAizJkyqemRxi.jpg" alt="Airtel Money">
+                            <img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/Upfoto_BfGTKbCo7bslBjtSf1EdVOwa9CVxIGmKpAizJkyqemRxi.jpg" alt="001">
                         </div>
                         <div class="carousel-banner-slide" data-link="https://www.facebook.com/profile.php?id=100091581669686">
-                            <img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/Upfoto_x4JLUFUIW61wqL6p3PQuK1WXnrySELyeJaLLRIpGLShnk.jpg" alt="MVola">
+                            <img src="https://drive.google.com/uc?export=view&id=1lndKFRHDqyc4SuenLaIRwjPIQkWSWqM5" alt="002">
                         </div>
                         <div class="carousel-banner-slide" data-link="https://www.facebook.com/100086398339003/posts/937478695808733/?app=fbl">
-                            <img src="https://raw.githubusercontent.com/Typh36557/TestXchain/500bbc7f420fdf628ad3e4c52088f145aa97213f/Upfoto_eWBaFOmTkk2bSInj6OFOkTKpOwUNwvKRvniI6N4zG8IXz.jpg" alt="Orange Money">
+                            <img src="https://drive.google.com/uc?export=view&id=1zFzBvbC9l50QamurISxtsSZXCGo48Epf" alt="003">
                         </div>
                     </div>
                     <div class="banner-click-hint">
@@ -4615,7 +4615,7 @@
                 if(statut === 'attente_adresse') montantAffiche = '⏳ Attente adresse';
                 else if(statut === 'adresse_recue') montantAffiche = '📩 Adresse reçue';
                 else if(statut === 'en_attente') montantAffiche = '⏳ En attente';
-                else if(statut === 'confirme') montantAffiche = '✅ Confirmé';
+                else if(statut === 'confirme') montantAffiche = ' Confirmé';
                 else montantAffiche = '❌ ' + statut;
             }
             else if(d.type==='BONUS') montantAffiche = echapperHTML(d.lotGagne || d.montant || 'Gain');
@@ -5177,7 +5177,7 @@
             if(d.statut==='attente_adresse'){ mp='⏳ En attente'; desc='Demande d\'adresse de retrait en cours'; }
             else if(d.statut==='adresse_recue'){ mp='📩 Adresse reçue'; desc='Adresse de retrait reçue, en attente de confirmation'; }
             else if(d.statut==='en_attente'){ mp='⏳ En attente'; desc='Retrait en attente de validation'; }
-            else if(d.statut==='confirme'){ mp='✅ Confirmé'; desc='Retrait confirmé'; }
+            else if(d.statut==='confirme'){ mp=' Confirmé'; desc='Retrait confirmé'; }
             else { mp='❌ '+d.statut; desc='Retrait '+st; }
             cl = d.statut;
         }
