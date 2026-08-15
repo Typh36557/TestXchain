@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>TYPH X-CHAIN • Exchange Crypto ⇄ Ariary</title>
+    <title>TYPH WALLET • Exchange Crypto ⇄ Ariary</title>
     
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://www.gstatic.com https://cdnjs.cloudflare.com https://*.firebaseio.com https://*.googleapis.com https://api.binance.com https://api.exchangerate-api.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https://raw.githubusercontent.com https://*.googleapis.com https://firebasestorage.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://api.binance.com https://api.exchangerate-api.com https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -16,7 +16,7 @@
     <meta name="theme-color" content="#0A0F1F">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="TYPH X-CHAIN">
+    <meta name="apple-mobile-web-app-title" content="TYPH WALLET">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/logo-application.png">
     
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -1173,7 +1173,7 @@
         .btn-refresh-popup i { font-size: 0.8rem; }
 
         /* ============================================================
-           AMÉLIORATION DE LA FLUIDITÉ DES BOUTONS
+           AMÉLIORATION 
            ============================================================ */
         button, 
         .btn, 
@@ -1274,9 +1274,9 @@
 
     <div class="app-header">
         <div class="header-content">
-            <div class="logo" onclick="showLandingPage()">
-                <img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/logo.png" alt="Logo" class="logo-img">
-                <span>TYPH X-CHAIN</span>
+            <div class="logo" onclick="actualiserAccueil()">
+                <img src="https://raw.githubusercontent.com/nalitsoavinatantely/Typh-FINANCE/refs/heads/main/logo.png" alt="Logo" class="logo-img">
+                <span>TYPH WALLET</span>
             </div>
             <div id="support-header-btn">
                 <button onclick="switchPlatformSection('support')" title="Support" 
@@ -1292,7 +1292,7 @@
     <div class="container">
         <div id="landing-page" class="landing-page">
             <div class="hero-section">
-                <h1 class="hero-title">TYPH X-CHAIN</h1>
+                <h1 class="hero-title">TYPH WALLET</h1>
                 <h2 class="hero-subtitle">Crypto ⇌ Mvola, Orange et Airtel</h2>
                 <p class="hero-description">La solution la plus simple pour convertir vos cryptos et Mobile Money.</p>
                 <button class="btn-hero" onclick="showAuthModal()"><i class="fas fa-rocket"></i> Echanger maintenant</button>
@@ -1322,7 +1322,7 @@
                 </button>
             </div>
 
-            <div style="display: flex; flex-direction: column; align-items: flex-end; margin: -10px 0 30px; padding-right: 10px;"><a href="https://www.mediafire.com/file/77fruf8hbz4lkwg/TYPH+X-CHAIN.apk/file" target="_blank" class="btn-download-green"><i class="fas fa-arrow-down"></i></a><div style="margin-top:5px;"><span style="color:var(--text-secondary);font-size:0.85rem;"><i class="fas fa-download" style="color:#10B981;"></i> Télécharger l'application</span></div></div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; margin: -10px 0 30px; padding-right: 10px;"><a href="https://www.mediafire.com/file/77fruf8hbz4lkwg/TYPH+WALLET.apk/file" target="_blank" class="btn-download-green"><i class="fas fa-arrow-down"></i></a><div style="margin-top:5px;"><span style="color:var(--text-secondary);font-size:0.85rem;"><i class="fas fa-download" style="color:#10B981;"></i> Télécharger l'application</span></div></div>
             <div class="features-grid"><div class="feature-card"><div class="feature-icon"><i class="fas fa-bolt"></i></div><h3 class="feature-title">Rapide</h3><p class="feature-description">Transactions en moins de 5 minutes, 15h/24 et 7j/7</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><h3 class="feature-title">Sécurisé</h3><p class="feature-description">Validation par code PIN à 6 chiffres</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-hand-holding-usd"></i></div><h3 class="feature-title">Meilleurs taux</h3><p class="feature-description">Des taux compétitifs mis à jour en temps réel</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-alt"></i></div><h3 class="feature-title">Mobile Money</h3><p class="feature-description">Compatible MVola, Orange Money, Airtel Money</p></div></div>
             <div class="stats-section"><div class="stat-item"><div class="stat-number">1K+</div><div class="stat-label">Utilisateurs</div></div><div class="stat-item"><div class="stat-number">5K+</div><div class="stat-label">Transactions</div></div><div class="stat-item"><div class="stat-number">4.8</div><div class="stat-label">Note moyenne</div></div><div class="stat-item"><div class="stat-number">24/7</div><div class="stat-label">Support</div></div></div>
             <div id="testimonials" class="testimonials-section"><h2 class="section-title">Ce que disent nos clients</h2><div class="testimonials-grid"><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Tantely Hervée</div><div class="testimonial-date">Il y a 2 jours</div></div></div><div class="testimonial-text">"Atokisana à 100% no sady rapide !"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Santatra Cedrick</div><div class="testimonial-date">Il y a 5 jours</div></div></div><div class="testimonial-text">"Mahay mandray olona sady manoro sy manampy"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div></div><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Mahefa Rakotonirina</div><div class="testimonial-date">Il y a 1 semaine</div></div></div><div class="testimonial-text">"Efa 02 taona niarahana fa milam sady atokisana hatrany foana."</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div></div><div style="text-align:center;margin-top:30px;"><a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a></div></div>
@@ -1562,7 +1562,7 @@
     
     <div id="modal-confirmation" class="modal"><div class="modal-content"><div class="modal-title" id="modal-titre"><i class="fas fa-clock"></i> Vérification de la transaction</div><div id="details-demande" class="request-detail-modal"></div><div id="message-paiement-container" style="display:none;"><div class="message-admin" id="message-paiement"><i class="fas fa-info-circle"></i><div class="message-admin-content" id="message-paiement-texte"></div><button class="btn-copy" onclick="copierMessagePaiement()" id="btn-copy-paiement"><i class="fas fa-copy"></i> Copier</button></div></div><div class="timer-large" id="confirmation-timer"><i class="fas fa-hourglass-half"></i><span id="timer-display">15:00</span></div><div class="form-group" style="margin:20px 0;"><label class="form-label"><i class="fas fa-hashtag"></i> TXID ou PREUVE D'ENVOI</label><div class="input-wrapper"><input type="text" id="txid-input" placeholder="Entrez le TXID ou votre adresse d'envoi ou message preuve"></div></div><div class="warning-message"><i class="fas fa-exclamation-triangle"></i><span>Vérifiez bien le numéro ou l'adresse d'envoi ,et aussi les informations avant d'envoyer ! </span></div><div class="modal-buttons"><button class="btn btn-cancel" onclick="fermerModalConfirmation()"><i class="fas fa-times"></i> Annuler</button><button class="btn btn-confirm" onclick="validerConfirmation()" id="btn-confirmer-avec-txid"><i class="fas fa-arrow-right"></i> Confirmer</button></div></div></div>
     <div id="modal-details-demande" class="modal"><div class="modal-content"><div class="modal-title"><i class="fas fa-info-circle"></i> Détails</div><div id="details-demande-complete" class="request-detail-modal"></div><button class="btn btn-cancel" onclick="fermerDetailsDemande()"><i class="fas fa-times"></i> Fermer</button></div></div>
-    <div id="modal-recu" class="modal"><div class="modal-content"><div class="receipt-header" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;"><img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/logo.png" alt="Logo" style="height: 64px; width: auto;"><h2 style="margin:0;">TYPH X-CHAIN</h2></div><div id="recu-content"></div><div class="receipt-actions"><button class="btn-receipt" onclick="verifierMesActifs()"><i class="fas fa-wallet"></i> Vérifier mes actifs</button><div class="rating-section"><div class="rating-title">RAPIDE - SIMPLE - SÉCURISÉ</div><div class="rating-stars"><i class="fas fa-star" onclick="noter(1)"></i><i class="fas fa-star" onclick="noter(2)"></i><i class="fas fa-star" onclick="noter(3)"></i><i class="fas fa-star" onclick="noter(4)"></i><i class="fas fa-star" onclick="noter(5)"></i></div><div class="rating-buttons"><span class="rating-btn" onclick="noter('positif')">Positive</span><span class="rating-btn" onclick="noter('negatif')">Négative</span></div></div></div><button class="btn btn-cancel" onclick="fermerModalRecu()" style="margin-top:20px;"><i class="fas fa-times"></i> Fermer</button></div></div>
+    <div id="modal-recu" class="modal"><div class="modal-content"><div class="receipt-header" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;"><img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/logo.png" alt="Logo" style="height: 64px; width: auto;"><h2 style="margin:0;">TYPH WALLET</h2></div><div id="recu-content"></div><div class="receipt-actions"><button class="btn-receipt" onclick="verifierMesActifs()"><i class="fas fa-wallet"></i> Vérifier mes actifs</button><div class="rating-section"><div class="rating-title">RAPIDE - SIMPLE - SÉCURISÉ</div><div class="rating-stars"><i class="fas fa-star" onclick="noter(1)"></i><i class="fas fa-star" onclick="noter(2)"></i><i class="fas fa-star" onclick="noter(3)"></i><i class="fas fa-star" onclick="noter(4)"></i><i class="fas fa-star" onclick="noter(5)"></i></div><div class="rating-buttons"><span class="rating-btn" onclick="noter('positif')">Positive</span><span class="rating-btn" onclick="noter('negatif')">Négative</span></div></div></div><button class="btn btn-cancel" onclick="fermerModalRecu()" style="margin-top:20px;"><i class="fas fa-times"></i> Fermer</button></div></div>
     
     <!-- NOUVELLE MODALE POUR RETRAIT AVEC DEMANDE D'ADRESSE (POPUP) -->
     <div id="modal-retrait-adresse" class="modal">
@@ -1860,7 +1860,7 @@
 
     // ============================================================
     //  RETRAIT AVEC DEMANDE D'ADRESSE - NOUVELLE VERSION POPUP
-    //  MODIFICATION : Réutilisation de l'adresse existante si non expirée
+    //  MODIFICATION : Réutilisation 
     // ============================================================
 
     let retraitAdresseDemandeId = null;
@@ -2457,7 +2457,7 @@
     };
 
     // ============================================================
-    //  FIN RETRAIT AVEC DEMANDE D'ADRESSE - NOUVELLE VERSION POPUP
+    //  FIN 
     // ============================================================
 
     async function demanderRetrait() {
@@ -3191,7 +3191,7 @@
     }
 
     // ============================================================
-    //  RATE LIMITER AMÉLIORÉ
+    //  RATE LIMITER 
     // ============================================================
     class RateLimiterAvance {
         constructor(limite = 15, fenetre = 60000) {
@@ -3535,7 +3535,7 @@
         }, 300);
         
         // ============================================================
-        // LOGIQUE MÉTIER - CORRECTION DU RÉSEAU POUR LA VENTE
+        // LOGIQUE MÉTIER
         // ============================================================
         
         if (s === 'vente') { 
@@ -3701,7 +3701,7 @@
     }
 
     // ============================================================
-    // FONCTIONS RESTANTES (inchangées)
+    // FONCTIONS RESTANTES 
     // ============================================================
     function deconnexion(){
         if(confirm('Êtes-vous sûr de vouloir vous déconnecter ?')){
@@ -6327,7 +6327,7 @@
             return;
         }
 
-        const SW_VERSION = '3.3.9';
+        const SW_VERSION = '3.4.0';
 
         const storedVersion = localStorage.getItem('sw_version');
         if (storedVersion !== SW_VERSION) {
