@@ -5174,15 +5174,32 @@
         else if(d.type==='VENTE'){ mp=Math.round(d.montantRecu||0).toLocaleString()+' Ar'; desc=`Vente ${st} de ${d.montant} ${d.crypto}`; } 
         else if(d.type==='RETRAIT'){ mp='$'+d.montant.toFixed(2); desc=`Retrait ${st} de $${d.montant.toFixed(2)}`; }
         else if(d.type==='RETRAIT_AVEC_DEMANDE'){ 
-    // Récupérer le montant en Ar
+    // Récupérer le montant en Ar APRÈS déduction des frais
     let montantAr = 'N/A';
+    
     if (d.montantRecu) {
+        // Si montantRecu existe déjà (déjà calculé)
         montantAr = Math.round(d.montantRecu).toLocaleString() + ' Ar';
     } else if (d.montant && d.crypto) {
-        // Convertir le montant crypto en Ar avec le taux
+        // Calculer le montant après déduction des frais
         const taux = donnees.taux?.[d.crypto]?.prixMGA || 4700;
-        const montantEnAr = d.montant * taux;
-        montantAr = Math.round(montantEnAr).toLocaleString() + ' Ar';
+        const montantBrutAr = d.montant * taux;
+        
+        // Déduire les frais (frais de vente + frais réseau)
+        const fraisVente = donnees.frais?.vente || 2.0;
+        const reseauSelect = document.getElementById('reseau-vente');
+        let fraisReseau = 0;
+        if (reseauSelect) {
+            const option = reseauSelect.options[reseauSelect.selectedIndex];
+            fraisReseau = option ? parseFloat(option.dataset.frais) || 0 : 0;
+        }
+        
+        // Calculer les frais en Ar
+        const fraisTotalPourcent = fraisVente + fraisReseau;
+        const fraisAr = montantBrutAr * (fraisTotalPourcent / 100);
+        const montantNetAr = montantBrutAr - fraisAr;
+        
+        montantAr = Math.round(montantNetAr).toLocaleString() + ' Ar';
     }
     
     if(d.statut==='attente_adresse'){ mp=montantAr; desc='Demande d\'adresse de retrait en cours'; }
