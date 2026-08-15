@@ -5174,13 +5174,11 @@
         else if(d.type==='VENTE'){ mp=Math.round(d.montantRecu||0).toLocaleString()+' Ar'; desc=`Vente ${st} de ${d.montant} ${d.crypto}`; } 
         else if(d.type==='RETRAIT'){ mp='$'+d.montant.toFixed(2); desc=`Retrait ${st} de $${d.montant.toFixed(2)}`; }
         else if(d.type==='RETRAIT_AVEC_DEMANDE'){ 
-            if(d.statut==='attente_adresse'){ mp='⏳ En attente'; desc='Demande d\'adresse de retrait en cours'; }
-            else if(d.statut==='adresse_recue'){ mp='📩 Adresse reçue'; desc='Adresse de retrait reçue, en attente de confirmation'; }
-            else if(d.statut==='en_attente'){ mp='⏳ En attente'; desc='Retrait en attente de validation'; }
-            else if(d.statut==='confirme'){ mp=' Confirmé'; desc='Retrait confirmé'; }
-            else { mp='❌ '+d.statut; desc='Retrait '+st; }
-            cl = d.statut;
-        }
+    const montantAffiche = d.montant ? `${d.montant} ${d.crypto || ''}` : 'N/A';
+    mp = montantAffiche;
+    desc = `Retrait ${st}`;
+    cl = d.statut;
+}
         else if(d.type==='BONUS'){ mp=echapperHTML(d.lotGagne || d.montant || 'N/A'); desc=`Bonus de fidélité ${st}`; }
         
         let b='';
@@ -6489,7 +6487,7 @@
     // ============================================================
     //  INITIALISATION FINALE
     // ============================================================
-    document.querySelector('.logo').addEventListener('dblclick',()=>window.open('security.html','_blank'));
+    document.querySelector('.logo').addEventListener('dblclick',()=>window.open('conditions.html','_blank'));
     
     window.addEventListener('load',function(){ 
         console.log('🚀 Page index chargée - Version avec support manuel, adresses approuvées, countdown et retrait avec demande d\'adresse (POPUP)'); 
