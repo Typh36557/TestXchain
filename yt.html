@@ -485,25 +485,6 @@ body {
 .tg-empty { text-align: center; padding: 60px 20px; color: var(--tg-text-dim); }
 .tg-empty i { font-size: 3rem; margin-bottom: 12px; opacity: 0.5; }
 
-.heart-burst {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    font-size: 5rem;
-    color: #ff4b6e;
-    pointer-events: none;
-    z-index: 50;
-    filter: drop-shadow(0 0 20px rgba(255,75,110,0.8));
-    animation: heartPop 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-@keyframes heartPop {
-    0%   { transform: translate(-50%, -50%) scale(0) rotate(-20deg); opacity: 0; }
-    20%  { transform: translate(-50%, -50%) scale(1.3) rotate(10deg); opacity: 1; }
-    40%  { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
-    70%  { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
-    100% { transform: translate(-50%, -50%) scale(1.6) rotate(0deg); opacity: 0; }
-}
-
 .tg-toast {
     position: fixed; bottom: 30px; left: 50%;
     transform: translateX(-50%) translateY(20px);
@@ -1341,6 +1322,10 @@ let unsubscribeLogo = null;
 let currentLightboxUrl = '';
 let replyToState = {};
 
+// ⬇️ HASH POUR DÉTECTER LES VRAIS CHANGEMENTS DE CONTENU ⬇️
+let dernierHashContenu = '';
+let derniersIdsMessages = '';
+
 let userId = localStorage.getItem(USER_ID_KEY);
 if (!userId) {
     userId = 'user_' + Math.random().toString(36).substr(2, 9);
@@ -1437,6 +1422,17 @@ function compterCommentaires(m) {
         if (c.replies) total += Object.keys(c.replies).length;
     });
     return total;
+}
+
+// ⬇️ CALCUL DU HASH DE CONTENU (pour détecter si le feed doit être reconstruit) ⬇️
+function calculerHashContenu(msgs) {
+    return msgs
+        .map(m => `${m.id}|${m.text || ''}|${m.image || ''}|${m.videoId || ''}|${m.date}`)
+        .sort()
+        .join('||');
+}
+function calculerIdsMessages(msgs) {
+    return msgs.map(m => m.id).sort().join(',');
 }
 
 function ecouterLogo() {
@@ -1612,26 +1608,35 @@ function detecterLienCourt() {
                     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     el.classList.add('search-highlight');
                     setTimeout(() => el.classList.remove('search-highlight'), 3000);
-                } else {
-                    setTimeout(() => {
-                        const el2 = document.querySelector(`.tg-msg[data-id="${msgId}"]`);
-                        if (el2) {
-                            el2.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            el2.classList.add('search-highlight');
-                            setTimeout(() => el2.classList.remove('search-highlight'), 3000);
-                        }
-                    }, 1500);
                 }
-            }, 1200);
+            }, 1500);
         }
     }).catch(err => console.error('Erreur lien court:', err));
 }
 
+// ⬇️ ÉCOUTE INTELLIGENTE : ne reconstruit le feed QUE si le contenu change ⬇️
 function ecouterMessages() {
     unsubscribeMessages = onValue(ref(db, 'messages'), (snapshot) => {
         const data = snapshot.val() || {};
-        state.messages = Object.entries(data).map(([id, val]) => ({ id, ...val }));
-        rendre();
+        const nouveauxMessages = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+        
+        const nouveauHash = calculerHashContenu(nouveauxMessages);
+        const nouveauxIds = calculerIdsMessages(nouveauxMessages);
+        const contenuChange = nouveauHash !== dernierHashContenu || nouveauxIds !== derniersIdsMessages;
+        
+        state.messages = nouveauxMessages;
+        
+        if (contenuChange) {
+            // ⬇️ Vrai changement : ajout, suppression, modification ⬇️
+            console.log('🔄 Contenu modifié → re-render complet');
+            dernierHashContenu = nouveauHash;
+            derniersIdsMessages = nouveauxIds;
+            rendre();
+        } else {
+            // ⬇️ Juste des vues/réactions → mise à jour ciblée, PAS de re-render ⬇️
+            mettreAJourCompteursSeulement();
+        }
+        
         cacherLoadingAvecDelai();
     }, (error) => {
         console.error('Erreur Firebase:', error);
@@ -1639,6 +1644,77 @@ function ecouterMessages() {
         cacherLoadingAvecDelai();
     });
 }
+
+// ⬇️ MISE À JOUR CIBLÉE : ne touche ni aux iframes ni au scroll ⬇️
+function mettreAJourCompteursSeulement() {
+    state.messages.forEach(m => {
+        const msgEl = document.querySelector(`.tg-msg[data-id="${m.id}"]`);
+        if (!msgEl) return;
+        
+        // Mettre à jour le nombre de vues
+        const vuesEl = msgEl.querySelector('.tg-msg-views');
+        if (vuesEl) {
+            vuesEl.innerHTML = `<i class="far fa-eye"></i> ${formatCount(m.views||0)}`;
+        }
+        
+        // Mettre à jour les pastilles de réactions (sans toucher à l'iframe)
+        const pillsContainer = msgEl.querySelector('.tg-reactions-display');
+        if (pillsContainer) {
+            const reactionsSet = new Set();
+            Object.keys(m.reactions || {}).forEach(e => { if (m.reactions[e] > 0) reactionsSet.add(e); });
+            if (m.userReactions && m.userReactions[userId]) reactionsSet.add(m.userReactions[userId]);
+            
+            pillsContainer.innerHTML = [...reactionsSet].map(emoji => {
+                const count = m.reactions?.[emoji] || 0;
+                const active = m.userReactions?.[userId] === emoji;
+                return `<div class="tg-reaction-pill ${active ? 'active' : ''}" 
+                             onclick="event.stopPropagation(); toggleReaction('${m.id}', '${emoji}')">
+                    <span>${emoji}</span><span class="count">${count}</span>
+                </div>`;
+            }).join('');
+        }
+        
+        // Mettre à jour le compteur de réactions du bouton
+        const reactBtn = msgEl.querySelector(`#react-btn-${m.id}`);
+        if (reactBtn) {
+            const nbReactions = compterReactions(m);
+            const userReaction = m.userReactions?.[userId] || null;
+            const displayEmoji = userReaction || DEFAULT_EMOJI;
+            const reactedClass = userReaction ? 'reacted' : '';
+            
+            reactBtn.className = `fb-action-btn ${reactedClass}`;
+            reactBtn.innerHTML = `
+                <span class="fb-emoji">${displayEmoji}</span>
+                ${nbReactions > 0 ? `<span class="fb-count">${formatCount(nbReactions)}</span>` : ''}
+            `;
+        }
+        
+        // Mettre à jour le compteur de commentaires
+        const nbCommentaires = compterCommentaires(m);
+        const commentBtns = msgEl.querySelectorAll('.fb-action-btn');
+        if (commentBtns[1]) {
+            const icon = commentBtns[1].querySelector('i');
+            const oldCount = commentBtns[1].querySelector('.fb-count');
+            if (nbCommentaires > 0) {
+                if (oldCount) {
+                    oldCount.textContent = formatCount(nbCommentaires);
+                } else {
+                    commentBtns[1].innerHTML = `<i class="far fa-comment" style="font-size:1.15rem;"></i><span class="fb-count">${formatCount(nbCommentaires)}</span>`;
+                }
+            } else if (oldCount) {
+                oldCount.remove();
+            }
+        }
+    });
+    
+    // Mettre à jour les stats globales sans toucher au feed
+    const totalVues = calculerTotalVues();
+    const elStats = document.getElementById('channel-stats');
+    if (elStats) elStats.textContent = `${formatCount(totalVues)} Views • ${CHANNEL_TAGLINE}`;
+    const ciTotalViews = document.getElementById('ci-total-views');
+    if (ciTotalViews) ciTotalViews.textContent = formatCount(totalVues);
+}
+
 function ecouterStats() {
     unsubscribeStats = onValue(ref(db, 'stats/subscribers'), (snapshot) => {
         const val = snapshot.val();
@@ -1648,7 +1724,6 @@ function ecouterStats() {
         } else {
             state.subscribers = val;
         }
-        rendre();
     });
 }
 
@@ -1688,13 +1763,36 @@ function rendre() {
         </div>`;
         return;
     }
+    
     const msgs = [...state.messages].sort((a, b) => b.date - a.date);
-    let html = '';
-    let lastDateKey = '';
+    
+    // ⬇️ Sauvegarder l'état AVANT reconstruction ⬇️
+    const scrollTop = window.scrollY;
+    const videosEnCours = new Set();
+    document.querySelectorAll('.tg-msg-video').forEach(iframe => {
+        const msgEl = iframe.closest('.tg-msg');
+        if (msgEl) {
+            const msgId = msgEl.dataset.id;
+            // Vérifier si la vidéo a été lancée (au moins interagie)
+            videosEnCours.add(msgId);
+        }
+    });
+    
     const openComments = new Set();
     document.querySelectorAll('.tg-comments-section.open').forEach(el => {
         openComments.add(el.dataset.msgId);
     });
+    
+    // Sauvegarder les iframes originales pour les réinsérer
+    const iframesSauvegardees = {};
+    videosEnCours.forEach(msgId => {
+        const iframe = document.querySelector(`.tg-msg[data-id="${msgId}"] .tg-msg-video`);
+        if (iframe) iframesSauvegardees[msgId] = iframe.cloneNode(true);
+    });
+    
+    // ⬇️ Construire le nouveau HTML ⬇️
+    let html = '';
+    let lastDateKey = '';
     msgs.forEach(m => {
         const dateKey = new Date(m.date).toDateString();
         if (dateKey !== lastDateKey) {
@@ -1703,10 +1801,29 @@ function rendre() {
         }
         html += rendreMessage(m, openComments.has(m.id));
     });
+    
     feed.innerHTML = html;
+    
+    // ⬇️ Réinsérer les iframes sauvegardées (préserve la lecture) ⬇️
+    Object.entries(iframesSauvegardees).forEach(([msgId, iframe]) => {
+        const msgEl = document.querySelector(`.tg-msg[data-id="${msgId}"]`);
+        if (msgEl) {
+            const newIframe = msgEl.querySelector('.tg-msg-video');
+            if (newIframe) {
+                newIframe.replaceWith(iframe);
+            }
+        }
+    });
+    
+    // ⬇️ Restaurer le scroll ⬇️
+    window.scrollTo(0, scrollTop);
+    
+    // ⬇️ Restaurer le focus des commentaires ouverts ⬇️
     openComments.forEach(msgId => {
         const input = document.getElementById('comment-input-' + msgId);
-        if (input) setTimeout(() => input.focus(), 10);
+        if (input && document.activeElement !== input && document.activeElement.tagName !== 'INPUT') {
+            setTimeout(() => input.focus(), 10);
+        }
     });
 }
 
@@ -1723,7 +1840,6 @@ function rendreMessage(m, commentsOpen = false) {
         </div>`;
     }).join('');
     
-    // ⬇️ VIDÉO avec youtube-nocookie + origin ⬇️
     const videoHtml = m.videoId
         ? `<iframe class="tg-msg-video" 
                    src="${construireUrlEmbed(m.videoId)}" 
@@ -2262,6 +2378,7 @@ document.getElementById('pseudo-input')?.addEventListener('keydown', e => {
     if (e.key === 'Enter') sauverProfil();
 });
 
+// Simulation des vues : toutes les 20s
 setInterval(() => {
     state.messages.forEach(m => {
         if (Math.random() < 0.15) {
@@ -2317,7 +2434,7 @@ if (window.location.hash) {
         if (el) el.classList.add('open');
     }, 800);
 }
-console.log('🔥 TYPH - YouTube corrigé (nocookie + origin)');
+console.log('🔥 TYPH - Vidéo préservée pendant les actualisations');
 </script>
 </body>
 </html>
