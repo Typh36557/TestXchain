@@ -125,7 +125,6 @@
         .stat-label { color: var(--text-secondary); font-size: 0.9rem; }
         .testimonials-section { margin: 60px 0; }
         .section-title { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 40px; color: var(--white); }
-        .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
         .testimonial-card { background: var(--bg-card); border-radius: var(--radius-xl); padding: 25px; border: 1px solid rgba(59,130,246,0.2); }
         .testimonial-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
         .testimonial-avatar { width: 50px; height: 50px; background: rgba(59,130,246,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent); }
@@ -133,6 +132,27 @@
         .testimonial-date { font-size: 0.8rem; color: var(--text-secondary); }
         .testimonial-text { color: var(--text-secondary); line-height: 1.6; margin-bottom: 15px; }
         .testimonial-rating { color: var(--warning); }
+        
+        /* ============================================================
+           TÉMOIGNAGES - CARROUSEL DYNAMIQUE
+           ============================================================ */
+        .testimonials-carousel-wrapper { position: relative; overflow: hidden; border-radius: var(--radius-xl); }
+        .testimonials-carousel-slides { display: flex; transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .testimonials-carousel-slide { min-width: 100%; flex-shrink: 0; padding: 5px; box-sizing: border-box; }
+        .testimonials-carousel-dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+        .testimonials-carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-300); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
+        .testimonials-carousel-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+        .testimonials-carousel-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); color: white; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; z-index: 5; }
+        .testimonials-carousel-arrow:hover { background: rgba(59,130,246,0.7); }
+        .testimonials-carousel-arrow:active { transform: translateY(-50%) scale(0.9); }
+        .testimonials-carousel-arrow.prev { left: 8px; }
+        .testimonials-carousel-arrow.next { right: 8px; }
+        .testimonials-empty { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
+        .testimonials-empty i { font-size: 2.5rem; color: var(--accent); opacity: 0.4; margin-bottom: 10px; display: block; }
+        @media (max-width: 600px) {
+            .testimonials-carousel-arrow { width: 32px; height: 32px; font-size: 0.75rem; }
+        }
+        
         .platform-section { display: none; }
         .platform-section.active { display: block; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(19, 27, 47, 0.95); backdrop-filter: blur(10px); border-top: 1px solid rgba(59,130,246,0.2); padding: 8px 0; z-index: 100; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); display: none; }
@@ -780,46 +800,6 @@
             color: #EF4444;
         }
 
-        #loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10,15,31,0.92);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            backdrop-filter: blur(12px);
-        }
-        #loading-overlay.active {
-            display: flex;
-        }
-        #loading-overlay .loader-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid #1A253C;
-            border-top-color: #3B82F6;
-            border-radius: 50%;
-            animation: spin-loader 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        @keyframes spin-loader {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        #loading-overlay .loader-text {
-            color: var(--text-primary);
-            font-size: 1.2rem;
-            font-weight: 500;
-        }
-        #loading-overlay .loader-sub {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-top: 8px;
-        }
-
         #numero-missing-banner {
             background: rgba(59,130,246,0.08);
             border: 2px solid #3B82F6;
@@ -1261,7 +1241,7 @@
         }
 
         /* ============================================================
-           NOUVEAU - PROTECTION ANTI-DOUBLE-CLIC
+           NPAC
            ============================================================ */
         .btn-loading {
             position: relative !important;
@@ -1286,7 +1266,7 @@
         }
 
         /* ============================================================
-           NOUVEAU - POPUP DE VÉRIFICATION EMAIL
+           NPVE
            ============================================================ */
         #modal-verif-email {
             z-index: 1500;
@@ -1400,15 +1380,274 @@
             font-weight: 600;
             margin-left: 8px;
         }
+
+        /* ============================================================
+           ITW
+           ============================================================ */
+        #loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, #1a2b47 0%, #0A0F1F 60%, #050a14 100%);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s;
+            overflow: hidden;
+        }
+        #loading-overlay.active {
+            display: flex;
+        }
+        #loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        #loading-overlay::before {
+            content: '';
+            position: absolute;
+            width: 280px; height: 280px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                rgba(59, 130, 246, 0) 90deg,
+                rgba(59, 130, 246, 0.4) 180deg,
+                rgba(96, 165, 250, 0.6) 270deg,
+                transparent 360deg
+            );
+            animation: rotate-loader 3s linear infinite;
+            filter: blur(40px);
+            z-index: 0;
+        }
+        #loading-overlay::after {
+            content: '';
+            position: absolute;
+            width: 240px; height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+            animation: pulse-halo 2s ease-in-out infinite;
+            z-index: 0;
+        }
+        @keyframes rotate-loader { to { transform: rotate(360deg); } }
+        @keyframes pulse-halo {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+        .loading-logo-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+        .loading-logo {
+            width: 130px; height: 130px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a2b47, #0A0F1F);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; position: relative;
+            border: 3px solid rgba(59, 130, 246, 0.4);
+            box-shadow: 
+                0 0 40px rgba(59, 130, 246, 0.5),
+                0 0 80px rgba(59, 130, 246, 0.25),
+                inset 0 0 30px rgba(59, 130, 246, 0.15);
+            animation: logoIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
+                       logoFloat 3s ease-in-out infinite 1s;
+            transform: scale(0);
+            opacity: 0;
+        }
+        .loading-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .loading-logo::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--accent-light);
+            border-right-color: rgba(96, 165, 250, 0.5);
+            animation: rotate-loader 1.5s linear infinite;
+        }
+        @keyframes logoIn {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            60% { transform: scale(1.15) rotate(10deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.02); }
+        }
+        .loading-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, #60A5FA, #ffffff, #60A5FA);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            opacity: 0;
+            animation: titleIn 0.8s ease 0.8s forwards, shimmer 2.5s linear infinite 1.5s;
+        }
+        @keyframes titleIn {
+            from { opacity: 0; transform: translateY(10px); letter-spacing: 8px; }
+            to { opacity: 1; transform: translateY(0); letter-spacing: 3px; }
+        }
+        @keyframes shimmer { to { background-position: 200% center; } }
+        .loading-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: subtitleIn 0.8s ease 1.2s forwards;
+            text-align: center;
+            transition: opacity 0.25s ease;
+            min-height: 1.2em;
+        }
+        @keyframes subtitleIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 0.7; transform: translateY(0); }
+        }
+        .loading-bar {
+            width: 180px; height: 3px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+            margin-top: 6px;
+            opacity: 0;
+            animation: subtitleIn 0.5s ease 1.5s forwards;
+        }
+        .loading-bar::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, transparent, var(--accent-light), transparent);
+            border-radius: 3px;
+            animation: loadingSlide 1.5s ease-in-out infinite;
+        }
+        @keyframes loadingSlide {
+            0% { left: -40%; }
+            100% { left: 100%; }
+        }
+        .loading-dots {
+            display: flex; gap: 6px;
+            margin-top: 4px;
+            opacity: 0;
+            animation: subtitleIn 0.5s ease 1.8s forwards;
+        }
+        .loading-dots span {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent-light);
+            animation: dotBounce 1.4s ease-in-out infinite;
+        }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dotBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+        .loading-particles {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .loading-particles span {
+            position: absolute;
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: rgba(96, 165, 250, 0.6);
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.8);
+            animation: particleFloat 8s linear infinite;
+        }
+        .loading-particles span:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; animation-duration: 7s; }
+        .loading-particles span:nth-child(2) { left: 80%; top: 30%; animation-delay: 1s; animation-duration: 9s; }
+        .loading-particles span:nth-child(3) { left: 25%; top: 80%; animation-delay: 2s; animation-duration: 8s; }
+        .loading-particles span:nth-child(4) { left: 85%; top: 75%; animation-delay: 3s; animation-duration: 10s; }
+        .loading-particles span:nth-child(5) { left: 50%; top: 15%; animation-delay: 0.5s; animation-duration: 8.5s; }
+        .loading-particles span:nth-child(6) { left: 15%; top: 55%; animation-delay: 2.5s; animation-duration: 7.5s; }
+        .loading-particles span:nth-child(7) { left: 70%; top: 60%; animation-delay: 1.5s; animation-duration: 9.5s; }
+        .loading-particles span:nth-child(8) { left: 40%; top: 90%; animation-delay: 3.5s; animation-duration: 8.2s; }
+        @keyframes particleFloat {
+            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(30px) scale(0.5); opacity: 0; }
+        }
+
+        /* ============================================================
+   BR
+   ============================================================ */
+#network-header-btn {
+    display: none;
+    margin-left: auto;
+}
+#network-header-btn a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    text-decoration: none;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    outline: none;
+    transition: transform 0.25s ease;
+}
+#network-header-btn a:hover {
+    transform: scale(1.12);
+}
+#network-header-btn a svg {
+    width: 32px;
+    height: 32px;
+    transition: transform 0.3s ease;
+}
+#network-header-btn a:hover svg {
+    transform: rotate(-12deg) scale(1.05);
+}
+#network-header-btn a svg {
+    width: 26px;
+    height: 26px;
+    filter: drop-shadow(0 0 6px #00D4FF) drop-shadow(0 0 12px #A855F7);
+    transition: all 0.3s;
+    position: relative;
+    z-index: 2;
+}
+#network-header-btn a:hover svg {
+    transform: rotate(-15deg) scale(1.1);
+}
     </style>
 </head>
 <body>
-    <!-- OVERLAY DE CHARGEMENT -->
-    <div id="loading-overlay">
-        <div style="text-align:center;">
-            <div class="loader-spinner"></div>
-            <p class="loader-text">Connexion en cours...</p>
-            <p class="loader-sub">Veuillez patienter</p>
+    <!-- OVERLAY DE CHARGEMENT / INTRO ANIMÉE TYPH WALLET -->
+    <div id="loading-overlay" class="active">
+        <div class="loading-particles">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="loading-logo-container">
+            <div class="loading-logo">
+                <img id="loading-logo-img" src="https://raw.githubusercontent.com/nalitsoavinatantely/Typh-FINANCE/refs/heads/main/logo.png" 
+                     alt="TYPH WALLET" 
+                     onerror="this.parentElement.innerHTML='<i class=\'fas fa-bolt\' style=\'font-size:3rem;color:#60A5FA;\'></i>'">
+            </div>
+            <div class="loading-title">TYPH WALLET</div>
+            <div class="loading-subtitle" id="loading-subtitle">TONGASOA - BIENVENUE - WELCOME</div>
+            <div class="loading-bar"></div>
+            <div class="loading-dots">
+                <span></span><span></span><span></span>
+            </div>
         </div>
     </div>
 
@@ -1418,15 +1657,20 @@
                 <img src="https://raw.githubusercontent.com/nalitsoavinatantely/Typh-FINANCE/refs/heads/main/logo.png" alt="Logo" class="logo-img">
                 <span>TYPH WALLET</span>
             </div>
-            <div id="support-header-btn">
-                <button onclick="switchPlatformSection('support')" title="Support" 
-                        style="background: transparent; border: none; padding: 8px; cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s ease;"
-                        onmouseenter="this.style.background='rgba(0, 212, 255, 0.12)'; this.querySelector('i').style.color='#00D4FF'; this.querySelector('i').style.textShadow='0 0 20px rgba(0, 212, 255, 0.6)';"
-                        onmouseleave="this.style.background='transparent'; this.querySelector('i').style.color='#94A3B8'; this.querySelector('i').style.textShadow='none';">
-                    <i class="fas fa-headset" style="font-size: 1.5rem; color: #94A3B8; transition: all 0.3s ease;"></i>
-                    <span class="support-dot offline" id="support-header-dot" style="position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg-dark, #0A0F1F);"></span>
-                </button>
-            </div>
+            <div id="network-header-btn">
+    <a href="https://typh-xchain.site/network.html" target="_blank" rel="noopener noreferrer" title="Réseau TYPH">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradNetwork" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#00D4FF;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#A855F7;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M22 2L11 13" stroke="url(#gradNetwork)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="url(#gradNetwork)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</div>
         </div>
     </div>
     <div class="container">
@@ -1441,7 +1685,7 @@
 
             <div id="auth-error-banner" style="display:none;">
                 <div class="banner-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                <div class="banner-text" id="auth-error-text">⚠️ Votre email n'est pas vérifié.</div>
+                <div class="banner-text" id="auth-error-text">Votre email n'est pas vérifié.</div>
                 <div class="banner-sub" id="auth-error-sub">Vérifiez votre boîte mail ou cliquez ci-dessous pour renvoyer le lien.</div>
                 <div>
                     <button class="btn-resend-email" onclick="renvoyerEmailDepuisAccueil()">
@@ -1465,7 +1709,23 @@
             <div style="display: flex; flex-direction: column; align-items: flex-end; margin: -10px 0 30px; padding-right: 10px;"><a href="https://www.mediafire.com/file/77fruf8hbz4lkwg/TYPH+WALLET.apk/file" target="_blank" class="btn-download-green"><i class="fas fa-arrow-down"></i></a><div style="margin-top:5px;"><span style="color:var(--text-secondary);font-size:0.85rem;"><i class="fas fa-download" style="color:#10B981;"></i> Télécharger l'application</span></div></div>
             <div class="features-grid"><div class="feature-card"><div class="feature-icon"><i class="fas fa-bolt"></i></div><h3 class="feature-title">Rapide</h3><p class="feature-description">Transactions en moins de 5 minutes, 15h/24 et 7j/7</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><h3 class="feature-title">Sécurisé</h3><p class="feature-description">Validation par code PIN à 6 chiffres</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-hand-holding-usd"></i></div><h3 class="feature-title">Meilleurs taux</h3><p class="feature-description">Des taux compétitifs mis à jour en temps réel</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-alt"></i></div><h3 class="feature-title">Mobile Money</h3><p class="feature-description">Compatible MVola, Orange Money, Airtel Money</p></div></div>
             <div class="stats-section"><div class="stat-item"><div class="stat-number">1K+</div><div class="stat-label">Utilisateurs</div></div><div class="stat-item"><div class="stat-number">5K+</div><div class="stat-label">Transactions</div></div><div class="stat-item"><div class="stat-number">4.8</div><div class="stat-label">Note moyenne</div></div><div class="stat-item"><div class="stat-number">24/7</div><div class="stat-label">Support</div></div></div>
-            <div id="testimonials" class="testimonials-section"><h2 class="section-title">Ce que disent nos clients</h2><div class="testimonials-grid"><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Tantely Hervée</div><div class="testimonial-date">Il y a 2 jours</div></div></div><div class="testimonial-text">"Atokisana à 100% no sady rapide !"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Santatra Cedrick</div><div class="testimonial-date">Il y a 5 jours</div></div></div><div class="testimonial-text">"Mahay mandray olona sady manoro sy manampy"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div></div><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Mahefa Rakotonirina</div><div class="testimonial-date">Il y a 1 semaine</div></div></div><div class="testimonial-text">"Efa 02 taona niarahana fa milam sady atokisana hatrany foana."</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div></div><div style="text-align:center;margin-top:30px;"><a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a></div></div>
+            
+            <!-- ============================================================
+                 TÉMOIGNAGES - CARROUSEL DYNAMIQUE
+                 ============================================================ -->
+            <div id="testimonials" class="testimonials-section">
+                <h2 class="section-title">Ce que disent nos clients</h2>
+                <div class="testimonials-carousel-wrapper">
+                    <button class="testimonials-carousel-arrow prev" onclick="temoignagePrecedent()" aria-label="Précédent"><i class="fas fa-chevron-left"></i></button>
+                    <button class="testimonials-carousel-arrow next" onclick="temoignageSuivant()" aria-label="Suivant"><i class="fas fa-chevron-right"></i></button>
+                    <div class="testimonials-carousel-slides" id="testimonialsSlides"></div>
+                </div>
+                <div class="testimonials-carousel-dots" id="testimonialsDots"></div>
+                <div style="text-align:center;margin-top:30px;">
+                    <a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a>
+                </div>
+            </div>
+            
             <div class="footer-copyright">Copyright ©2026 All rights reserved | Dev. Typh</div>
             <div class="terms-link">
                 <a href="https://policies.google.com/privacy?hl=fr" target="_blank" rel="noopener noreferrer">
@@ -1486,7 +1746,7 @@
 
             <div id="solde-alert" class="solde-alert" style="display:none;">
                 <i class="fas fa-exclamation-triangle"></i>
-                <span><strong>⚠️ Votre solde a atteint 5 000 Ar !</strong> Effectuez un retrait pour continuer à recevoir des bonus.</span>
+                <span><strong>Votre solde a atteint 5 000 Ar !</strong> Effectuez un retrait pour continuer à recevoir des bonus.</span>
                 <button class="btn-retrait-rapide" onclick="ouvrirModalRetraitOptions()"><i class="fas fa-arrow-up"></i> Retirer</button>
             </div>
 
@@ -1530,7 +1790,7 @@
                 </div>
                 <div class="carousel-banner-dots" id="bannerDots"></div>
             </div>
-            <div class="card"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-history"></i> Transactions par nos clients</h2><ul class="activity-list" id="recent-activity"></ul></div>
+            <div class="card"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-history"></i> Vos dernières transactions</h2><ul class="activity-list" id="recent-activity"></ul></div>
             <div class="card"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-newspaper"></i> Actualités & Annonces</h2><div class="news-container" id="news-container"></div></div>
         </div>
         <div id="achat-section" class="platform-section">
@@ -1538,10 +1798,10 @@
                 <h2 class="card-title"><i class="fas fa-arrow-down"></i> Achat crypto</h2>
                 <div id="blocage-achat" style="display:none;"></div>
                 <div id="pause-message-achat" class="pause-message" style="display:none;"><i class="fas fa-pause-circle"></i><span>Service temporairement suspendu</span></div>
-                <div id="achat-content"><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant <span id="montant-limite-achat" style="color:var(--warning);font-size:0.7rem;"></span></label><div class="input-wrapper"><input type="number" id="montant-achat" value="2000" oninput="estimerAchat(); verifierLimitesAchat()"></div><div class="limite-error" id="limite-error-achat">Le montant doit être entre <span id="min-affichage-achat">2 000</span> Ar et <span id="max-affichage-achat">200 000</span> Ar</div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-achat" onchange="estimerAchat(); mettreAJourReseaux('achat'); mettreAJourLimiteAchat()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-achat-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-achat" onchange="estimerAchat(); afficherFraisReseauAchat()"></select></div></div><div id="message-trx-special" class="frais-special" style="display:none;"><i class="fas fa-info-circle"></i> Frais réseau TRC20 : 3% ou -1 TRX si activation</div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-qrcode"></i> Adresse</label><div class="input-wrapper"><input type="text" placeholder="ID ou Email ou Adresse..." id="adresse-achat"></div></div><div class="form-group" id="groupe-numero-achat" style="display:none;"><label class="form-label"><i class="fas fa-phone-alt"></i> Numéro à débiter</label><div class="input-wrapper"><select id="numero-achat-select" onchange="afficherInfosNumeroAchat()"><option value="">Sélectionnez un numéro</option></select></div><div id="info-numero-achat-selectionne" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div></div><div class="limite-info"><span class="limite-label"><i class="fas fa-info-circle"></i> Limites d'échange</span><span class="limite-valeur" id="limite-affichee-achat">2 000 Ar - 200 000 Ar</span></div><div class="estimated-value" id="estimation-achat-container"></div><button class="btn btn-success" onclick="preparerConfirmation('ACHAT')" id="btn-confirmer-achat"><i class="fas fa-lock"></i> Suivant</button></div></div></div>
+                <div id="achat-content"><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant <span id="montant-limite-achat" style="color:var(--warning);font-size:0.7rem;"></span></label><div class="input-wrapper"><input type="number" id="montant-achat" value="2000" oninput="estimerAchat(); verifierLimitesAchat()"></div><div class="limite-error" id="limite-error-achat">Le montant doit être entre <span id="min-affichage-achat">2 000</span> Ar et <span id="max-affichage-achat">200 000</span> Ar</div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-achat" onchange="estimerAchat(); mettreAJourReseaux('achat'); mettreAJourLimiteAchat()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-achat-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-achat" onchange="estimerAchat(); afficherFraisReseauAchat()"></select></div></div><div id="message-trx-special" class="frais-special" style="display:none;"><i class="fas fa-info-circle"></i> Frais réseau TRC20 : -0.3 TRX ou -1 TRX si activation</div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-qrcode"></i> Adresse</label><div class="input-wrapper"><input type="text" placeholder="ID ou Email ou Adresse..." id="adresse-achat"></div></div><div class="form-group" id="groupe-numero-achat" style="display:none;"><label class="form-label"><i class="fas fa-phone-alt"></i> Numéro à débiter</label><div class="input-wrapper"><select id="numero-achat-select" onchange="afficherInfosNumeroAchat()"><option value="">Sélectionnez un numéro</option></select></div><div id="info-numero-achat-selectionne" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div></div><div class="limite-info"><span class="limite-label"><i class="fas fa-info-circle"></i> Limites d'échange</span><span class="limite-valeur" id="limite-affichee-achat">2 000 Ar - 200 000 Ar</span></div><div class="estimated-value" id="estimation-achat-container"></div><button class="btn btn-success" onclick="preparerConfirmation('ACHAT')" id="btn-confirmer-achat"><i class="fas fa-lock"></i> Suivant</button></div></div></div>
         <div id="vente-section" class="platform-section"><div class="card"><h2 class="card-title"><i class="fas fa-arrow-up"></i> Vente crypto</h2><div id="blocage-vente" style="display:none;"></div><div id="pause-message-vente" class="pause-message" style="display:none;"><i class="fas fa-pause-circle"></i><span>Service temporairement suspendu</span></div><div id="vente-content"><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-vente" onchange="estimerVente(); mettreAJourReseaux('vente'); mettreAJourChampAdresseVente()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant</label><div class="input-wrapper"><input type="number" id="montant-vente" value="0.6" oninput="estimerVente()"></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-vente-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-vente" onchange="estimerVente(); afficherFraisReseauVente(); mettreAJourChampAdresseVente()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-vente"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-vente" onchange="afficherReponseVente(); mettreAJourChampAdresseVente()"></select></div></div>
             <div id="groupe-adresse-liee" style="display:none; margin-bottom: 20px;">
-                <label class="form-label"><i class="fas fa-link"></i> 📍 Mon adresse de réception</label>
+                <label class="form-label"><i class="fas fa-link"></i> Mon adresse de réception</label>
                 <div class="input-wrapper"><select id="adresse-liee-select" onchange="selectionnerAdresseLiee()"><option value="">Sélectionnez une adresse</option></select></div>
                 <div id="info-adresse-liee" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div>
             </div>
@@ -1578,7 +1838,7 @@
                 </div>
             </div>
             <div id="email-verification-banner" class="email-verification-banner" style="display:none;">
-                <i class="fas fa-exclamation-triangle"></i> ⚠️ Votre email n'est pas vérifié. Vous devez vérifier votre email pour accéder aux fonctionnalités.
+                <i class="fas fa-exclamation-triangle"></i> Votre email n'est pas vérifié. Vous devez vérifier votre email pour accéder aux fonctionnalités.
                 <br>
                 <button class="btn-verify-email" onclick="renvoyerEmailVerification()">
                     <i class="fas fa-envelope"></i> Renvoyer l'email de vérification
@@ -1600,17 +1860,17 @@
             </div>
             <div class="card card-bonus-rouge" id="card-bonus" style="text-align:center; background: linear-gradient(135deg, var(--bg-card), #7F1D1D); border: 2px solid #EF4444; box-shadow: 0 0 20px rgba(239,68,68,0.3);">
                 <h2 class="card-title" style="justify-content:center;"><i class="fas fa-gift" style="color:#F87171;"></i> Bonus Journalier - Roue de la Fortune</h2>
-                <p id="bonus-message" style="color:var(--text-secondary); margin:10px 0; font-size:0.9rem;">🎰 Tournez la roue et gagnez des lots !</p>
+                <p id="bonus-message" style="color:var(--text-secondary); margin:10px 0; font-size:0.9rem;">Tournez la roue et gagnez des lots !</p>
                 <button id="btn-roue-action" class="btn btn-wheel-disabled" onclick="ouvrirModalRoue()" disabled><i class="fas fa-dharmachakra"></i> Tourner la Roue</button>
-                <p id="bonus-restriction" style="color:var(--warning); font-size:0.8rem; margin-top:8px;">🔒 Une transaction confirmée aujourd'hui ou un tour gratuit est requis</p>
+                <p id="bonus-restriction" style="color:var(--warning); font-size:0.8rem; margin-top:8px;"><i class="fas fa-lock"></i> Une transaction confirmée aujourd'hui ou un tour gratuit est requis</p>
             </div>
             <div class="card"><h2 class="card-title"><i class="fas fa-key"></i> Code PIN de sécurité</h2><div id="pin-management"></div><button class="btn btn-success" onclick="gererPIN()" id="btn-gerer-pin"><i class="fas fa-key"></i> Configurer mon code PIN</button></div>
-            <div class="card"><h2 class="card-title"><i class="fas fa-link"></i> 🔗 Mes adresses de portefeuille</h2>
+            <div class="card"><h2 class="card-title"><i class="fas fa-link"></i> Mes adresses de portefeuille</h2>
                 <div id="liste-adresses-utilisateur" class="activity-list"></div>
                 <button class="btn btn-success" onclick="ouvrirModalAjoutAdresse()" style="margin-bottom: 10px;"><i class="fas fa-plus"></i> Ajouter une adresse</button>
                 <div class="info-message"><i class="fas fa-info-circle"></i> Les adresses approuvées par l'administrateur seront utilisées lors de vos retraits.</div>
             </div>
-            <div class="card"><h2 class="card-title"><i class="fas fa-phone-alt"></i> Mes numéros (max 3)</h2><div id="liste-numeros-utilisateur" class="activity-list"></div><div id="form-ajout-numero" style="margin-top:20px;"><div class="form-group"><label class="form-label">Nom complet</label><div class="input-wrapper"><input type="text" id="nouveau-nom" placeholder="Rakoto Jean"></div></div><div class="form-group"><label class="form-label">Numéro</label><div class="input-wrapper"><input type="tel" id="nouveau-numero" placeholder="034 00 000 00"></div></div><button class="btn btn-success" onclick="ajouterNumero()" id="btn-ajouter-numero"><i class="fas fa-plus"></i> Ajouter un numéro</button></div><div style="margin-top:20px;text-align:center;"><div id="user-badge-bottom-container" style="margin-bottom: 15px;"></div><a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a></div></div>
+            <div class="card"><h2 class="card-title"><i class="fas fa-phone-alt"></i> Mes numéros (max 3)</h2><div id="liste-numeros-utilisateur" class="activity-list"></div><div id="form-ajout-numero" style="margin-top:20px;"><div class="form-group"><label class="form-label">Nom complet</label><div class="input-wrapper"><input type="text" id="nouveau-nom" placeholder="Rakoto Jean"></div></div><div class="form-group"><label class="form-label">Numéro</label><div class="input-wrapper"><input type="tel" id="nouveau-numero" placeholder="034 00 000 00"></div></div><button class="btn btn-success" onclick="ajouterNumero()" id="btn-ajouter-numero"><i class="fas fa-plus"></i> Ajouter un numéro</button></div><div style="margin-top:20px;text-align:center;"><div id="user-badge-bottom-container" style="margin-bottom: 15px;"></div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><button class="btn btn-refresh-small" onclick="switchPlatformSection('support')" style="width:auto;display:inline-flex;background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);color:var(--white);"><i class="fas fa-headset"></i> Support</button><a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support" style="margin:0;"><i class="fab fa-facebook-f"></i> Support Facebook</a></div></div></div>
             
             <div class="card">
                 <h2 class="card-title"><i class="fas fa-database"></i> Gestion du cache</h2>
@@ -1810,7 +2070,7 @@
         </div>
     </div>
 
-    <!-- NOUVEAU - MODAL DE VÉRIFICATION EMAIL -->
+    <!-- NVE -->
     <div id="modal-verif-email" class="modal">
         <div class="modal-content" style="border: 2px solid var(--warning);">
             <div class="verif-email-popup-icon">
@@ -1860,10 +2120,46 @@
 
     <script>
     // ============================================================
-    //  🔒 SÉCURITÉ AVANCÉE 
+    //  ITP
+    // ============================================================
+    const MIN_LOADING_DURATION = 10000; // 10 secondes
+    const loadingStartTime = Date.now();
+    let loadingMsgIndex = 0;
+    const loadingMessages = ['TONGASOA - BIENVENUE - WELCOME', 'UNE EXCELLENTE JOURNÉE À VOUS...', 'Veuillez patienter...'];
+    const loadingMsgInterval = setInterval(() => {
+        loadingMsgIndex++;
+        if (loadingMsgIndex >= loadingMessages.length) {
+            clearInterval(loadingMsgInterval);
+            return;
+        }
+        const el = document.getElementById('loading-subtitle');
+        if (el) {
+            el.style.opacity = '0';
+            setTimeout(() => {
+                el.textContent = loadingMessages[loadingMsgIndex];
+                el.style.opacity = '0.7';
+            }, 250);
+        }
+    }, 2500);
+
+    function cacherIntroAvecDelai() {
+        const elapsed = Date.now() - loadingStartTime;
+        const remaining = Math.max(0, MIN_LOADING_DURATION - elapsed);
+        setTimeout(() => {
+            const loader = document.getElementById('loading-overlay');
+            if (loader) {
+                loader.classList.remove('active');
+                loader.classList.add('hidden');
+            }
+            clearInterval(loadingMsgInterval);
+        }, remaining);
+    }
+
+    // ============================================================
+    //  🔒 S-A
     // ============================================================
 
-    // VERSION AMÉLIORÉE - Protection renforcée du solde
+    // VAP
     let _soldeProtect = 0;
     
     function verrouillerUtilisateur() {
@@ -1883,7 +2179,7 @@
                     return _soldeProtect;
                 },
                 set: function(valeur) {
-                    console.error('❌ [SÉCURITÉ] Tentative de modification du solde via console bloquée !');
+                    console.error('[SÉCURITÉ] Tentative de modification du solde via console bloquée !');
                     return _soldeProtect;
                 }
             });
@@ -1895,7 +2191,7 @@
                     return _soldeProtect;
                 },
                 set: function(valeur) {
-                    console.error('❌ [SÉCURITÉ] Tentative de modification du solde interne bloquée !');
+                    console.error('[SÉCURITÉ] Tentative de modification du solde interne bloquée !');
                     return _soldeProtect;
                 }
             });
@@ -1956,7 +2252,7 @@
                     if (match) {
                         const soldeAfficheValeur = parseFloat(match[1]);
                         if (Math.abs(soldeAfficheValeur - _soldeProtect) > 0.001) {
-                            console.warn('🛡️ [SÉCURITÉ] Tentative de modification du solde détectée et corrigée');
+                            console.warn('[SÉCURITÉ] Tentative de modification du solde détectée et corrigée');
                             soldeAffiche.innerHTML = `$ ${_soldeProtect.toFixed(2)} <small>USD</small>`;
                             
                             const soldeMgaElem = document.getElementById('solde-mga');
@@ -1984,7 +2280,7 @@
                 if (argsStr.includes('solde') || argsStr.includes('balance') || 
                     argsStr.includes('utilisateur') || argsStr.includes('user') ||
                     argsStr.includes('_solde') || argsStr.includes('protect')) {
-                    console.warn('🛡️ [SÉCURITÉ] Tentative d\'accès aux données sensibles via console détectée');
+                    console.warn('[SÉCURITÉ] Tentative d\'accès aux données sensibles via console détectée');
                 }
                 originalMethods[method].apply(console, args);
             };
@@ -1992,11 +2288,11 @@
     }
 
     function initialiserSecuriteSolde() {
-        console.log('🔒 [SÉCURITÉ] Initialisation de la protection du solde...');
+        console.log('[SÉCURITÉ] Initialisation de la protection du solde...');
         verrouillerUtilisateur();
         demarrerSurveillanceSolde();
         surveillerConsole();
-        console.log('✅ [SÉCURITÉ] Protection du solde activée');
+        console.log('[SÉCURITÉ] Protection du solde activée');
     }
 
     function ecouterChangementsSolde() {
@@ -2032,7 +2328,7 @@
         configurable: false,
         enumerable: false,
         value: function() {
-            console.error('❌ [SÉCURITÉ] Cette fonction est réservée à l\'administrateur !');
+            console.error('[SÉCURITÉ] Cette fonction est réservée à l\'administrateur !');
             return false;
         }
     });
@@ -2041,45 +2337,35 @@
         configurable: false,
         enumerable: false,
         value: function() {
-            console.error('❌ [SÉCURITÉ] Cette fonction est réservée à l\'administrateur !');
+            console.error('[SÉCURITÉ] Cette fonction est réservée à l\'administrateur !');
             return false;
         }
     });
 
     // ============================================================
-    //  ⚡ PROTECTION ANTI-DOUBLE-CLIC (NOUVEAU)
-    // ============================================================
-    // Empêche les clics multiples sur un même bouton pendant
-    // qu'une requête est en cours. À utiliser avec :
-    //   onclick="avecProtection(this, async () => { ... })"
+    //  ⚡ PAC
     // ============================================================
     async function avecProtection(btnOrEvent, asyncFn) {
-        // Résoudre le bouton (peut être un event, un element, ou null)
         let btn = btnOrEvent;
         if (btnOrEvent && btnOrEvent.currentTarget) {
             btn = btnOrEvent.currentTarget;
         }
         
-        // Si pas de bouton, exécuter directement
         if (!btn || !(btn instanceof HTMLElement)) {
             return await asyncFn();
         }
         
-        // Si déjà en cours, ignorer le clic
         if (btn.dataset.loading === 'true' || btn.disabled) {
             return;
         }
         
-        // Sauvegarder le contenu original
         const originalHTML = btn.innerHTML;
         const originalWidth = btn.offsetWidth;
         
-        // Marquer comme en cours
         btn.dataset.loading = 'true';
         btn.classList.add('btn-loading');
         btn.disabled = true;
         
-        // Stabiliser la largeur pour éviter le "saut" visuel
         if (originalWidth > 0) {
             btn.style.minWidth = originalWidth + 'px';
         }
@@ -2087,9 +2373,8 @@
         try {
             await asyncFn();
         } catch (error) {
-            console.error('❌ Erreur dans avecProtection:', error);
+            console.error('Erreur dans avecProtection:', error);
         } finally {
-            // Restaurer le bouton
             btn.dataset.loading = 'false';
             btn.classList.remove('btn-loading');
             btn.disabled = false;
@@ -2099,24 +2384,20 @@
     }
 
     // ============================================================
-    //  📧 POPUP VÉRIFICATION EMAIL (NOUVEAU)
-    // ============================================================
-    // Renvoi limité à 1 fois par heure (stocké dans Firebase)
+    //  📧 PVE
     // ============================================================
     let verifEmailCountdownInterval = null;
 
-    // Renvoi d'email depuis le popup (avec limite 1×/heure via Firebase)
     async function renvoyerEmailPopup() {
         return avecProtection(document.getElementById('btn-renvoyer-verif'), async () => {
             if (!auth.currentUser) {
-                afficherErreurVerifEmail('❌ Aucun utilisateur connecté.');
+                afficherErreurVerifEmail('Aucun utilisateur connecté.');
                 return;
             }
             
             const erreurDiv = document.getElementById('verif-email-error');
             erreurDiv.classList.remove('show');
             
-            // Vérifier la limite dans Firebase
             try {
                 const snapshot = await database.ref(`donnees/utilisateurs/${monUid}/derniereVerifEmail`).once('value');
                 const derniereVerif = snapshot.val() || 0;
@@ -2127,24 +2408,19 @@
                     const restant = uneHeure - (maintenant - derniereVerif);
                     const minutes = Math.floor(restant / 60000);
                     const secondes = Math.floor((restant % 60000) / 1000);
-                    afficherErreurVerifEmail(`⏳ Veuillez attendre ${minutes}m ${secondes}s avant de renvoyer.`);
+                    afficherErreurVerifEmail(`Veuillez attendre ${minutes}m ${secondes}s avant de renvoyer.`);
                     return;
                 }
                 
-                // Envoyer l'email
                 await auth.currentUser.sendEmailVerification();
-                
-                // Enregistrer le timestamp dans Firebase
                 await database.ref(`donnees/utilisateurs/${monUid}/derniereVerifEmail`).set(maintenant);
                 
-                afficherErreurVerifEmail('✅ Email envoyé ! Vérifiez votre boîte et vos SPAM.', 'success');
-                
-                // Démarrer le countdown
+                afficherErreurVerifEmail('Email envoyé ! Vérifiez votre boîte et vos SPAM.', 'success');
                 demarrerCountdownVerifEmail(uneHeure);
                 
             } catch (error) {
                 console.error('Erreur renvoi email:', error);
-                afficherErreurVerifEmail('❌ Erreur lors de l\'envoi. Réessayez plus tard.');
+                afficherErreurVerifEmail('Erreur lors de l\'envoi. Réessayez plus tard.');
             }
         });
     }
@@ -2199,14 +2475,14 @@
                 emailVerifie = true;
                 fermerPopupVerifEmail();
                 cacherBanniereEmailNonVerifie();
-                alert('✅ Email vérifié ! Rechargement...');
+                alert('Email vérifié ! Rechargement...');
                 setTimeout(() => window.location.reload(), 800);
             } else {
-                alert('⏳ Email toujours non vérifié. Vérifiez votre boîte mail et SPAM.');
+                alert('Email toujours non vérifié. Vérifiez votre boîte mail et SPAM.');
             }
         } catch(e) {
             console.error(e);
-            alert('❌ Erreur de vérification.');
+            alert('Erreur de vérification.');
         }
     }
 
@@ -2214,10 +2490,7 @@
         const modal = document.getElementById('modal-verif-email');
         const adresseSpan = document.getElementById('verif-email-adresse');
         if (adresseSpan) adresseSpan.textContent = email || 'votre adresse';
-        
-        // Vérifier s'il y a un countdown en cours (dernier envoi < 1h)
         verifierCountdownVerifEmailExistant();
-        
         modal.classList.add('active');
     }
 
@@ -2247,7 +2520,7 @@
     }
 
     // ============================================================
-    //  FONCTION RETRAIT AVEC DEMANDE D'ADRESSE
+    //  FRDA
     // ============================================================
 
     let retraitAdresseDemandeId = null;
@@ -2319,20 +2592,20 @@
 
     async function initierRetraitAvecDemande() {
         if (!sessionValide || !utilisateurCourant) { alert('Veuillez vous connecter'); showAuthModal(); return; }
-        if (!emailVerifie) { alert('⚠️ Veuillez vérifier votre email avant d\'effectuer un retrait.'); return; }
+        if (!emailVerifie) { alert('Veuillez vérifier votre email avant d\'effectuer un retrait.'); return; }
         if (!rateLimiters.demande.peutExecuter('demander_adresse_retrait')) {
-            alert('⏳ Trop de tentatives. Veuillez patienter.');
+            alert('Trop de tentatives. Veuillez patienter.');
             return;
         }
         
         if (!peutFaireNouvelleDemande()) {
-            alert('⛔ Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.');
+            alert('Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.');
             switchPlatformSection('demandes');
             return;
         }
         
         if (!aNumeroApprouve()) {
-            alert('❌ Vous devez avoir un numéro approuvé pour effectuer un retrait.');
+            alert('Vous devez avoir un numéro approuvé pour effectuer un retrait.');
             switchPlatformSection('profil');
             return;
         }
@@ -2409,7 +2682,7 @@
 
         } catch (error) {
             console.error('Erreur lors de la demande d\'adresse:', error);
-            alert('❌ Erreur lors de la demande. Veuillez réessayer.');
+            alert('Erreur lors de la demande. Veuillez réessayer.');
         }
     }
 
@@ -2439,7 +2712,7 @@
             content.innerHTML = `
                 <div class="retrait-adresse-popup-waiting">
                     <span class="waiting-icon"><i class="fas fa-clock"></i></span>
-                    <div class="waiting-title">⏳ En attente de l'adresse de retrait</div>
+                    <div class="waiting-title">En attente de l'adresse de retrait</div>
                     <div class="waiting-sub">L'administrateur prépare votre adresse de retrait...</div>
                     <div class="waiting-spinner"></div>
                     <div style="margin-top:15px; font-size:0.8rem; color:var(--text-secondary);">
@@ -2464,7 +2737,7 @@
                 content.innerHTML = `
                     <div class="retrait-adresse-popup-expired">
                         <span class="expired-icon"><i class="fas fa-exclamation-triangle"></i></span>
-                        <div class="expired-title">⏰ Adresse expirée</div>
+                        <div class="expired-title">Adresse expirée</div>
                         <div class="expired-sub">Le délai pour utiliser cette adresse est expiré.</div>
                         <button class="btn-request-new" onclick="initierRetraitAvecDemande()">
                             <i class="fas fa-paper-plane"></i> Nouvelle demande
@@ -2524,7 +2797,7 @@
                 <div class="retrait-adresse-popup-received" style="border-color: var(--success);">
                     <div class="adresse-header" style="color: var(--success);">
                         <i class="fas fa-check-circle"></i>
-                        <span>${demande.statut === 'confirme' ? '✅ Retrait confirmé !' : '⏳ Retrait en attente de validation'}</span>
+                        <span>${demande.statut === 'confirme' ? 'Retrait confirmé !' : 'Retrait en attente de validation'}</span>
                     </div>
                     <div style="text-align:center; padding:20px; color:var(--text-secondary);">
                         <i class="fas fa-info-circle"></i> 
@@ -2544,7 +2817,7 @@
             content.innerHTML = `
                 <div class="retrait-adresse-popup-expired" style="border-color: var(--danger);">
                     <span class="expired-icon"><i class="fas fa-times-circle"></i></span>
-                    <div class="expired-title" style="color:var(--danger);">❌ Demande rejetée</div>
+                    <div class="expired-title" style="color:var(--danger);">Demande rejetée</div>
                     <div class="expired-sub">Votre demande de retrait a été rejetée par l'administrateur.</div>
                     <button class="btn-request-new" onclick="initierRetraitAvecDemande()">
                         <i class="fas fa-paper-plane"></i> Nouvelle demande
@@ -2557,7 +2830,7 @@
         content.innerHTML = `
             <div class="retrait-adresse-popup-waiting">
                 <span class="waiting-icon"><i class="fas fa-clock"></i></span>
-                <div class="waiting-title">⏳ En attente...</div>
+                <div class="waiting-title">En attente...</div>
                 <div class="waiting-sub">Statut: ${echapperHTML(demande.statut)}</div>
             </div>
         `;
@@ -2683,48 +2956,48 @@
                 }, 3000);
             }
         }).catch(() => {
-            alert('❌ Impossible de copier. Veuillez copier manuellement.');
+            alert('Impossible de copier. Veuillez copier manuellement.');
         });
     }
 
     async function confirmerRetraitAvecAdressePopup() {
         if (!retraitAdresseDemandeId) {
-            alert('❌ Aucune demande en cours.');
+            alert('Aucune demande en cours.');
             return;
         }
         
         const txid = document.getElementById('retrait-txid-popup-input')?.value.trim();
         if (!txid) {
-            alert('⚠️ Veuillez entrer le TXID de votre transaction.');
+            alert('Veuillez entrer le TXID de votre transaction.');
             document.getElementById('retrait-txid-popup-input')?.focus();
             return;
         }
         
         if (!utilisateurCourant.codePIN || !utilisateurCourant.codePIN.actif) {
-            alert('⚠️ Veuillez configurer votre code PIN dans le profil');
+            alert('Veuillez configurer votre code PIN dans le profil');
             fermerPopupRetraitAdresse();
             switchPlatformSection('profil');
             return;
         }
         
         if (utilisateurCourant.codePIN.bloque) {
-            alert('❌ Code PIN bloqué. Contactez l\'administrateur.');
+            alert('Code PIN bloqué. Contactez l\'administrateur.');
             return;
         }
         
         const demande = retraitAdresseDemandeEnCours;
         if (!demande) {
-            alert('❌ Demande introuvable.');
+            alert('Demande introuvable.');
             return;
         }
         
         if (demande.statut !== 'adresse_recue') {
-            alert('❌ L\'adresse n\'a pas encore été reçue ou est expirée.');
+            alert('L\'adresse n\'a pas encore été reçue ou est expirée.');
             return;
         }
         
         if (demande.deadline && new Date(demande.deadline) < new Date()) {
-            alert('⏰ L\'adresse a expiré. Veuillez faire une nouvelle demande.');
+            alert('L\'adresse a expiré. Veuillez faire une nouvelle demande.');
             return;
         }
 
@@ -2748,7 +3021,7 @@
 
     async function envoyerMessageAdminRetrait(demandeId) {
         try {
-            const message = `📩 NOUVELLE DEMANDE DE RETRAIT AVEC ADRESSE\n\nID: ${demandeId}\nCrypto: ${document.getElementById('crypto-vente')?.value}\nRéseau: ${document.getElementById('reseau-vente')?.value}\nMontant: ${document.getElementById('montant-vente')?.value}\n\nVeuillez fournir l'adresse de retrait.`;
+            const message = `NOUVELLE DEMANDE DE RETRAIT AVEC ADRESSE\n\nID: ${demandeId}\nCrypto: ${document.getElementById('crypto-vente')?.value}\nRéseau: ${document.getElementById('reseau-vente')?.value}\nMontant: ${document.getElementById('montant-vente')?.value}\n\nVeuillez fournir l'adresse de retrait.`;
             
             const ref = database.ref(`donnees/support/conversations/admin/demandes_retrait`).push();
             await ref.set({
@@ -2760,13 +3033,12 @@
                 type: 'demande_retrait_adresse'
             });
             
-            console.log('✅ Message admin envoyé pour la demande:', demandeId);
+            console.log('Message admin envoyé pour la demande:', demandeId);
         } catch (error) {
             console.warn('Impossible d\'envoyer la notification admin:', error);
         }
     }
 
-    // Surcharge de la fonction creerDemande pour gérer RETRAIT_AVEC_DEMANDE
     const originalCreerDemande = creerDemande;
     creerDemande = async function() {
         if (!transactionEnAttente) return;
@@ -2805,7 +3077,7 @@
                 
             } catch (error) {
                 console.error('Erreur confirmation retrait avec adresse:', error);
-                alert('❌ Erreur lors de la confirmation. Veuillez réessayer.');
+                alert('Erreur lors de la confirmation. Veuillez réessayer.');
             }
             return;
         }
@@ -2815,7 +3087,7 @@
 
     async function demanderRetrait() {
         if (!rateLimiters.demande.peutExecuter('demander_retrait')) {
-            alert('⏳ Trop de tentatives de retrait. Veuillez patienter.');
+            alert('Trop de tentatives de retrait. Veuillez patienter.');
             return;
         }
         
@@ -2825,17 +3097,17 @@
         const errorDiv = document.getElementById('retrait-error');
         
         if(isNaN(montant) || montant < 0.5) { 
-            errorDiv.textContent = '❌ Montant minimum : 0.50 $'; 
+            errorDiv.textContent = 'Montant minimum : 0.50 $'; 
             errorDiv.classList.add('show'); 
             return; 
         }
         if(!numero) { 
-            errorDiv.textContent = '❌ Veuillez entrer votre numéro de réception'; 
+            errorDiv.textContent = 'Veuillez entrer votre numéro de réception'; 
             errorDiv.classList.add('show'); 
             return; 
         }
         if(!nom) { 
-            errorDiv.textContent = '❌ Veuillez entrer votre nom complet'; 
+            errorDiv.textContent = 'Veuillez entrer votre nom complet'; 
             errorDiv.classList.add('show'); 
             return; 
         }
@@ -2843,20 +3115,20 @@
         const soldeActuel = await mettreAJourSoldeDepuisFirebase();
         
         if(montant > soldeActuel) { 
-            errorDiv.textContent = `❌ Solde insuffisant. Vous avez $${soldeActuel.toFixed(2)}`; 
+            errorDiv.textContent = `Solde insuffisant. Vous avez $${soldeActuel.toFixed(2)}`; 
             errorDiv.classList.add('show'); 
             return; 
         }
         
         if(!utilisateurCourant.codePIN || !utilisateurCourant.codePIN.actif) {
-            alert('❌ Veuillez configurer votre code PIN dans le profil');
+            alert('Veuillez configurer votre code PIN dans le profil');
             fermerModalRetrait();
             switchPlatformSection('profil');
             return;
         }
         
         if (!peutFaireNouvelleDemande()) {
-            alert('⛔ Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.');
+            alert('Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.');
             fermerModalRetrait();
             switchPlatformSection('demandes');
             return;
@@ -2883,28 +3155,28 @@
             if(!donnees.demandes) donnees.demandes = {};
             donnees.demandes[demandeId] = demande;
             fermerModalRetrait();
-            alert('✅ Demande de retrait envoyée ! L\'administrateur va la traiter.');
+            alert('Demande de retrait envoyée ! L\'administrateur va la traiter.');
             switchPlatformSection('demandes');
             mettreAJourMesDemandes();
             afficherBlocageDemande('achat');
             afficherBlocageDemande('vente');
         } catch(error) {
             console.error("Erreur demande de retrait:", error);
-            errorDiv.textContent = '❌ Erreur lors de l\'envoi de la demande';
+            errorDiv.textContent = 'Erreur lors de l\'envoi de la demande';
             errorDiv.classList.add('show');
         }
     }
 
     async function reclamerBonusAvecChoix() {
         if (!rateLimiters.demande.peutExecuter('reclamer_bonus')) {
-            alert('⏳ Trop de tentatives de réclamation. Veuillez patienter.');
+            alert('Trop de tentatives de réclamation. Veuillez patienter.');
             return;
         }
         
         if(!lotGagneInfo || !utilisateurCourant) return;
         
         if (!peutFaireNouvelleDemande()) {
-            alert('⛔ Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.');
+            alert('Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.');
             switchPlatformSection('demandes');
             return;
         }
@@ -2957,9 +3229,9 @@
             
             let msg = '';
             if (destination === 'solde') {
-                msg = '✅ Votre gain sera crédité sur votre solde par l\'administrateur.';
+                msg = 'Votre gain sera crédité sur votre solde par l\'administrateur.';
             } else {
-                msg = `✅ Demande envoyée ! L'administrateur va vérifier et valider votre gain vers l'adresse fournie.`;
+                msg = `Demande envoyée ! L'administrateur va vérifier et valider votre gain vers l'adresse fournie.`;
             }
             
             document.getElementById('roue-resultat').innerHTML = `
@@ -2986,7 +3258,7 @@
         if(!lotGagneInfo || !utilisateurCourant) return;
         
         if (!peutFaireNouvelleDemande()) {
-            alert('⛔ Vous avez déjà 2 demandes en attente. Le bonus sera traité plus tard.');
+            alert('Vous avez déjà 2 demandes en attente. Le bonus sera traité plus tard.');
             document.getElementById('btn-fermer-roue').style.display = 'block';
             document.getElementById('roue-resultat').innerHTML = `
                 <h3 style="color:var(--warning);"><i class="fas fa-clock"></i> Demande en attente</h3>
@@ -3030,7 +3302,7 @@
             document.getElementById('roue-resultat').innerHTML = `
                 <h3 style="color:var(--success);"><i class="fas fa-check-circle"></i> Gain réclamé automatiquement !</h3>
                 <p style="color:var(--text-secondary); margin-top:10px;">
-                    ✅ Votre lot <strong>${echapperHTML(lotGagneInfo.nom)}</strong> a été envoyé en attente de validation par l'administrateur.
+                    Votre lot <strong>${echapperHTML(lotGagneInfo.nom)}</strong> a été envoyé en attente de validation par l'administrateur.
                     <br>Il sera traité par l'administrateur prochainement.
                 </p>
             `;
@@ -3046,7 +3318,7 @@
         } catch(e) {
             console.error("Erreur réclamation auto bonus:", e);
             document.getElementById('roue-resultat').innerHTML = `
-                <h3 style="color:var(--danger);">❌ Erreur</h3>
+                <h3 style="color:var(--danger);">Erreur</h3>
                 <p style="color:var(--text-secondary); margin-top:10px;">Impossible de réclamer automatiquement. Veuillez contacter le support.</p>
             `;
             document.getElementById('btn-fermer-roue').style.display = 'block';
@@ -3069,7 +3341,7 @@
     }
 
     // ============================================================
-    //  FONCTIONS D'OUVERTURE MODALES
+    //  FOM
     // ============================================================
 
     function ouvrirModalRetraitOptions() {
@@ -3089,12 +3361,12 @@
     async function renvoyerEmailDepuisAccueil() {
         return avecProtection(event?.currentTarget || null, async () => {
             if (!auth.currentUser) {
-                alert('❌ Aucun utilisateur connecté.');
+                alert('Aucun utilisateur connecté.');
                 return;
             }
             try {
                 await auth.currentUser.sendEmailVerification();
-                alert('📧 Un nouvel email de vérification a été envoyé !\n\n💡 Pensez à vérifier vos spams.');
+                alert('Un nouvel email de vérification a été envoyé !\n\nPensez à vérifier vos spams.');
                 
                 const banner = document.getElementById('auth-error-banner');
                 if(banner) {
@@ -3109,7 +3381,7 @@
                     }, 3000);
                 }
             } catch(e) {
-                alert('❌ Erreur lors de l\'envoi: ' + e.message);
+                alert('Erreur lors de l\'envoi: ' + e.message);
             }
         });
     }
@@ -3120,7 +3392,7 @@
         const sub = document.getElementById('auth-error-sub');
         if(banner && text && sub) {
             banner.style.display = 'block';
-            text.textContent = `⚠️ Votre email "${email}" n'est pas vérifié.`;
+            text.textContent = `Votre email "${email}" n'est pas vérifié.`;
             sub.textContent = 'Vérifiez votre boîte mail ou cliquez ci-dessous pour renvoyer le lien.';
         }
     }
@@ -3146,6 +3418,132 @@
     const database = firebase.database();
     const auth = firebase.auth();
     const storage = firebase.storage();
+
+    // ============================================================
+    //  TÉMOIGNAGES - CARROUSEL DYNAMIQUE (chargement Firebase)
+    // ============================================================
+    const TEMOIGNAGES_PAR_DEFAUT = [
+        { nom: "Tantely Hervée", date: "29 Mai 2026", texte: "Atokisana à 100% no sady rapide !", note: 5 },
+        { nom: "Santatra Cedrick", date: "02 Juillet 2026", texte: "Mahay mandray olona sady manoro sy manampy", note: 4.5 },
+        { nom: "Mahefa Rakotonirina", date: "14 Juin 2026", texte: "Efa 02 taona niarahana fa milam sady atokisana hatrany foana.", note: 5 }
+    ];
+
+    let temoignagesListe = [];
+    let temoignageIndex = 0;
+    let temoignageInterval = null;
+    let temoignagesCharges = false;
+
+    function chargerTemoignages() {
+        if (!database) {
+            temoignagesListe = TEMOIGNAGES_PAR_DEFAUT;
+            afficherTemoignages();
+            return;
+        }
+        
+        database.ref('donnees/temoignages').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                let arr = Array.isArray(data) ? data : Object.values(data);
+                arr = arr.filter(t => t && t.nom && t.texte);
+                if (arr.length > 0) {
+                    temoignagesListe = arr;
+                } else {
+                    temoignagesListe = TEMOIGNAGES_PAR_DEFAUT;
+                }
+            } else {
+                temoignagesListe = TEMOIGNAGES_PAR_DEFAUT;
+            }
+            temoignagesCharges = true;
+            temoignageIndex = 0;
+            afficherTemoignages();
+        }, (error) => {
+            console.warn('Erreur chargement témoignages:', error);
+            temoignagesListe = TEMOIGNAGES_PAR_DEFAUT;
+            temoignagesCharges = true;
+            afficherTemoignages();
+        });
+    }
+
+    function genererEtoiles(note) {
+        const n = Math.max(0, Math.min(5, parseFloat(note) || 5));
+        let html = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= Math.floor(n)) {
+                html += '<i class="fas fa-star"></i>';
+            } else if (i - 0.5 === n || (i - n === 0.5)) {
+                html += '<i class="fas fa-star-half-alt"></i>';
+            } else {
+                html += '<i class="far fa-star"></i>';
+            }
+        }
+        return html;
+    }
+
+    function afficherTemoignages() {
+        const slides = document.getElementById('testimonialsSlides');
+        const dots = document.getElementById('testimonialsDots');
+        if (!slides || !dots) return;
+
+        if (!temoignagesListe || temoignagesListe.length === 0) {
+            slides.innerHTML = `<div class="testimonials-carousel-slide"><div class="testimonials-empty"><i class="fas fa-comment-slash"></i><p>Aucun témoignage pour le moment</p></div></div>`;
+            dots.innerHTML = '';
+            return;
+        }
+
+        slides.innerHTML = temoignagesListe.map(t => `
+            <div class="testimonials-carousel-slide">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
+                        <div>
+                            <div class="testimonial-name">${echapperHTML(t.nom || 'Anonyme')}</div>
+                            <div class="testimonial-date">${echapperHTML(t.date || '')}</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-text">"${echapperHTML(t.texte || '')}"</div>
+                    <div class="testimonial-rating">${genererEtoiles(t.note)}</div>
+                </div>
+            </div>
+        `).join('');
+
+        dots.innerHTML = temoignagesListe.map((_, i) => 
+            `<button class="testimonials-carousel-dot${i === temoignageIndex ? ' active' : ''}" onclick="allerTemoignage(${i})" aria-label="Témoignage ${i+1}"></button>`
+        ).join('');
+
+        allerTemoignage(temoignageIndex, false);
+        demarrerAutoTemoignages();
+    }
+
+    function allerTemoignage(index, resetTimer = true) {
+        if (!temoignagesListe || temoignagesListe.length === 0) return;
+        if (index < 0) index = temoignagesListe.length - 1;
+        if (index >= temoignagesListe.length) index = 0;
+        temoignageIndex = index;
+
+        const slides = document.getElementById('testimonialsSlides');
+        if (slides) {
+            slides.style.transform = `translateX(-${temoignageIndex * 100}%)`;
+        }
+
+        document.querySelectorAll('.testimonials-carousel-dot').forEach((d, i) => {
+            d.classList.toggle('active', i === temoignageIndex);
+        });
+
+        if (resetTimer) {
+            demarrerAutoTemoignages();
+        }
+    }
+
+    function temoignageSuivant() { allerTemoignage(temoignageIndex + 1); }
+    function temoignagePrecedent() { allerTemoignage(temoignageIndex - 1); }
+
+    function demarrerAutoTemoignages() {
+        if (temoignageInterval) clearInterval(temoignageInterval);
+        if (!temoignagesListe || temoignagesListe.length <= 1) return;
+        temoignageInterval = setInterval(() => {
+            allerTemoignage(temoignageIndex + 1, false);
+        }, 5000);
+    }
 
     let donnees = {
         portefeuilles: [], operateurs: [], cryptos: ["USDT","BTC","ETH","BNB","LTC","SOL","TRX","DOGE","MATIC","SUI","XRP","USDC","GRAM"],
@@ -3183,7 +3581,6 @@
     let lotsRoue = [];
     let lotGagneInfo = null;
 
-    // SUPPORT VARIABLES
     let messagesSupport = [];
     let supportRefreshCount = 0;
     let dernierRefreshSupport = 0;
@@ -3307,7 +3704,7 @@
     
     async function connexion() {
         if (!rateLimiters.auth.peutExecuter('connexion')) {
-            afficherErreur('⏳ Trop de tentatives de connexion. Veuillez attendre 60 secondes.');
+            afficherErreur('Trop de tentatives de connexion. Veuillez attendre 60 secondes.');
             return;
         }
         
@@ -3328,7 +3725,6 @@
                 afficherBanniereEmailNonVerifie(email);
                 monUid = result.user.uid;
                 
-                // NOUVEAU : Nom auto-généré depuis l'email
                 const nomAuto = genererNomDepuisEmail(email);
                 utilisateurCourant = {
                     email: email,
@@ -3341,7 +3737,6 @@
                 hideAuthModal();
                 showPlatform();
                 
-                // NOUVEAU : Ouvrir le popup de vérification email
                 ouvrirPopupVerifEmail(email);
                 
                 resetTurnstileWidgets();
@@ -3364,7 +3759,7 @@
     
     async function inscription() {
         if (!rateLimiters.auth.peutExecuter('inscription')) {
-            afficherErreur('⏳ Trop de tentatives d\'inscription. Veuillez attendre 60 secondes.');
+            afficherErreur('Trop de tentatives d\'inscription. Veuillez attendre 60 secondes.');
             return;
         }
         
@@ -3374,7 +3769,7 @@
         const parrainId = document.getElementById('parrain-id')?.value.trim() || '';
         
         if (!email.endsWith('@gmail.com')) {
-            afficherErreur('⚠️ Seules les adresses Gmail sont autorisées (@gmail.com)');
+            afficherErreur('Seules les adresses Gmail sont autorisées (@gmail.com)');
             return;
         }
         
@@ -3407,8 +3802,8 @@
             resetTurnstileWidgets();
             await auth.signOut();
             
-            alert(`✅ Inscription réussie !\n\n📧 Un email de vérification a été envoyé à ${email}.\n\n⚠️ Vous devez vérifier votre email avant de pouvoir accéder à la plateforme.` + 
-                  (parrainValide ? '\n\n✅ Code parrain enregistré.' : ''));
+            alert(`Inscription réussie !\n\nUn email de vérification a été envoyé à ${email}.\n\nVous devez vérifier votre email avant de pouvoir accéder à la plateforme.` + 
+                  (parrainValide ? '\n\nCode parrain enregistré.' : ''));
             
             setTimeout(() => showAuthModal(), 1000);
             
@@ -3431,7 +3826,7 @@
         }
         try {
             await auth.currentUser.sendEmailVerification();
-            alert('📧 Un nouvel email de vérification a été envoyé à votre adresse.\n\n💡 Pensez à vérifier vos spams.');
+            alert('Un nouvel email de vérification a été envoyé à votre adresse.\n\nPensez à vérifier vos spams.');
         } catch(e) {
             alert('Erreur lors de l\'envoi de l\'email: ' + e.message);
         }
@@ -3442,16 +3837,11 @@
         else inscription(); 
     }
     
-    // ============================================================
-    //  🆕 GÉNÉRATION AUTOMATIQUE DU NOM DEPUIS L'EMAIL
-    // ============================================================
     function genererNomDepuisEmail(email) {
         if (!email || typeof email !== 'string') return 'Utilisateur';
         const partieLocale = email.split('@')[0] || 'Utilisateur';
         if (!partieLocale) return 'Utilisateur';
-        // Prendre le premier segment avant un point (ex: jean.dupont -> Jean)
         const premierSegment = partieLocale.split('.')[0] || partieLocale;
-        // Mettre la première lettre en majuscule
         return premierSegment.charAt(0).toUpperCase() + premierSegment.slice(1).toLowerCase();
     }
 
@@ -3532,7 +3922,7 @@
     }
 
     // ============================================================
-    //  RATE LIMITER 
+    //  RL
     // ============================================================
     class RateLimiterAvance {
         constructor(limite = 15, fenetre = 60000) {
@@ -3598,7 +3988,7 @@
     const rateLimiterSync = new RateLimiterAvance(10, 300000);
 
     // ============================================================
-    //  FONCTIONS DE CHARGEMENT
+    //  FDC
     // ============================================================
     function chargerDonnees() {
         if(!monUid) return;
@@ -3650,14 +4040,14 @@
     }
 
     // ============================================================
-    //  FONCTIONS D'AUTHENTIFICATION
+    //  F-A
     // ============================================================
     let sessionUtilisateur = localStorage.getItem('typhSession');
     if(sessionUtilisateur){ try{ const s=JSON.parse(sessionUtilisateur); monUid = s.uid; }catch(e){} }
 
     auth.onAuthStateChanged(async(fbUser)=>{
-        const loader = document.getElementById('loading-overlay');
-        if(loader) loader.classList.remove('active');
+        // Cacher l'intro après 10s minimum (déjà géré par cacherIntroAvecDelai)
+        cacherIntroAvecDelai();
 
         if(fbUser){
             monUid = fbUser.uid;
@@ -3668,7 +4058,6 @@
             if (!emailVerifie) {
                 afficherBanniereEmailNonVerifie(fbUser.email);
                 
-                // NOUVEAU : Nom auto-généré depuis l'email
                 const nomAuto = fbUser.displayName || genererNomDepuisEmail(fbUser.email);
                 
                 utilisateurCourant = {
@@ -3683,7 +4072,6 @@
                 showPlatform();
                 mettreAJourAffichage();
                 
-                // NOUVEAU : Ouvrir le popup de vérification email
                 ouvrirPopupVerifEmail(fbUser.email);
                 return;
             }
@@ -3702,14 +4090,12 @@
                 utilisateurCourant.solde = utilisateurCourant._solde;
                 utilisateurCourant.emailVerifie = true;
                 
-                // NOUVEAU : Si le nom est vide/inconnu, le générer depuis l'email
                 if (!utilisateurCourant.nom || 
                     utilisateurCourant.nom === 'Inconnu' || 
                     utilisateurCourant.nom === 'Non renseigné' ||
                     utilisateurCourant.nom.trim() === '') {
                     const nomAuto = genererNomDepuisEmail(fbUser.email);
                     utilisateurCourant.nom = nomAuto;
-                    // Persister dans Firebase (silencieux)
                     database.ref(`donnees/utilisateurs/${monUid}/nom`).set(nomAuto).catch(() => {});
                 }
                 
@@ -3719,7 +4105,6 @@
             } else {
                 const urlParams = new URLSearchParams(window.location.search);
                 const refId = urlParams.get('ref');
-                // NOUVEAU : Nom auto-généré depuis l'email
                 const nomAuto = fbUser.displayName || genererNomDepuisEmail(fbUser.email);
                 const nouvelUtilisateur = {
                     id: genererIDStable(fbUser.email, nomAuto),
@@ -3788,15 +4173,14 @@
             cacherBanniereEmailNonVerifie();
             cacherBanniereNumeroManquant();
             mettreAJourAffichage();
-            document.getElementById('support-header-btn').style.display = 'none';
+            document.getElementById('network-header-btn').style.display = 'none';
             arreterEcouteRetraitAdresse();
-            // NOUVEAU : Fermer le popup de vérif email à la déconnexion
             fermerPopupVerifEmail();
         }
     });
 
     // ============================================================
-    //  FONCTIONS D'AFFICHAGE ET DE MISE À JOUR
+    //  FAM
     // ============================================================
     function showAuthModal(){ 
         const urlParams = new URLSearchParams(window.location.search);
@@ -3959,7 +4343,7 @@
         } 
         
         if (!emailVerifie) {
-            alert('⚠️ Veuillez vérifier votre email avant d\'accéder à cette fonctionnalité.');
+            alert('Veuillez vérifier votre email avant d\'accéder à cette fonctionnalité.');
             ouvrirPopupVerifEmail(utilisateurCourant.email);
             return;
         }
@@ -3983,7 +4367,7 @@
         if (s === 'achat' || s === 'vente' || s === 'demandes') {
             const demandesEnAttente = getDemandesEnAttente();
             if (demandesEnAttente.length >= 2 && (s === 'achat' || s === 'vente')) {
-                alert(`⛔ Vous avez déjà ${demandesEnAttente.length} demande(s) en attente. Veuillez attendre qu'elles soient traitées.`);
+                alert(`Vous avez déjà ${demandesEnAttente.length} demande(s) en attente. Veuillez attendre qu'elles soient traitées.`);
                 switchPlatformSection('demandes');
                 return;
             }
@@ -4054,7 +4438,7 @@
                 cacherBanniereNumeroManquant();
                 showLandingPage();
                 mettreAJourAffichage();
-                document.getElementById('support-header-btn').style.display = 'none';
+                document.getElementById('network-header-btn').style.display = 'none';
                 arreterEcouteRetraitAdresse();
                 fermerPopupVerifEmail();
             });
@@ -4098,7 +4482,7 @@
                 userBadgeContainer.innerHTML = `<div class="user-badge-bottom" onclick="showAuthModal()"><i class="fas fa-user-check"></i> ${echapperHTML(nomTronque)}</div>`;
             }
             document.getElementById('carte-deconnexion').style.display='block';
-            document.getElementById('support-header-btn').style.display = 'flex';
+            document.getElementById('network-header-btn').style.display = 'flex';
             initialiserSupport();
         }else{
             const userBadgeContainer = document.getElementById('user-badge-bottom-container');
@@ -4106,7 +4490,7 @@
                 userBadgeContainer.innerHTML = `<div class="user-badge-bottom" onclick="showAuthModal()"><i class="fas fa-user-circle"></i> Connexion</div>`;
             }
             document.getElementById('carte-deconnexion').style.display='none';
-            document.getElementById('support-header-btn').style.display = 'none';
+            document.getElementById('network-header-btn').style.display = 'none';
             cacherBanniereEmailNonVerifie();
             cacherBanniereNumeroManquant();
         }
@@ -4156,11 +4540,11 @@
             mettreAJourProfil();
             mettreAJourAffichage();
             
-            alert('✅ Votre nom a été mis à jour avec succès !');
+            alert('Votre nom a été mis à jour avec succès !');
             
         } catch (error) {
             console.error('Erreur lors de la modification du nom :', error);
-            alert('❌ Erreur lors de la mise à jour du nom. Veuillez réessayer.');
+            alert('Erreur lors de la mise à jour du nom. Veuillez réessayer.');
         }
     }
 
@@ -4171,7 +4555,7 @@
         }
         
         if (utilisateurCourant.dateInscription && utilisateurCourant.dateInscription !== 'Non définie') {
-            if (!confirm('⚠️ Une date d\'inscription existe déjà (le ' + new Date(utilisateurCourant.dateInscription).toLocaleDateString('fr-FR') + ').\nVoulez-vous vraiment la remplacer par la date d\'aujourd\'hui ?')) {
+            if (!confirm('Une date d\'inscription existe déjà (le ' + new Date(utilisateurCourant.dateInscription).toLocaleDateString('fr-FR') + ').\nVoulez-vous vraiment la remplacer par la date d\'aujourd\'hui ?')) {
                 return;
             }
         }
@@ -4185,11 +4569,11 @@
             
             mettreAJourProfil();
             
-            alert('✅ Date d\'inscription générée avec succès !');
+            alert('Date d\'inscription générée avec succès !');
             
         } catch (error) {
             console.error('Erreur lors de la génération de la date :', error);
-            alert('❌ Erreur lors de la génération de la date. Veuillez réessayer.');
+            alert('Erreur lors de la génération de la date. Veuillez réessayer.');
         }
     }
 
@@ -4199,7 +4583,6 @@
         if(utilisateurCourant) {
             const id = utilisateurCourant.id || 'Non attribué';
             const idEscape = echapperHTML(id);
-            // NOUVEAU : Ne jamais afficher "Inconnu" - fallback sur génération depuis email
             let nomAffiche = utilisateurCourant.nom;
             if (!nomAffiche || nomAffiche === 'Inconnu' || nomAffiche === 'Non renseigné' || nomAffiche.trim() === '') {
                 nomAffiche = genererNomDepuisEmail(utilisateurCourant.email);
@@ -4220,7 +4603,7 @@
             
             const numerosCount = Object.keys(utilisateurCourant.numeros||{}).length;
             const adressesCount = Object.keys(adressesUtilisateur).length;
-            const pinStatus = utilisateurCourant.codePIN?.actif ? '✅ Configuré' : '❌ Non configuré';
+            const pinStatus = utilisateurCourant.codePIN?.actif ? '<i class="fas fa-check-circle" style="color:var(--success);"></i> Configuré' : '<i class="fas fa-times-circle" style="color:var(--danger);"></i> Non configuré';
             const solde = utilisateurCourant._solde || 0;
             
             let emailDisplay = email;
@@ -4246,7 +4629,7 @@
                 `;
             }
             
-            const emailStatus = emailVerifie ? '✅ Vérifié' : '⚠️ Non vérifié';
+            const emailStatus = emailVerifie ? '<i class="fas fa-check-circle"></i> Vérifié' : '<i class="fas fa-exclamation-triangle"></i> Non vérifié';
             
             p.innerHTML=`
                 <div class="profile-row">
@@ -4287,11 +4670,11 @@
                 </div>
                 <div class="profile-row">
                     <span class="profile-label">Tours gratuits</span>
-                    <span class="profile-value">🎟️ ${toursGratuits} tour(s)</span>
+                    <span class="profile-value"><i class="fas fa-ticket-alt"></i> ${toursGratuits} tour(s)</span>
                 </div>
                 <div class="profile-row">
                     <span class="profile-label">Filleuls</span>
-                    <span class="profile-value">👥 ${filleulsCount} personne(s)</span>
+                    <span class="profile-value"><i class="fas fa-users"></i> ${filleulsCount} personne(s)</span>
                 </div>
             `; 
         } else {
@@ -4301,26 +4684,26 @@
 
     async function renvoyerEmailDepuisProfil() {
         if (!auth.currentUser) {
-            alert('❌ Aucun utilisateur connecté.');
+            alert('Aucun utilisateur connecté.');
             return;
         }
         try {
             await auth.currentUser.sendEmailVerification();
-            alert('📧 Un nouvel email de vérification a été envoyé !\n\n💡 Pensez à vérifier vos spams.');
+            alert('Un nouvel email de vérification a été envoyé !\n\nPensez à vérifier vos spams.');
             setTimeout(() => mettreAJourProfil(), 1000);
         } catch(e) {
-            alert('❌ Erreur lors de l\'envoi: ' + e.message);
+            alert('Erreur lors de l\'envoi: ' + e.message);
         }
     }
 
     async function genererIDAuto() {
         if (!utilisateurCourant || !monUid) {
-            alert('❌ Veuillez vous connecter d\'abord.');
+            alert('Veuillez vous connecter d\'abord.');
             return;
         }
         
         if (utilisateurCourant.id && utilisateurCourant.id !== 'Non attribué' && utilisateurCourant.id !== 'undefined') {
-            alert('⚠️ Vous avez déjà un ID. Vous ne pouvez pas le modifier.');
+            alert('Vous avez déjà un ID. Vous ne pouvez pas le modifier.');
             return;
         }
         
@@ -4334,11 +4717,11 @@
             mettreAJourProfil();
             mettreAJourAffichageAffiliation();
             
-            alert(`✅ Votre ID a été généré avec succès : ${nouveauId}`);
+            alert(`Votre ID a été généré avec succès : ${nouveauId}`);
             
         } catch(e) {
             console.error('Erreur lors de la génération de l\'ID:', e);
-            alert('❌ Erreur lors de la génération de l\'ID. Veuillez réessayer.');
+            alert('Erreur lors de la génération de l\'ID. Veuillez réessayer.');
         }
     }
 
@@ -4362,7 +4745,7 @@
     function copierLienAffiliation() {
         const lien = document.getElementById('affiliate-link')?.textContent;
         if(lien) {
-            navigator.clipboard.writeText(lien).then(() => alert('✅ Lien d\'affiliation copié !')).catch(() => alert('❌ Impossible de copier'));
+            navigator.clipboard.writeText(lien).then(() => alert('Lien d\'affiliation copié !')).catch(() => alert('Impossible de copier'));
         }
     }
 
@@ -4480,12 +4863,12 @@
 
     async function syncBinanceManuel() {
         if (!rateLimiters.sync.peutExecuter('sync_manuel')) {
-            alert('⏳ Trop de synchronisations manuelles. Veuillez attendre 5 minutes.');
+            alert('Trop de synchronisations manuelles. Veuillez attendre 5 minutes.');
             return;
         }
-        alert('🔄 Synchronisation...');
+        alert('Synchronisation...');
         await syncBinance();
-        alert('✅ Taux mis à jour !');
+        alert('Taux mis à jour !');
     }
 
     function afficherTauxSimplifies(){ 
@@ -4602,7 +4985,7 @@
             if(!utilisateurCourant || !monUid){ showAuthModal(); return; }
             
             if (!emailVerifie) {
-                alert('⚠️ Vous devez vérifier votre email avant d\'ajouter un numéro. Veuillez vérifier votre boîte mail ou renvoyer le lien de vérification.');
+                alert('Vous devez vérifier votre email avant d\'ajouter un numéro. Veuillez vérifier votre boîte mail ou renvoyer le lien de vérification.');
                 ouvrirPopupVerifEmail(utilisateurCourant.email);
                 return;
             }
@@ -4613,7 +4996,7 @@
             if(!nom || !numero){ alert('Veuillez remplir tous les champs'); return; }
             
             if (!rateLimiters.default.peutExecuter('ajout_numero')) {
-                alert('⏳ Trop de tentatives d\'ajout de numéro. Veuillez patienter.');
+                alert('Trop de tentatives d\'ajout de numéro. Veuillez patienter.');
                 return;
             }
             
@@ -4697,7 +5080,7 @@
         if(!utilisateurCourant || !monUid){ showAuthModal(); return; }
         
         if (!emailVerifie) {
-            alert('⚠️ Veuillez vérifier votre email avant d\'ajouter une adresse.');
+            alert('Veuillez vérifier votre email avant d\'ajouter une adresse.');
             ouvrirPopupVerifEmail(utilisateurCourant.email);
             return;
         }
@@ -4728,7 +5111,7 @@
     async function enregistrerAdresse() {
         return avecProtection(event?.currentTarget || null, async () => {
             if (!rateLimiters.default.peutExecuter('enregistrer_adresse')) {
-                alert('⏳ Trop de tentatives d\'enregistrement. Veuillez patienter.');
+                alert('Trop de tentatives d\'enregistrement. Veuillez patienter.');
                 return;
             }
             
@@ -4765,14 +5148,14 @@
             try {
                 await database.ref(`donnees/utilisateurs/${monUid}/adressesLiees/${idAdresse}`).set(nouvelleAdresse);
                 fermerModalAjoutAdresse();
-                alert('✅ Adresse envoyée pour approbation ! L\'administrateur va la vérifier.');
+                alert('Adresse envoyée pour approbation ! L\'administrateur va la vérifier.');
             } catch(error) { console.error(error); alert('Erreur lors de l\'enregistrement'); }
         });
     }
     
     async function supprimerAdresse(id) {
         if(!confirm('Supprimer cette adresse ?')) return;
-        try { await database.ref(`donnees/utilisateurs/${monUid}/adressesLiees/${id}`).remove(); alert('✅ Adresse supprimée'); } 
+        try { await database.ref(`donnees/utilisateurs/${monUid}/adressesLiees/${id}`).remove(); alert('Adresse supprimée'); } 
         catch(error) { console.error(error); alert('Erreur lors de la suppression'); }
     }
     
@@ -4789,7 +5172,7 @@
             const crypto = echapperHTML(addr.crypto);
             const reseau = echapperHTML(addr.reseau);
             const statut = addr.statut || 'en_attente';
-            const statutTexte = statut === 'en_attente' ? 'En attente' : (statut === 'approuve' ? '✅ Approuvé' : '❌ Rejeté');
+            const statutTexte = statut === 'en_attente' ? 'En attente' : (statut === 'approuve' ? '<i class="fas fa-check-circle"></i> Approuvé' : '<i class="fas fa-times-circle"></i> Rejeté');
             const statutClass = statut === 'en_attente' ? 'en-attente' : (statut === 'approuve' ? 'approuve' : 'rejete');
             return `
                 <div class="adresse-item">
@@ -4893,10 +5276,10 @@
                 <div class="demande-bloquee">
                     <i class="fas fa-hourglass-half"></i>
                     <div>
-                        <strong>⛔ ${count} demande(s) en attente</strong><br>
+                        <strong>${count} demande(s) en attente</strong><br>
                         <span style="font-size:0.8rem;">Types: ${types}</span>
                         <br><span style="font-size:0.7rem; color:var(--text-secondary);">Dates: ${dates}</span>
-                        <br><span style="font-size:0.7rem; color:var(--warning);">⚠️ Maximum 2 demandes en attente autorisées</span>
+                        <br><span style="font-size:0.7rem; color:var(--warning);">Maximum 2 demandes en attente autorisées</span>
                     </div>
                     <button class="btn-voir-demande" onclick="switchPlatformSection('demandes')"><i class="fas fa-eye"></i> Voir</button>
                 </div>
@@ -4930,11 +5313,11 @@
             else if(d.type==='VENTE') montantAffiche = d.montant.toFixed(4) + ' ' + crypto;
             else if(d.type==='RETRAIT') montantAffiche = '$' + d.montant.toFixed(2) + ' → ' + (d.nomReception || d.numero || '');
             else if(d.type==='RETRAIT_AVEC_DEMANDE') {
-                if(statut === 'attente_adresse') montantAffiche = '⏳ Attente adresse';
-                else if(statut === 'adresse_recue') montantAffiche = '📩 Adresse reçue';
-                else if(statut === 'en_attente') montantAffiche = '⏳ En attente';
-                else if(statut === 'confirme') montantAffiche = ' Confirmé';
-                else montantAffiche = '❌ ' + statut;
+                if(statut === 'attente_adresse') montantAffiche = '<i class="fas fa-clock"></i> Attente adresse';
+                else if(statut === 'adresse_recue') montantAffiche = '<i class="fas fa-envelope"></i> Adresse reçue';
+                else if(statut === 'en_attente') montantAffiche = '<i class="fas fa-clock"></i> En attente';
+                else if(statut === 'confirme') montantAffiche = '<i class="fas fa-check-circle"></i> Confirmé';
+                else montantAffiche = '<i class="fas fa-times-circle"></i> ' + statut;
             }
             else if(d.type==='BONUS') montantAffiche = echapperHTML(d.lotGagne || d.montant || 'Gain');
             else montantAffiche = 'Gain';
@@ -4953,11 +5336,11 @@
     function rafraichirMesDemandes() {
         return avecProtection(event?.currentTarget || null, async () => {
             if (!rateLimiters.refresh.peutExecuter('rafraichir_mes_demandes')) {
-                alert('⏳ Trop de rafraîchissements. Veuillez patienter.');
+                alert('Trop de rafraîchissements. Veuillez patienter.');
                 return;
             }
             
-            console.log('🔄 Rafraîchissement des demandes...');
+            console.log('Rafraîchissement des demandes...');
             if(monUid) {
                 try {
                     const snapshot = await database.ref('donnees/demandes').orderByChild('userID').equalTo(monUid).once('value');
@@ -4966,7 +5349,7 @@
                         donnees.demandes = demandes; 
                         mettreAJourMesDemandes(); 
                         verifierAccesBonus(); 
-                        alert('✅ Demandes actualisées');
+                        alert('Demandes actualisées');
                     }
                     else { donnees.demandes = {}; mettreAJourMesDemandes(); alert('Aucune demande trouvée'); }
                 } catch(err) {
@@ -5115,13 +5498,13 @@
             if(!sessionValide || !utilisateurCourant){ alert('Veuillez vous connecter'); showAuthModal(); return; }
             
             if (!emailVerifie) {
-                alert('⚠️ Veuillez vérifier votre email avant d\'effectuer une transaction.');
+                alert('Veuillez vérifier votre email avant d\'effectuer une transaction.');
                 ouvrirPopupVerifEmail(utilisateurCourant.email);
                 return;
             }
             
             if (!peutFaireNouvelleDemande()) {
-                alert(`⛔ Vous avez déjà ${getNombreDemandesEnAttente()} demande(s) en attente. Veuillez attendre qu'elles soient traitées.`);
+                alert(`Vous avez déjà ${getNombreDemandesEnAttente()} demande(s) en attente. Veuillez attendre qu'elles soient traitées.`);
                 switchPlatformSection('demandes');
                 return;
             }
@@ -5133,7 +5516,7 @@
             }
             
             if (!rateLimiters.demande.peutExecuter('preparer_' + type)) {
-                alert('⏳ Trop de préparations de demande. Veuillez patienter.');
+                alert('Trop de préparations de demande. Veuillez patienter.');
                 return;
             }
             
@@ -5211,7 +5594,7 @@
             messagePaiement = portefeuille ? portefeuille.messageConfirmation : 'Envoyez les cryptos à l\'adresse indiquée';
             let adresseDestinataire = '';
             if(transactionEnAttente.adresseLiee) {
-                adresseDestinataire = `<p><strong>📍 Mon adresse de réception:</strong> <span style="word-break:break-all;">${echapperHTML(transactionEnAttente.adresseLiee)}</span></p>`;
+                adresseDestinataire = `<p><strong>Mon adresse de réception:</strong> <span style="word-break:break-all;">${echapperHTML(transactionEnAttente.adresseLiee)}</span></p>`;
             } else {
                 adresseDestinataire = `<p><strong>Adresse du portefeuille:</strong> <span style="word-break:break-all;">${portefeuille ? echapperHTML(portefeuille.reponse) : 'Non spécifiée'}</span></p>`;
             }
@@ -5243,7 +5626,7 @@
     function validerConfirmation(){
         return avecProtection(event?.currentTarget || document.getElementById('btn-confirmer-avec-txid'), async () => {
             if (!rateLimiters.demande.peutExecuter('valider_confirmation')) {
-                alert('⏳ Trop de tentatives de validation. Veuillez patienter.');
+                alert('Trop de tentatives de validation. Veuillez patienter.');
                 return;
             }
             
@@ -5339,7 +5722,7 @@
         try {
             await database.ref(`donnees/utilisateurs/${monUid}/codePIN`).set({ actif: false, bloque: false, tentativeEchouees: 0, hash: null, salt: null });
             if(utilisateurCourant.codePIN) { utilisateurCourant.codePIN.actif = false; utilisateurCourant.codePIN.bloque = false; }
-            alert('✅ Code PIN réinitialisé ! Veuillez configurer un nouveau code.');
+            alert('Code PIN réinitialisé ! Veuillez configurer un nouveau code.');
             document.getElementById('pin-reset').style.display = 'none';
             ouvrirModalPIN();
         } catch(e) { console.error(e); document.getElementById('reset-pin-error').textContent = 'Erreur serveur'; document.getElementById('reset-pin-error').classList.add('show'); }
@@ -5353,7 +5736,7 @@
             const updates = { [`donnees/utilisateurs/${monUid}/codePIN/hash`]: hash, [`donnees/utilisateurs/${monUid}/codePIN/salt`]: salt, [`donnees/utilisateurs/${monUid}/codePIN/actif`]: true, [`donnees/utilisateurs/${monUid}/codePIN/tentativeEchouees`]: 0, [`donnees/utilisateurs/${monUid}/codePIN/bloque`]: false };
             await database.ref().update(updates);
             if(utilisateurCourant) { utilisateurCourant.codePIN = { hash, salt, actif: true, tentativeEchouees: 0, bloque: false }; }
-            alert('✅ Code PIN enregistré avec succès !');
+            alert('Code PIN enregistré avec succès !');
             fermerModalPIN();
             mettreAJourProfil();
         } catch(error){ console.error(error); alert('Erreur lors de l\'enregistrement du PIN'); }
@@ -5361,7 +5744,7 @@
     
     async function verifierPIN(){
         if (!rateLimiters.default.peutExecuter('verifier_pin')) {
-            alert('⏳ Trop de tentatives de vérification PIN. Veuillez patienter.');
+            alert('Trop de tentatives de vérification PIN. Veuillez patienter.');
             return;
         }
         
@@ -5399,14 +5782,14 @@
 
     async function creerDemande(){
         if (!rateLimiters.demande.peutExecuter('creer_demande')) {
-            alert('⏳ Trop de demandes. Veuillez patienter.');
+            alert('Trop de demandes. Veuillez patienter.');
             return;
         }
         
         if(!transactionEnAttente || !utilisateurCourant) return;
         
         if (!peutFaireNouvelleDemande()) {
-            alert('⛔ Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.');
+            alert('Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.');
             return;
         }
         
@@ -5557,10 +5940,10 @@
                 const estExpire = deadlineDate < maintenant;
                 deadlineInfo = `
                     <div class="detail-row">
-                        <span class="detail-label">⏰ Deadline</span>
+                        <span class="detail-label">Deadline</span>
                         <span class="detail-value" style="color:${estExpire ? 'var(--danger)' : 'var(--warning)'}">
                             ${deadlineDate.toLocaleString('fr-FR')}
-                            ${estExpire ? ' (⚠️ Expirée)' : ''}
+                            ${estExpire ? ' (Expirée)' : ''}
                         </span>
                     </div>
                 `;
@@ -5569,7 +5952,7 @@
             if(d.adresseRetrait) {
                 adresseInfo = `
                     <div class="detail-row">
-                        <span class="detail-label">📩 Adresse retrait</span>
+                        <span class="detail-label">Adresse retrait</span>
                         <span class="detail-value small" style="word-break:break-all;">${echapperHTML(d.adresseRetrait)}</span>
                     </div>
                 `;
@@ -5578,7 +5961,7 @@
             if(d.imageRetrait) {
                 imageInfo = `
                     <div class="detail-row">
-                        <span class="detail-label">🖼️ Image</span>
+                        <span class="detail-label">Image</span>
                         <span class="detail-value">
                             <img src="${echapperHTML(d.imageRetrait)}" style="max-width:100%; border-radius:12px; max-height:150px; cursor:pointer;" onclick="window.open('${echapperHTML(d.imageRetrait)}','_blank')">
                         </span>
@@ -5616,7 +5999,7 @@
         document.getElementById('modal-recu').classList.add('active'); 
     }
     
-    function copierTexte(t){ if(t) navigator.clipboard.writeText(t).then(()=>alert('✅ TXID copié !')); }
+    function copierTexte(t){ if(t) navigator.clipboard.writeText(t).then(()=>alert('TXID copié !')); }
     function scrollToTestimonials(){ document.getElementById('testimonials').scrollIntoView({behavior:'smooth'}); }
     function fermerDetailsDemande(){ document.getElementById('modal-details-demande').classList.remove('active'); }
 
@@ -5632,8 +6015,8 @@
             btnRoue.classList.add('btn-wheel-disabled');
             btnRoue.classList.remove('btn-wheel-active');
             if(msgRestriction) msgRestriction.style.display = 'block';
-            if(msgRestriction) msgRestriction.innerHTML = '🔒 La roue est temporairement désactivée';
-            if(msgNormal) msgNormal.textContent = '💰 Roue de la Fortune';
+            if(msgRestriction) msgRestriction.innerHTML = '<i class="fas fa-lock"></i> La roue est temporairement désactivée';
+            if(msgNormal) msgNormal.textContent = 'Roue de la Fortune';
             return;
         }
         
@@ -5643,8 +6026,8 @@
             btnRoue.classList.add('btn-wheel-disabled');
             btnRoue.classList.remove('btn-wheel-active');
             if(msgRestriction) msgRestriction.style.display = 'block';
-            if(msgRestriction) msgRestriction.innerHTML = '🔒 Aucun lot configuré pour le moment';
-            if(msgNormal) msgNormal.textContent = '💰 Roue de la Fortune';
+            if(msgRestriction) msgRestriction.innerHTML = '<i class="fas fa-lock"></i> Aucun lot configuré pour le moment';
+            if(msgNormal) msgNormal.textContent = 'Roue de la Fortune';
             return;
         }
         
@@ -5652,8 +6035,8 @@
             btnRoue.disabled = true;
             btnRoue.classList.add('btn-wheel-disabled');
             if(msgRestriction) msgRestriction.style.display = 'block';
-            if(msgRestriction) msgRestriction.innerHTML = '🔒 Connectez-vous pour jouer';
-            if(msgNormal) msgNormal.textContent = '💰 Roue de la Fortune';
+            if(msgRestriction) msgRestriction.innerHTML = '<i class="fas fa-lock"></i> Connectez-vous pour jouer';
+            if(msgNormal) msgNormal.textContent = 'Roue de la Fortune';
             return;
         }
         
@@ -5661,8 +6044,8 @@
             btnRoue.disabled = true;
             btnRoue.classList.add('btn-wheel-disabled');
             if(msgRestriction) msgRestriction.style.display = 'block';
-            if(msgRestriction) msgRestriction.innerHTML = '🔒 Vérifiez votre email pour accéder à la roue';
-            if(msgNormal) msgNormal.textContent = '💰 Roue de la Fortune';
+            if(msgRestriction) msgRestriction.innerHTML = '<i class="fas fa-lock"></i> Vérifiez votre email pour accéder à la roue';
+            if(msgNormal) msgNormal.textContent = 'Roue de la Fortune';
             return;
         }
         
@@ -5690,30 +6073,30 @@
             btnRoue.classList.add('btn-wheel-active');
             if(msgRestriction) msgRestriction.style.display = 'none';
             if(aTourGratuit && !aTransactionAujourdhui) {
-                if(msgNormal) msgNormal.innerHTML = '🎉 Vous avez un tour gratuit ! Profitez-en maintenant !';
+                if(msgNormal) msgNormal.innerHTML = '<i class="fas fa-gift"></i> Vous avez un tour gratuit ! Profitez-en maintenant !';
             } else {
-                if(msgNormal) msgNormal.textContent = '🎉 Félicitations ! Vous pouvez jouer maintenant !';
+                if(msgNormal) msgNormal.textContent = 'Félicitations ! Vous pouvez jouer maintenant !';
             }
         } else if(aJoueAujourdhui && !aTourGratuit) {
             btnRoue.disabled = true;
             btnRoue.classList.add('btn-wheel-disabled');
             btnRoue.classList.remove('btn-wheel-active');
             if(msgRestriction) msgRestriction.style.display = 'block';
-            if(msgRestriction) msgRestriction.innerHTML = '⏰ Vous avez déjà joué aujourd\'hui. Revenez demain !';
-            if(msgNormal) msgNormal.textContent = '💰 Roue de la Fortune';
+            if(msgRestriction) msgRestriction.innerHTML = '<i class="fas fa-clock"></i> Vous avez déjà joué aujourd\'hui. Revenez demain !';
+            if(msgNormal) msgNormal.textContent = 'Roue de la Fortune';
         } else if(aTourGratuit && aJoueAujourdhui) {
             btnRoue.disabled = false;
             btnRoue.classList.remove('btn-wheel-disabled');
             btnRoue.classList.add('btn-wheel-active');
             if(msgRestriction) msgRestriction.style.display = 'none';
-            if(msgNormal) msgNormal.innerHTML = '🎉 Vous avez un tour gratuit ! Profitez-en maintenant !';
+            if(msgNormal) msgNormal.innerHTML = '<i class="fas fa-gift"></i> Vous avez un tour gratuit ! Profitez-en maintenant !';
         } else {
             btnRoue.disabled = true;
             btnRoue.classList.add('btn-wheel-disabled');
             btnRoue.classList.remove('btn-wheel-active');
             if(msgRestriction) msgRestriction.style.display = 'block';
-            if(msgRestriction) msgRestriction.innerHTML = '🔒 Une transaction confirmée aujourd\'hui ou un tour gratuit est requis pour jouer';
-            if(msgNormal) msgNormal.textContent = '💰 Roue de la Fortune';
+            if(msgRestriction) msgRestriction.innerHTML = '<i class="fas fa-lock"></i> Une transaction confirmée aujourd\'hui ou un tour gratuit est requis pour jouer';
+            if(msgNormal) msgNormal.textContent = 'Roue de la Fortune';
         }
     }
 
@@ -5781,13 +6164,13 @@
         if(!utilisateurCourant) { showAuthModal(); return; }
         
         if (!emailVerifie) {
-            alert('⚠️ Veuillez vérifier votre email avant de jouer à la roue.');
+            alert('Veuillez vérifier votre email avant de jouer à la roue.');
             ouvrirPopupVerifEmail(utilisateurCourant.email);
             return;
         }
         
         if (!peutFaireNouvelleDemande()) {
-            alert(`⛔ Vous avez déjà ${getNombreDemandesEnAttente()} demande(s) en attente. Veuillez attendre qu'elles soient traitées.`);
+            alert(`Vous avez déjà ${getNombreDemandesEnAttente()} demande(s) en attente. Veuillez attendre qu'elles soient traitées.`);
             switchPlatformSection('demandes');
             return;
         }
@@ -5849,7 +6232,7 @@
 
     function tournerRoue() {
         if (!rateLimiters.default.peutExecuter('roue_tourner')) {
-            alert('⏳ Trop de tentatives. Veuillez patienter.');
+            alert('Trop de tentatives. Veuillez patienter.');
             return;
         }
         
@@ -5903,7 +6286,7 @@
                         lotGagneInfo.nom.includes('0.002 $');
         
         if (estAuto) {
-            document.getElementById('texte-resultat').innerHTML = `🎉 Félicitations ! Vous avez gagné !`;
+            document.getElementById('texte-resultat').innerHTML = `Félicitations ! Vous avez gagné !`;
             document.getElementById('texte-resultat').style.color = 'var(--success)';
             document.getElementById('texte-instruction-bonus').textContent = `Lot : ${lotGagneInfo.nom}. Réclamation automatique en cours...`;
             document.getElementById('bonus-choix-container').style.display = 'none';
@@ -5919,7 +6302,7 @@
             return;
         }
         
-        document.getElementById('texte-resultat').innerHTML = `🎉 Félicitations ! Vous avez gagné !`;
+        document.getElementById('texte-resultat').innerHTML = `Félicitations ! Vous avez gagné !`;
         document.getElementById('texte-resultat').style.color = 'var(--success)';
         document.getElementById('texte-instruction-bonus').textContent = `Lot : ${lotGagneInfo.nom}. Choisissez comment récupérer votre gain.`;
         
@@ -6051,7 +6434,7 @@
         if(!utilisateurCourant || !monUid) { showAuthModal(); return; }
         
         if (!peutFaireNouvelleDemande()) {
-            alert(`⛔ Vous avez déjà ${getNombreDemandesEnAttente()} demande(s) en attente. Veuillez attendre qu'elles soient traitées.`);
+            alert(`Vous avez déjà ${getNombreDemandesEnAttente()} demande(s) en attente. Veuillez attendre qu'elles soient traitées.`);
             switchPlatformSection('demandes');
             return;
         }
@@ -6060,7 +6443,7 @@
         
         mettreAJourSoldeDepuisFirebase().then(solde => {
             if(solde < 0.5) {
-                alert(`❌ Solde insuffisant. Minimum 0.50 $. Vous avez $${solde.toFixed(2)}`);
+                alert(`Solde insuffisant. Minimum 0.50 $. Vous avez $${solde.toFixed(2)}`);
                 return;
             }
             document.getElementById('montant-retrait').value = '';
@@ -6074,7 +6457,7 @@
     function fermerModalRetrait() { document.getElementById('modal-retrait').classList.remove('active'); }
 
     function effacerCacheEtMettreAJour() {
-        if(confirm('⚠️ Effacer le cache va vider les données locales et forcer l\'application à se mettre à jour. Continuer ?')) {
+        if(confirm('Effacer le cache va vider les données locales et forcer l\'application à se mettre à jour. Continuer ?')) {
             try {
                 if('caches' in window) {
                     caches.keys().then(keys => {
@@ -6091,14 +6474,14 @@
                     document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
                 });
                 
-                alert('✅ Cache effacé ! L\'application va se rafraîchir.');
+                alert('Cache effacé ! L\'application va se rafraîchir.');
                 
                 setTimeout(() => {
                     window.location.reload(true);
                 }, 1000);
             } catch(e) {
                 console.error('Erreur lors du nettoyage du cache:', e);
-                alert('❌ Erreur lors du nettoyage. Veuillez rafraîchir manuellement la page.');
+                alert('Erreur lors du nettoyage. Veuillez rafraîchir manuellement la page.');
             }
         }
     }
@@ -6120,11 +6503,13 @@
 
     function initialiserSupport() {
         if (!peutUtiliserSupport()) {
-            document.getElementById('support-header-btn').style.display = 'none';
+            const networkBtn = document.getElementById('network-header-btn');
+            if(networkBtn) networkBtn.style.display = 'none';
             return;
         }
         
-        document.getElementById('support-header-btn').style.display = 'flex';
+        const networkBtn = document.getElementById('network-header-btn');
+        if(networkBtn) networkBtn.style.display = 'flex';
         
         if (!ecouteSupportActive) {
             ecouteSupportActive = true;
@@ -6146,7 +6531,7 @@
             if (!rateLimiters.support.peutExecuter('refresh_support')) {
                 const statusSpan = document.getElementById('support-refresh-status');
                 if (statusSpan) {
-                    statusSpan.textContent = '⏳ Attendez...';
+                    statusSpan.textContent = 'Attendez...';
                     statusSpan.style.color = 'var(--warning)';
                     setTimeout(() => {
                         statusSpan.textContent = '';
@@ -6159,7 +6544,7 @@
             const statusSpan = document.getElementById('support-refresh-status');
             
             if (statusSpan) {
-                statusSpan.textContent = '🔄 Chargement...';
+                statusSpan.textContent = 'Chargement...';
                 statusSpan.style.color = 'var(--neon-blue)';
             }
             
@@ -6169,7 +6554,7 @@
                 afficherMessagesSupport();
                 
                 if (statusSpan) {
-                    statusSpan.textContent = '✅ Mis à jour';
+                    statusSpan.textContent = 'Mis à jour';
                     statusSpan.style.color = 'var(--success)';
                     setTimeout(() => {
                         statusSpan.textContent = '';
@@ -6178,7 +6563,7 @@
             } catch(e) {
                 console.error('Erreur actualisation support:', e);
                 if (statusSpan) {
-                    statusSpan.textContent = '❌ Erreur';
+                    statusSpan.textContent = 'Erreur';
                     statusSpan.style.color = 'var(--danger)';
                     setTimeout(() => {
                         statusSpan.textContent = '';
@@ -6255,7 +6640,7 @@
             element.innerHTML = `
                 <div class="countdown-timer">
                     <div class="timer-expired-message">
-                        <i class="fas fa-clock"></i> ⏰ Ce message a expiré
+                        <i class="fas fa-clock"></i> Ce message a expiré
                     </div>
                     <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">
                         Veuillez contacter le support pour plus d'informations.
@@ -6354,7 +6739,7 @@
                     countdownHTML = `
                         <div class="countdown-timer">
                             <div class="timer-expired-message">
-                                <i class="fas fa-clock"></i> ⏰ Ce message a expiré
+                                <i class="fas fa-clock"></i> Ce message a expiré
                             </div>
                             <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">
                                 Veuillez contacter le support pour plus d'informations.
@@ -6437,7 +6822,7 @@
             }
             
             if (!rateLimiters.default.peutExecuter('support_message')) {
-                alert('⏳ Trop de messages envoyés. Veuillez patienter.');
+                alert('Trop de messages envoyés. Veuillez patienter.');
                 return;
             }
             
@@ -6500,28 +6885,19 @@
     function mettreAJourStatutAdmin(enLigne, info) {
         const dot = document.getElementById('support-status-dot');
         const text = document.getElementById('support-status-text');
-        const headerDot = document.getElementById('support-header-dot');
         
         if (enLigne) {
             dot.className = 'support-status-dot online';
-            if (text) text.textContent = '🟢 En ligne';
-            
-            if (headerDot) {
-                headerDot.className = 'support-dot online';
-            }
+            if (text) text.textContent = 'En ligne';
         } else {
             dot.className = 'support-status-dot offline';
             if (text) {
                 if (info && info.derniereConnexion) {
                     const date = new Date(info.derniereConnexion);
-                    text.textContent = `🔴 Dernière connexion: ${date.toLocaleString('fr-FR')}`;
+                    text.textContent = `Dernière connexion: ${date.toLocaleString('fr-FR')}`;
                 } else {
-                    text.textContent = '🔴 Discussion professionnelle';
+                    text.textContent = 'Discussion professionnelle';
                 }
-            }
-            
-            if (headerDot) {
-                headerDot.className = 'support-dot offline';
             }
         }
     }
@@ -6550,6 +6926,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        chargerTemoignages();
         const input = document.getElementById('support-input');
         if (input) {
             input.addEventListener('keypress', function(e) {
@@ -6560,8 +6937,6 @@
             });
         }
     });
-
-    console.log('💬 Système de support avec messages en clair et actualisation manuelle');
 
     (function initBannerCarousel() {
         const slides = document.querySelectorAll('#bannerSlides .carousel-banner-slide');
@@ -6626,20 +7001,17 @@
 
         goToSlide(0);
         startAutoplay();
-        console.log('🎠 Bannière carrousel démarrée (16:6)');
     })();
 
     (function setupServiceWorkerUpdates() {
         if (!('serviceWorker' in navigator)) {
-            console.log('❌ Service Worker non supporté');
             return;
         }
 
-        const SW_VERSION = '3.4.0';
+        const SW_VERSION = '3.5.2';
 
         const storedVersion = localStorage.getItem('sw_version');
         if (storedVersion !== SW_VERSION) {
-            console.log(`🔄 Nouvelle version SW détectée: ${SW_VERSION}`);
             localStorage.setItem('sw_version', SW_VERSION);
         }
 
@@ -6649,7 +7021,6 @@
         navigator.serviceWorker.register('/sw.js')
             .then((reg) => {
                 registration = reg;
-                console.log('✅ Service Worker enregistré');
 
                 checkForUpdate();
 
@@ -6657,11 +7028,9 @@
 
                 registration.addEventListener('updatefound', () => {
                     const newWorker = registration.installing;
-                    console.log('🔄 Nouveau SW détecté en installation...');
 
                     newWorker.addEventListener('statechange', () => {
                         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            console.log('🔄 Nouveau SW installé, mise à jour disponible');
                             pendingUpdate = true;
                             showUpdateNotification();
                         }
@@ -6669,17 +7038,15 @@
                 });
 
                 if (registration.waiting) {
-                    console.log('🔄 SW en attente détecté');
                     pendingUpdate = true;
                     showUpdateNotification();
                 }
             })
             .catch((error) => {
-                console.error('❌ Erreur enregistrement SW:', error);
+                console.error('Erreur enregistrement SW:', error);
             });
 
         navigator.serviceWorker.addEventListener('controllerchange', () => {
-            console.log('🔄 Contrôleur SW changé');
             setTimeout(() => {
                 if (pendingUpdate) {
                     pendingUpdate = false;
@@ -6691,11 +7058,9 @@
         function checkForUpdate() {
             if (registration) {
                 registration.update()
-                    .then(() => {
-                        console.log('🔍 Vérification des mises à jour effectuée');
-                    })
+                    .then(() => {})
                     .catch((error) => {
-                        console.warn('⚠️ Erreur vérification mise à jour:', error);
+                        console.warn('Erreur vérification mise à jour:', error);
                     });
             }
         }
@@ -6731,7 +7096,7 @@
             
             notification.innerHTML = `
                 <i class="fas fa-sync-alt" style="font-size:1.2rem; animation: spin 2s linear infinite;"></i>
-                <span style="font-size:0.95rem;">🔄 Nouvelle version disponible !</span>
+                <span style="font-size:0.95rem;">Nouvelle version disponible !</span>
                 <button onclick="forceUpdateApp()" style="
                     background: white;
                     color: #1A253C;
@@ -6773,8 +7138,6 @@
         }
 
         window.forceUpdateApp = function() {
-            console.log('🔄 Forçage de la mise à jour...');
-            
             const notif = document.getElementById('sw-update-notification');
             if (notif) notif.remove();
             
@@ -6790,23 +7153,11 @@
         window.getSWVersion = function() {
             return SW_VERSION;
         };
-
-        console.log(`📱 Version SW: ${SW_VERSION}`);
     })();
 
     document.querySelector('.logo').addEventListener('dblclick',()=>window.open('conditions.html','_blank'));
     
     window.addEventListener('load',function(){ 
-        console.log('🚀 Page index chargée - Version avec popup vérification email, nom auto et protection anti-double-clic'); 
-        
-        const loader = document.getElementById('loading-overlay');
-        if(loader) {
-            loader.classList.add('active');
-            setTimeout(() => {
-                loader.classList.remove('active');
-            }, 3000);
-        }
-        
         if (utilisateurCourant) {
             initialiserSecuriteSolde();
             initialiserSupport();
