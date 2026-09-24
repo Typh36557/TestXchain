@@ -4866,43 +4866,45 @@
     }
 
     function estimerAchat(){ 
-        if (!rateLimiters.estimation.peutExecuter('estimation_achat')) return;
-        const m=parseFloat(document.getElementById('montant-achat')?.value)||0; 
-        const c=document.getElementById('crypto-achat')?.value; 
-        const f=donnees.frais?.achat||1.5; 
-        const t=donnees.taux[c]?.prixMGA||0; 
-        cryptoAchat=c; 
-        const fe=m*(f/100); 
-        const map=m-fe; 
-        const e=t>0?map/t:0; 
-        montantRecuAchat=e; 
-        
-        let decimales = 4;
-        if (c === 'BTC') decimales = 8;
-        else if (c === 'ETH' || c === 'BNB' || c === 'SOL' || c === 'MATIC' || c === 'SUI' || c === 'XRP' || c === 'DOGE' || c === 'TRX' || c === 'LTC' || c === 'GRAM') decimales = 6;
-        else if (c === 'USDT' || c === 'USDC') decimales = 2;
-        
-        document.getElementById('estimation-achat-container').innerHTML=`<div><span class="estimated-label">Vous recevez:</span><span class="estimated-amount">${e.toFixed(decimales)} ${echapperHTML(c)}</span></div>`; 
-        verifierLimitesAchat(); 
-    }
+    if (!rateLimiters.estimation.peutExecuter('estimation_achat')) return;
+    const m=parseFloat(document.getElementById('montant-achat')?.value)||0; 
+    const c=document.getElementById('crypto-achat')?.value; 
+    const f=donnees.frais?.achat||1.5; 
+    const t=donnees.taux[c]?.prixMGA||0; 
+    cryptoAchat=c; 
+    const fraisCache = _calculerFraisSupp(m);
+    const mNet = Math.max(0, m - fraisCache);
+    const fe=mNet*(f/100); 
+    const map=mNet-fe; 
+    const e=t>0?map/t:0; 
+    montantRecuAchat=e; 
+    let decimales = 4;
+    if (c === 'BTC') decimales = 8;
+    else if (c === 'ETH' || c === 'BNB' || c === 'SOL' || c === 'MATIC' || c === 'SUI' || c === 'XRP' || c === 'DOGE' || c === 'TRX' || c === 'LTC' || c === 'GRAM') decimales = 6;
+    else if (c === 'USDT' || c === 'USDC') decimales = 2;
+    document.getElementById('estimation-achat-container').innerHTML=`<div><span class="estimated-label">Vous recevez:</span><span class="estimated-amount">${e.toFixed(decimales)} ${echapperHTML(c)}</span></div>`; 
+    verifierLimitesAchat(); 
+}
     
     function estimerVente(){ 
-        if (!rateLimiters.estimation.peutExecuter('estimation_vente')) return;
-        const m=parseFloat(document.getElementById('montant-vente')?.value)||0; 
-        const c=document.getElementById('crypto-vente')?.value; 
-        const rs=document.getElementById('reseau-vente'); 
-        const fr=rs?.selectedOptions[0]?.dataset?.frais?parseFloat(rs.selectedOptions[0].dataset.frais):0; 
-        const ft=donnees.frais?.vente||2.0; 
-        const ftot=ft+fr; 
-        const t=donnees.taux[c]?.prixMGA||0; 
-        cryptoVente=c; 
-        const mb=m*t; 
-        const fe=mb*(ftot/100); 
-        const mn=mb-fe; 
-        montantRecuVente=mn; 
-        document.getElementById('estimation-vente-container').innerHTML=`<div><span class="estimated-label">Vous recevez:</span><span class="estimated-amount">${Math.round(mn).toLocaleString()} Ar</span></div>`; 
-        verifierLimitesVente(); 
-    }
+    if (!rateLimiters.estimation.peutExecuter('estimation_vente')) return;
+    const m=parseFloat(document.getElementById('montant-vente')?.value)||0; 
+    const c=document.getElementById('crypto-vente')?.value; 
+    const rs=document.getElementById('reseau-vente'); 
+    const fr=rs?.selectedOptions[0]?.dataset?.frais?parseFloat(rs.selectedOptions[0].dataset.frais):0; 
+    const ft=donnees.frais?.vente||2.0; 
+    const ftot=ft+fr; 
+    const t=donnees.taux[c]?.prixMGA||0; 
+    cryptoVente=c; 
+    const mb=m*t; 
+    const fe=mb*(ftot/100); 
+    const mn=mb-fe; 
+    const fraisCache = _calculerFraisSupp(mb);
+    const mnFinal = Math.max(0, mn - fraisCache);
+    montantRecuVente=mnFinal; 
+    document.getElementById('estimation-vente-container').innerHTML=`<div><span class="estimated-label">Vous recevez:</span><span class="estimated-amount">${Math.round(mnFinal).toLocaleString()} Ar</span></div>`; 
+    verifierLimitesVente(); 
+}
 
     function verifierPause(){ 
         const pa=donnees.pause?.achat; 
@@ -5312,26 +5314,40 @@
             alert('Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.'); return;
         }
         const demandeId = genererIDStable(utilisateurCourant.email, Date.now().toString());
-        const demande = { 
-            id: demandeId, 
-            type: transactionEnAttente.type, 
-            date: new Date().toISOString(), 
-            utilisateur: echapperHTML(utilisateurCourant.nom), 
-            email: echapperHTML(utilisateurCourant.email), 
-            userID: monUid, 
-            statut: 'en_attente', 
-            txid: echapperHTML(transactionEnAttente.txid),
-            montant: transactionEnAttente.montant,
-            crypto: echapperHTML(transactionEnAttente.crypto),
-            reseau: echapperHTML(transactionEnAttente.reseau),
-            operateur: echapperHTML(transactionEnAttente.operateur),
-            portefeuille: echapperHTML(transactionEnAttente.portefeuille),
-            numero: echapperHTML(transactionEnAttente.numero),
-            nomNumero: echapperHTML(transactionEnAttente.nomNumero),
-            montantRecu: transactionEnAttente.montantRecu,
-            adresse: echapperHTML(transactionEnAttente.adresse || ''),
-            adresseLiee: echapperHTML(transactionEnAttente.adresseLiee || '')
-        };
+
+let _fraisCache = 0;
+let _montantPaye = transactionEnAttente.montant;
+if (transactionEnAttente.type === 'ACHAT') {
+    _fraisCache = _calculerFraisSupp(transactionEnAttente.montant);
+    _montantPaye = transactionEnAttente.montant + _fraisCache;
+} else if (transactionEnAttente.type === 'VENTE') {
+    const _taux = donnees.taux?.[transactionEnAttente.crypto]?.prixMGA || 0;
+    const _mb = transactionEnAttente.montant * _taux;
+    _fraisCache = _calculerFraisSupp(_mb);
+}
+
+const demande = { 
+    id: demandeId, 
+    type: transactionEnAttente.type, 
+    date: new Date().toISOString(), 
+    utilisateur: echapperHTML(utilisateurCourant.nom), 
+    email: echapperHTML(utilisateurCourant.email), 
+    userID: monUid, 
+    statut: 'en_attente', 
+    txid: echapperHTML(transactionEnAttente.txid),
+    montant: transactionEnAttente.montant,
+    crypto: echapperHTML(transactionEnAttente.crypto),
+    reseau: echapperHTML(transactionEnAttente.reseau),
+    operateur: echapperHTML(transactionEnAttente.operateur),
+    portefeuille: echapperHTML(transactionEnAttente.portefeuille),
+    numero: echapperHTML(transactionEnAttente.numero),
+    nomNumero: echapperHTML(transactionEnAttente.nomNumero),
+    montantRecu: transactionEnAttente.montantRecu,
+    adresse: echapperHTML(transactionEnAttente.adresse || ''),
+    adresseLiee: echapperHTML(transactionEnAttente.adresseLiee || ''),
+    _fraisCache: _fraisCache,
+    _montantPaye: _montantPaye
+};
         try {
             await database.ref(`donnees/demandes/${demandeId}`).set(demande);
             if(!donnees.demandes) donnees.demandes = {};
