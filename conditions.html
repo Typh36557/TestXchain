@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Conditions & Règlements • TYPH WALLET</title>
+    <meta name="theme-color" content="#0A0F1F">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TYPH WALLET">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/logo-application.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-dark: #0A0F1F;
+            --bg-card: #131B2F;
+            --primary: #1A253C;
+            --accent: #3B82F6;
+            --accent-light: #60A5FA;
+            --accent-dark: #2563EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --text-primary: #FFFFFF;
+            --text-secondary: #94A3B8;
+            --gray-300: #2D3A4A;
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* ============ HEADER ============ */
+        .app-header {
+            background: rgba(19, 27, 47, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 16px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo img {
+            height: 3rem;
+            width: auto;
+            display: inline-block;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, #FFFFFF, #3B82F6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            color: var(--text-primary);
+            padding: 9px 18px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .btn-back:hover {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: var(--accent);
+            transform: translateX(-3px);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
+        }
+
+        .btn-back i { color: var(--accent-light); }
+
+        /* ============ HERO ============ */
+        .hero {
+            text-align: center;
+            padding: 55px 20px 35px;
+            background: radial-gradient(ellipse at top, rgba(245, 158, 11, 0.10) 0%, transparent 65%);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.12);
+        }
+
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
+            border: 2px solid rgba(245, 158, 11, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.2rem;
+            color: var(--warning);
+            box-shadow: 0 0 40px rgba(245, 158, 11, 0.25);
+            animation: pulseIcon 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseIcon {
+            0%, 100% { box-shadow: 0 0 40px rgba(245, 158, 11, 0.25); }
+            50% { box-shadow: 0 0 55px rgba(245, 158, 11, 0.5); }
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #FFFFFF, #F59E0B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .hero .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .hero .last-update {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            background: var(--primary);
+            border: 1px solid var(--gray-300);
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .hero .last-update i { color: var(--warning); }
+
+        /* ============ BANNIÈRE MALAGASY ============ */
+        .malagasy-banner {
+            max-width: 900px;
+            margin: 25px auto 0;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(217, 119, 6, 0.05));
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: var(--radius-lg);
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 0.92rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .malagasy-banner i {
+            color: var(--warning);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        /* ============ CONTENT ============ */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+            width: 100%;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            margin-bottom: 22px;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 8px 35px rgba(59, 130, 246, 0.12);
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card:nth-child(1) { animation-delay: 0.05s; }
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.15s; }
+        .card:nth-child(4) { animation-delay: 0.2s; }
+        .card:nth-child(5) { animation-delay: 0.25s; }
+        .card:nth-child(6) { animation-delay: 0.3s; }
+        .card:nth-child(7) { animation-delay: 0.35s; }
+        .card:nth-child(8) { animation-delay: 0.4s; }
+        .card:nth-child(9) { animation-delay: 0.45s; }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .card-title .num {
+            flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .card p:last-child { margin-bottom: 0; }
+
+        .card strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .sub-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent-light);
+            margin: 20px 0 10px;
+        }
+
+        .sub-title i {
+            font-size: 0.9rem;
+            color: var(--accent);
+        }
+
+        .card ul {
+            list-style: none;
+            margin: 10px 0 10px 4px;
+        }
+
+        .card ul li {
+            color: var(--text-secondary);
+            font-size: 0.93rem;
+            padding: 7px 0 7px 26px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .card ul li::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 15px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+        }
+
+        /* ============ ALERTES ============ */
+        .info-box {
+            background: rgba(59, 130, 246, 0.08);
+            border-left: 3px solid var(--accent);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin: 16px 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .info-box i {
+            color: var(--accent);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.08);
+            border-left: 3px solid var(--warning);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin: 16px 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .warning-box i {
+            color: var(--warning);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .danger-box {
+            background: rgba(239, 68, 68, 0.10);
+            border-left: 3px solid var(--danger);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin: 16px 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .danger-box i {
+            color: var(--danger);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .success-box {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 3px solid var(--success);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin: 16px 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .success-box i {
+            color: var(--success);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* ============ PARTENAIRES ============ */
+        .partner-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .partner-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(59, 130, 246, 0.06);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 14px 18px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .partner-item:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--accent);
+            transform: translateX(4px);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+
+        .partner-item .partner-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .partner-item .partner-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .partner-item .partner-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.92rem;
+            margin-bottom: 2px;
+        }
+
+        .partner-item .partner-link {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            word-break: break-all;
+        }
+
+        .partner-item .partner-arrow {
+            color: var(--accent-light);
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            transition: transform 0.25s;
+        }
+
+        .partner-item:hover .partner-arrow {
+            transform: translateX(4px);
+        }
+
+        /* ============ ÉTAPES VÉRIFICATION ============ */
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin: 16px 0;
+            counter-reset: step;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            background: rgba(10, 15, 31, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: 16px;
+            padding: 16px 18px;
+            position: relative;
+        }
+
+        .step-item .step-num {
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .step-item .step-content {
+            flex: 1;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .step-item .step-content strong {
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* ============ DÉLAI ============ */
+        .delay-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 18px 20px;
+            margin: 16px 0;
+        }
+
+        .delay-box i {
+            font-size: 1.8rem;
+            color: var(--success);
+            flex-shrink: 0;
+        }
+
+        .delay-box .delay-info {
+            flex: 1;
+        }
+
+        .delay-box .delay-info strong {
+            display: block;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+            font-size: 0.95rem;
+        }
+
+        .delay-box .delay-info span {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* ============ ACCEPTATION FINALE ============ */
+        .acceptance-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(185, 28, 28, 0.05));
+            border: 2px solid rgba(239, 68, 68, 0.4);
+            border-radius: var(--radius-xl);
+            padding: 28px 24px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .acceptance-box .acceptance-icon {
+            font-size: 2.5rem;
+            color: var(--danger);
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .acceptance-box .acceptance-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.5;
+        }
+
+        .acceptance-box .acceptance-sub {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        /* ============ CONTACT ============ */
+        .contact-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(37, 99, 235, 0.06));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .contact-box .contact-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 40px;
+            background: rgba(10, 15, 31, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 6px 4px;
+            transition: all 0.25s ease;
+        }
+
+        .contact-box .contact-item:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .contact-box .contact-item i {
+            color: var(--accent-light);
+            flex-shrink: 0;
+        }
+
+        /* ============ FOOTER ============ */
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 1px solid rgba(59, 130, 246, 0.15);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            background: rgba(19, 27, 47, 0.6);
+        }
+
+        .footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover { color: var(--accent); text-decoration: underline; }
+
+        .footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .footer .footer-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.82rem;
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.7rem; }
+            .hero-icon { width: 65px; height: 65px; font-size: 1.8rem; }
+            .card { padding: 22px; border-radius: 22px; }
+            .card-title { font-size: 1.1rem; }
+            .card-title .num { width: 34px; height: 34px; font-size: 0.85rem; }
+            .logo img { height: 2.5rem; }
+            .logo span { font-size: 1.15rem; }
+            .btn-back { padding: 8px 14px; font-size: 0.78rem; }
+            .btn-back span { display: none; }
+            .malagasy-banner { font-size: 0.85rem; padding: 14px 16px; }
+            .malagasy-banner i { font-size: 1.2rem; }
+            .acceptance-box { padding: 22px 18px; }
+            .acceptance-box .acceptance-title { font-size: 0.92rem; }
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 25px 14px 60px; }
+            .card { padding: 18px; }
+            .hero { padding: 40px 16px 25px; }
+            .hero h1 { font-size: 1.45rem; }
+            .hero .subtitle { font-size: 0.9rem; }
+            .partner-item { padding: 12px 14px; gap: 10px; }
+            .partner-item .partner-icon { width: 36px; height: 36px; font-size: 0.95rem; }
+            .partner-item .partner-name { font-size: 0.85rem; }
+            .step-item { padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============ HEADER ============ -->
+    <header class="app-header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <img src="https://raw.githubusercontent.com/nalitsoavinatantely/Typh-FINANCE/refs/heads/main/logo.png" alt="TYPH WALLET">
+                <span>TYPH WALLET</span>
+            </a>
+            <a href="index.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                <span>Retour à l'application</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+        <div class="hero-icon">
+            <i class="fas fa-file-contract"></i>
+        </div>
+        <h1>Conditions & Règlements</h1>
+        <p class="subtitle">Veuillez lire attentivement les règles ci-dessous avant d'effectuer toute transaction sur notre plateforme.</p>
+        <div class="last-update">
+            <i class="fas fa-calendar-alt"></i>
+            Dernière mise à jour : 24 septembre 2026
+        </div>
+    </section>
+
+    <!-- Bannière d'avertissement -->
+    <div class="malagasy-banner">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>
+            <strong>Mila manaiky sy manaraka ireto toromarika ireto aloha anaovana TRANSACTION ato.</strong><br>
+            <span style="color: var(--text-secondary); font-size: 0.85rem;">Veuillez accepter et respecter ces règles avant toute transaction.</span>
+        </span>
+    </div>
+
+    <!-- ============ CONTENU ============ -->
+    <main class="container">
+
+        <!-- 1. Présentation -->
+        <article class="card">
+            <h2 class="card-title">
+                <span class="num">1</span>
+                Présentation de la plateforme
+            </h2>
+            <p><strong>TYPH X-CHAIN</strong> est une plateforme d'échange en ligne opérant dans le domaine du <strong>trading de cryptomonnaies</strong>. Nous ne fournissons aucune expertise ou conseil lié à vos activités d'investissement.</p>
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                <span>Notre champ d'action se limite exclusivement à la gestion de votre <strong>PORTEFEUILLE</strong> et au traitement de vos <strong>TRANSACTIONS</strong>.</span>
+            </div>
+        </article>
+
+        <!-- 2. Partenaires officiels -->
+        <article class="card">
+            <h2 class="card-title">
+                <span class="num">2</span>
+                Nos partenaires officiels
+            </h2>
+            <p>Nous n'avons <strong>aucun autre partenaire</strong> en dehors des services officiels listés ci-dessous. Seuls ces canaux sont habilités à échanger vos cryptos.</p>
+
+            <div class="partner-list">
+                <a href="https://www.facebook.com/typh.business" target="_blank" rel="noopener noreferrer" class="partner-item">
+                    <div class="partner-icon"><i class="fas fa-handshake"></i></div>
+                    <div class="partner-info">
+                        <div class="partner-name">Page Partenaire</div>
+                        <div class="partner-link">facebook.com/typh.business</div>
+                    </div>
+                    <i class="fas fa-external-link-alt partner-arrow"></i>
+                </a>
+
+                <a href="https://www.facebook.com/profile.php?id=100088409727429" target="_blank" rel="noopener noreferrer" class="partner-item">
+                    <div class="partner-icon"><i class="fas fa-user-shield"></i></div>
+                    <div class="partner-info">
+                        <div class="partner-name">Compte Principal Admin</div>
+                        <div class="partner-link">facebook.com/profile.php?id=100088409727429</div>
+                    </div>
+                    <i class="fas fa-external-link-alt partner-arrow"></i>
+                </a>
+
+                <a href="https://www.facebook.com/profile.php?id=61590510013402" target="_blank" rel="noopener noreferrer" class="partner-item">
+                    <div class="partner-icon"><i class="fas fa-exchange-alt"></i></div>
+                    <div class="partner-info">
+                        <div class="partner-name">Page d'échange Facebook 02</div>
+                        <div class="partner-link">facebook.com/profile.php?id=61590510013402</div>
+                    </div>
+                    <i class="fas fa-external-link-alt partner-arrow"></i>
+                </a>
+            </div>
+
+            <div class="danger-box">
+                <i class="fas fa-shield-alt"></i>
+                <span>Ces <strong>trois canaux uniquement</strong> sont autorisés pour échanger vos cryptos. Tout autre contact doit être considéré comme suspect.</span>
+            </div>
+        </article>
+
+        <!-- 3. Vérification obligatoire -->
+        <article class="card">
+            <h2 class="card-title">
+                <span class="num">3</span>
+                Vérification du numéro obligatoire
+            </h2>
+            <p>Vous devez obligatoirement faire <strong>vérifier votre numéro</strong> avant de pouvoir effectuer un <strong>DÉPÔT</strong> ou un <strong>RETRAIT</strong> sur la plateforme.</p>
+
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <strong>Utilisez uniquement votre propre numéro</strong>
+                        Aucun intermédiaire n'est accepté (vérification par appel ou SMS de vérification).
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <strong>Les numéros Cash-Point ne sont pas acceptés</strong>
+                        Seuls les numéros personnels enregistrés à votre nom sont valides.
+                    </div>
+                </div>
+            </div>
+
+            <div class="delay-box">
+                <i class="fas fa-hourglass-half"></i>
+                <div class="delay-info">
+                    <strong>Délai de vérification</strong>
+                    <span>Entre 24 heures et 48 heures ouvrées</span>
+                </div>
+            </div>
+        </article>
+
+        <!-- 4. Règle du portefeuille unique -->
+        <article class="card">
+            <h2 class="card-title">
+                <span class="num">4</span>
+                Règle du portefeuille unique
+            </h2>
+            <p>Un <strong>PORTEFEUILLE</strong> correspond à un <strong>compte unique</strong>. La création de doubles comptes est strictement interdite.</p>
+            <div class="warning-box">
+                <i class="fas fa-ban"></i>
+                <span>Toute tentative de double compte entraînera la suspension définitive du ou des comptes concernés, sans préavis.</span>
+            </div>
+        </article>
+
+        <!-- 5. Utilisation du service -->
+        <article class="card">
+            <h2 class="card-title">
+                <span class="num">5</span>
+                Utilisation du service
+            </h2>
+            <p>Le service TYPH X-CHAIN est strictement <strong>personnel</strong> et ne peut faire l'objet d'aucun prêt, location ou revente.</p>
+            <ul>
+                <li>Le prêt du service à un tiers est interdit ;</li>
+                <li>La revente de l'accès est interdite ;</li>
+                <li>Le partage de votre compte avec une autre personne est interdit.</li>
+            </ul>
+        </article>
+
+        <!-- 6. Numéros officiels -->
+        <article class="card">
+            <h2 class="card-title">
+                <span class="num">6</span>
+                Numéros officiels
+            </h2>
+            <p>Nous ne disposons d'<strong>aucun autre numéro</strong> en dehors de ceux déjà utilisés et communiqués officiellement.</p>
+            <div class="info-box">
+                <i class="fas fa-check-circle"></i>
+                <span>Seuls les numéros ayant déjà été utilisés par le passé restent actifs et officiels.</span>
+            </div>
+        </article>
+
+        <!-- 7. Dépôt direct -->
+        <article class="card">
+            <h2 class="card-title">
+                <span class="num">7</span>
+                Dépôt direct
+            </h2>
+            <p>Nous <strong>ne proposons pas</strong> de dépôt direct sur le site à court terme.</p>
+            <div class="warning-box">
+                <i class="fas fa-clock"></i>
+                <span>Cette option pourra éventuellement être proposée ultérieurement. En attendant, veuillez utiliser les canaux officiels.</span>
+            </div>
+        </article>
+
+        <!-- 8. Responsabilité -->
+        <article class="card">
+            <h2 class="card-title">
+                <span class="num">8</span>
+                Responsabilité de l'utilisateur
+            </h2>
+            <p>En utilisant nos services, vous reconnaissez avoir lu, compris et accepté l'intégralité des présentes conditions.</p>
+            <ul>
+                <li>Vous êtes responsable de la confidentialité de vos identifiants ;</li>
+                <li>Vous vous engagez à fournir des informations exactes ;</li>
+                <li>Vous acceptez de ne pas utiliser le service à des fins illégales ;</li>
+                <li>Vous reconnaissez que toute violation peut entraîner la suspension de votre compte.</li>
+            </ul>
+        </article>
+
+        <!-- 9. Contact -->
+        <article class="card">
+            <h2 class="card-title">
+                <span class="num">9</span>
+                Contact
+            </h2>
+            <p>Pour toute question relative aux présentes conditions, vous pouvez nous contacter via nos canaux officiels :</p>
+            <div class="contact-box">
+                <a href="https://www.facebook.com/typh.business" target="_blank" rel="noopener noreferrer" class="contact-item">
+                    <i class="fab fa-facebook"></i>
+                    Page Partenaire
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=100088409727429" target="_blank" rel="noopener noreferrer" class="contact-item">
+                    <i class="fas fa-user-shield"></i>
+                    Admin Principal
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=61590510013402" target="_blank" rel="noopener noreferrer" class="contact-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    Page d'échange 02
+                </a>
+                <a href="mailto:sarobidytyph4@gmail.com" class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    sarobidytyph4@gmail.com
+                </a>
+            </div>
+        </article>
+
+        <!-- ACCEPTATION FINALE -->
+        <div class="acceptance-box">
+            <i class="fas fa-handshake acceptance-icon"></i>
+            <div class="acceptance-title">
+                Aloha anaovana transaction dia mila manaiky anio règlements io aloha
+            </div>
+            <div class="acceptance-sub">
+                En effectuant une transaction, vous confirmez avoir lu et accepté l'ensemble de ces conditions.
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="conditions.html"><i class="fas fa-file-contract"></i> Conditions</a>
+            <a href="politique.html"><i class="fas fa-user-shield"></i> Confidentialité</a>
+            <a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-facebook-f"></i> Support
+            </a>
+        </div>
+        <div>Copyright ©2026 TYPH WALLET • Tous droits réservés | Dev. Typh</div>
+    </footer>
+
+</body>
+</html>
