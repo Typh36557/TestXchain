@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>TYPH WALLET • Exchange Crypto ⇄ Ariary</title>
     
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://www.gstatic.com https://cdnjs.cloudflare.com https://*.firebaseio.com https://*.googleapis.com https://api.binance.com https://api.exchangerate-api.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https://raw.githubusercontent.com https://*.googleapis.com https://firebasestorage.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://api.binance.com https://api.exchangerate-api.com https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://www.gstatic.com https://cdnjs.cloudflare.com https://*.firebaseio.com https://*.googleapis.com https://api.binance.com https://api.exchangerate-api.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https://raw.githubusercontent.com https://*.googleapis.com https://firebasestorage.googleapis.com https://api.dicebear.com; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://api.binance.com https://api.exchangerate-api.com https://challenges.cloudflare.com https://api.dicebear.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
@@ -19,7 +19,7 @@
     <meta name="apple-mobile-web-app-title" content="TYPH WALLET">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/logo-application.png">
     
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -125,33 +125,115 @@
         .stat-label { color: var(--text-secondary); font-size: 0.9rem; }
         .testimonials-section { margin: 60px 0; }
         .section-title { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 40px; color: var(--white); }
-        .testimonial-card { background: var(--bg-card); border-radius: var(--radius-xl); padding: 25px; border: 1px solid rgba(59,130,246,0.2); }
-        .testimonial-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .testimonial-avatar { width: 50px; height: 50px; background: rgba(59,130,246,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent); }
-        .testimonial-name { font-weight: 600; color: var(--white); }
-        .testimonial-date { font-size: 0.8rem; color: var(--text-secondary); }
-        .testimonial-text { color: var(--text-secondary); line-height: 1.6; margin-bottom: 15px; }
-        .testimonial-rating { color: var(--warning); }
+        .testimonial-card { 
+            background: var(--bg-card); 
+            border-radius: var(--radius-xl); 
+            padding: 25px; 
+            border: 1px solid rgba(59,130,246,0.2); 
+            min-height: 170px; 
+            display: flex; 
+            flex-direction: column;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .testimonial-header { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            margin-bottom: 15px;
+            width: 100%;
+            min-width: 0;
+        }
+        .testimonial-header > div:last-child {
+            min-width: 0;
+            flex: 1;
+            overflow: hidden;
+        }
+        .testimonial-avatar { 
+            width: 55px; 
+            height: 55px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, #1A253C, #0A0F1F); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.5rem; 
+            color: var(--accent); 
+            overflow: hidden; 
+            flex-shrink: 0; 
+            border: 2px solid rgba(59,130,246,0.4); 
+            box-shadow: 0 0 12px rgba(59,130,246,0.2); 
+        }
+        .testimonial-avatar img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block; 
+        }
+        .testimonial-name { 
+            font-weight: 600; 
+            color: var(--white); 
+            word-wrap: break-word;
+            overflow-wrap: anywhere;
+            white-space: normal;
+            font-size: 1rem;
+        }
+        .testimonial-date { 
+            font-size: 0.8rem; 
+            color: var(--text-secondary); 
+            word-wrap: break-word;
+            overflow-wrap: anywhere;
+            white-space: normal;
+        }
+        .testimonial-text { 
+            color: var(--text-secondary); 
+            line-height: 1.6; 
+            margin-bottom: 15px; 
+            word-wrap: break-word;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            white-space: normal;
+            hyphens: auto;
+            -webkit-hyphens: auto;
+            flex: 1; 
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        .testimonial-rating { 
+            color: var(--warning); 
+            margin-top: auto; 
+        }
         
         /* ============================================================
            TCD
            ============================================================ */
-        .testimonials-carousel-wrapper { position: relative; overflow: hidden; border-radius: var(--radius-xl); }
-        .testimonials-carousel-slides { display: flex; transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-        .testimonials-carousel-slide { min-width: 100%; flex-shrink: 0; padding: 5px; box-sizing: border-box; }
-        .testimonials-carousel-dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
-        .testimonials-carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-300); border: none; cursor: pointer; transition: all 0.3s ease; padding: 0; }
-        .testimonials-carousel-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
-        .testimonials-carousel-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); color: white; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; z-index: 5; }
-        .testimonials-carousel-arrow:hover { background: rgba(59,130,246,0.7); }
-        .testimonials-carousel-arrow:active { transform: translateY(-50%) scale(0.9); }
-        .testimonials-carousel-arrow.prev { left: 8px; }
-        .testimonials-carousel-arrow.next { right: 8px; }
+        .testimonials-carousel-wrapper { 
+            position: relative; 
+            overflow: hidden; 
+            border-radius: var(--radius-xl); 
+            width: 100%; 
+            max-width: 100%;
+        }
+        .testimonials-carousel-slides { 
+            display: flex; 
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+            width: 100%;
+        }
+        .testimonials-carousel-slide { 
+            flex: 0 0 100%;
+            min-width: 0;
+            max-width: 100%;
+            flex-shrink: 0;
+            padding: 5px; 
+            box-sizing: border-box; 
+            overflow: hidden;
+        }
         .testimonials-empty { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
         .testimonials-empty i { font-size: 2.5rem; color: var(--accent); opacity: 0.4; margin-bottom: 10px; display: block; }
-        @media (max-width: 600px) {
-            .testimonials-carousel-arrow { width: 32px; height: 32px; font-size: 0.75rem; }
-        }
         
         .platform-section { display: none; }
         .platform-section.active { display: block; }
@@ -1629,7 +1711,7 @@
 }
 
 /* ============================================================
-   TERMS ACCEPTANCE CHECKBOX
+   TAC
    ============================================================ */
 .terms-acceptance-container {
     background: rgba(59, 130, 246, 0.08);
@@ -1712,13 +1794,96 @@
 }
 
 /* ============================================================
-   SECURITY ENHANCEMENTS
+   SE
    ============================================================ */
 .no-select {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+/* ============================================================
+   FAB
+   ============================================================ */
+#btn-connexion-mode, #btn-inscription-mode, #btn-auth {
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 2;
+}
+#btn-connexion-mode:not(.btn-success):hover,
+#btn-inscription-mode:not(.btn-success):hover {
+    background: var(--primary-light) !important;
+    transform: translateY(-2px);
+}
+#btn-connexion-mode:active,
+#btn-inscription-mode:active,
+#btn-auth:active {
+    transform: scale(0.97) !important;
+}
+.modal-content button {
+    pointer-events: auto !important;
+}
+
+/* ============================================================
+   FAT
+   ============================================================ */
+@media (max-width: 768px) {
+    .testimonials-carousel-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+    .testimonials-carousel-slides {
+        width: 100% !important;
+    }
+    .testimonials-carousel-slide {
+        flex: 0 0 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+    .testimonial-card {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        word-wrap: break-word !important;
+        overflow-wrap: anywhere !important;
+        white-space: normal !important;
+        box-sizing: border-box !important;
+    }
+    .testimonial-text {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        text-align: left;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        hyphens: auto;
+        -webkit-hyphens: auto;
+    }
+    .testimonial-header {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+    .testimonial-header > div:last-child {
+        min-width: 0 !important;
+        max-width: calc(100% - 70px) !important;
+        overflow: hidden !important;
+        flex: 1 !important;
+    }
+    .testimonial-name,
+    .testimonial-date {
+        word-wrap: break-word !important;
+        overflow-wrap: anywhere !important;
+        white-space: normal !important;
+    }
 }
     </style>
 </head>
@@ -1747,7 +1912,7 @@
     <div class="app-header">
         <div class="header-content">
             <div class="logo" onclick="actualiserAccueil()">
-                <img src="https://raw.githubusercontent.com/nalitsoavinatantely/Typh-FINANCE/refs/heads/main/logo.png" alt="Logo" class="logo-img">
+                <img id="logo-header-img" src="https://raw.githubusercontent.com/nalitsoavinatantely/Typh-FINANCE/refs/heads/main/logo.png" alt="Logo" class="logo-img">
                 <span>TYPH WALLET</span>
             </div>
             <div id="network-header-btn">
@@ -1809,11 +1974,8 @@
             <div id="testimonials" class="testimonials-section">
                 <h2 class="section-title">Ce que disent nos clients</h2>
                 <div class="testimonials-carousel-wrapper">
-                    <button class="testimonials-carousel-arrow prev" onclick="temoignagePrecedent()" aria-label="Précédent"><i class="fas fa-chevron-left"></i></button>
-                    <button class="testimonials-carousel-arrow next" onclick="temoignageSuivant()" aria-label="Suivant"><i class="fas fa-chevron-right"></i></button>
                     <div class="testimonials-carousel-slides" id="testimonialsSlides"></div>
                 </div>
-                <div class="testimonials-carousel-dots" id="testimonialsDots"></div>
                 <div style="text-align:center;margin-top:30px;">
                     <a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a>
                 </div>
@@ -1867,15 +2029,7 @@
                 </div>
                 <div class="carousel-banner-wrapper" id="bannerWrapper">
                     <div class="carousel-banner-slides" id="bannerSlides">
-                        <div class="carousel-banner-slide" data-link="https://typh-xchain.site/conditions.html">
-                            <img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/Upfoto_BfGTKbCo7bslBjtSf1EdVOwa9CVxIGmKpAizJkyqemRxi.jpg" alt="001">
-                        </div>
-                        <div class="carousel-banner-slide" data-link="https://www.facebook.com/profile.php?id=100091581669686">
-                            <img src="https://raw.githubusercontent.com/nalitsoavinatantely/Typh-FINANCE/refs/heads/main/Upfoto_x4JLUFUIW61wqL6p3PQuK1WXnrySELyeJaLLRIpGLShnk.jpg" alt="002">
-                        </div>
-                        <div class="carousel-banner-slide" data-link="https://www.facebook.com/100086398339003/posts/1038627799027155/?app=fbl">
-                            <img src="https://raw.githubusercontent.com/nalitsoavinatantely/Typh-FINANCE/refs/heads/main/Upfoto_eWBaFOmTkk2bSInj6OFOkTKpOwUNwvKRvniI6N4zG8IXz.jpg" alt="003">
-                        </div>
+                        <!-- Rempli dynamiquement depuis Firebase (donnees/bannieres) -->
                     </div>
                     <div class="banner-click-hint">
                         <i class="fas fa-hand-pointer"></i> Cliquez
@@ -1883,7 +2037,18 @@
                 </div>
                 <div class="carousel-banner-dots" id="bannerDots"></div>
             </div>
-            <div class="card"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-history"></i> Vos dernières transactions</h2><ul class="activity-list" id="recent-activity"></ul></div>
+            <div class="card">
+                <h2 class="card-title" style="margin-bottom:16px;">
+                    <i class="fas fa-history"></i> Nos dernières transactions
+                </h2>
+                <ul class="activity-list" id="recent-activity">
+                    <li class="activity-item">
+                        <div style="text-align:center;width:100%;color:var(--text-secondary);padding:20px;">
+                            <i class="fas fa-spinner fa-spin"></i> Chargement...
+                        </div>
+                    </li>
+                </ul>
+            </div>
             <div class="card"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-newspaper"></i> Actualités & Annonces</h2><div class="news-container" id="news-container"></div></div>
         </div>
         <div id="achat-section" class="platform-section">
@@ -2018,43 +2183,66 @@
     <div class="bottom-nav" id="bottom-nav"><div class="nav-menu"><div class="nav-item" onclick="verifierAvantAcces('accueil', event)" id="nav-accueil"><i class="fas fa-home"></i><span>Accueil</span></div><div class="nav-item" onclick="verifierAvantAcces('achat', event)" id="nav-achat"><i class="fas fa-arrow-down"></i><span>Dépôt</span></div><div class="nav-item" onclick="verifierAvantAcces('vente', event)" id="nav-vente"><i class="fas fa-arrow-up"></i><span>Retrait</span></div><div class="nav-item" onclick="verifierAvantAcces('demandes', event)" id="nav-demandes"><i class="fas fa-clipboard-list"></i><span>Demandes</span></div><div class="nav-item" onclick="verifierAvantAcces('profil', event)" id="nav-profil"><i class="fas fa-user-circle"></i><span>Profil</span></div></div></div>
 
     <!-- MODALS -->
-    <div id="modal-auth" class="modal"><div class="modal-content"><div class="modal-title"><i class="fas fa-sign-in-alt"></i> Bienvenue</div><div style="display:flex;gap:10px;margin-bottom:20px;"><button class="btn btn-success" style="flex:1;" onclick="switchAuthMode('connexion')" id="btn-connexion-mode">Connexion</button><button class="btn" style="flex:1;background:var(--gray-300);" onclick="switchAuthMode('inscription')" id="btn-inscription-mode">Inscription</button></div>
-        <div id="connexion-form"><input type="email" id="email-connexion" class="modal-input" placeholder="Email"><input type="password" id="password-connexion" class="modal-input" placeholder="Mot de passe"><div style="display:flex;align-items:center;gap:8px;margin:15px 0;"><input type="checkbox" id="check-rester-connecte" style="width:18px;height:18px;accent-color:var(--accent);" checked><label style="color:var(--text-secondary);font-size:0.85rem;"><i class="fas fa-lock"></i> Rester connecté</label></div><div style="text-align:right;margin:10px 0 20px;"><span onclick="ouvrirModalMotDePasseOublie()" style="color:var(--accent);cursor:pointer;font-size:0.85rem;"><i class="fas fa-question-circle"></i> Mot de passe oublié ?</span></div></div>
-        <div id="inscription-form" style="display:none;">
-            <input type="text" id="nom-inscription" class="modal-input" placeholder="Nom complet">
-            <input type="email" id="email-inscription" class="modal-input" placeholder="Email (@gmail.com)">
-            <input type="password" id="password-inscription" class="modal-input" placeholder="Mot de passe">
-            <div style="margin: 10px 0; background: rgba(16,185,129,0.1); border-radius: 20px; padding: 12px;">
-                <label style="color: var(--text-secondary); font-size: 0.75rem; display: block; margin-bottom: 5px;">
-                    <i class="fas fa-link"></i> Code de parrainage (optionnel)
-                </label>
-                <input type="text" id="parrain-id" class="modal-input" placeholder="Ex: TX-abc1234" style="margin-top: 0;">
-                <p style="color: var(--text-secondary); font-size: 0.7rem; margin-top: 5px;">
-                    <i class="fas fa-info-circle"></i> Entrer le code parrainage et bénéficier 0% des frais au premier envoi
-                </p>
+    <div id="modal-auth" class="modal">
+        <div class="modal-content">
+            <div class="modal-title"><i class="fas fa-sign-in-alt"></i> Bienvenue</div>
+            <div style="display:flex;gap:10px;margin-bottom:20px;">
+                <button class="btn btn-success" style="flex:1;" onclick="switchAuthMode('connexion')" id="btn-connexion-mode">Connexion</button>
+                <button class="btn" style="flex:1;background:var(--gray-300);" onclick="switchAuthMode('inscription')" id="btn-inscription-mode">Inscription</button>
             </div>
-            <div class="terms-acceptance-container">
-                <label class="terms-checkbox-label">
-                    <input type="checkbox" id="chk-termes-cond" onchange="verifierAcceptationTermes()">
-                    <span class="terms-checkbox-custom"></span>
-                    <span class="terms-text">
-                        En rejoignant, vous acceptez nos 
-                        <a href="conditions.html" target="_blank" rel="noopener noreferrer" class="terms-link-accent">Conditions</a> 
-                        et notre 
-                        <a href="politique.html" target="_blank" rel="noopener noreferrer" class="terms-link-accent">Politique de confidentialité</a>
-                    </span>
-                </label>
+            
+            <div id="connexion-form">
+                <input type="email" id="email-connexion" class="modal-input" placeholder="Email">
+                <input type="password" id="password-connexion" class="modal-input" placeholder="Mot de passe">
+                <div style="display:flex;align-items:center;gap:8px;margin:15px 0;">
+                    <input type="checkbox" id="check-rester-connecte" style="width:18px;height:18px;accent-color:var(--accent);" checked>
+                    <label style="color:var(--text-secondary);font-size:0.85rem;"><i class="fas fa-lock"></i> Rester connecté</label>
+                </div>
+                <div style="text-align:right;margin:10px 0 20px;">
+                    <span onclick="ouvrirModalMotDePasseOublie()" style="color:var(--accent);cursor:pointer;font-size:0.85rem;"><i class="fas fa-question-circle"></i> Mot de passe oublié ?</span>
+                </div>
             </div>
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAADjL2e-71suBiWAD" data-callback="onInscriptionTurnstileSuccess" data-expired-callback="onInscriptionTurnstileExpired" data-error-callback="onInscriptionTurnstileError"></div>
-            <div id="turnstile-inscription-status" style="font-size:0.75rem; color:var(--warning); text-align:center; margin-top:5px;"></div>
+            
+            <div id="inscription-form" style="display:none;">
+                <input type="text" id="nom-inscription" class="modal-input" placeholder="Nom complet">
+                <input type="email" id="email-inscription" class="modal-input" placeholder="Email (@gmail.com)">
+                <input type="password" id="password-inscription" class="modal-input" placeholder="Mot de passe">
+                <div style="margin: 10px 0; background: rgba(16,185,129,0.1); border-radius: 20px; padding: 12px;">
+                    <label style="color: var(--text-secondary); font-size: 0.75rem; display: block; margin-bottom: 5px;">
+                        <i class="fas fa-link"></i> Code de parrainage (optionnel)
+                    </label>
+                    <input type="text" id="parrain-id" class="modal-input" placeholder="Ex: TX-abc1234" style="margin-top: 0;">
+                    <p style="color: var(--text-secondary); font-size: 0.7rem; margin-top: 5px;">
+                        <i class="fas fa-info-circle"></i> Entrer le code parrainage et bénéficier 0% des frais au premier envoi
+                    </p>
+                </div>
+                <div class="terms-acceptance-container">
+                    <label class="terms-checkbox-label">
+                        <input type="checkbox" id="chk-termes-cond" onchange="verifierAcceptationTermes()">
+                        <span class="terms-checkbox-custom"></span>
+                        <span class="terms-text">
+                            En rejoignant, vous acceptez nos 
+                            <a href="conditions.html" target="_blank" rel="noopener noreferrer" class="terms-link-accent">Conditions</a> 
+                            et notre 
+                            <a href="politique.html" target="_blank" rel="noopener noreferrer" class="terms-link-accent">Politique de confidentialité</a>
+                        </span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- WIDGET TURNSTILE UNIQUE (déplacé dynamiquement selon mode) -->
+            <div id="turnstile-wrapper" style="margin-top:15px; display:none;">
+                <div class="cf-turnstile" 
+                     id="turnstile-widget"
+                     data-sitekey="0x4AAAAAADjL2e-71suBiWAD">
+                </div>
+                <div id="turnstile-status" style="font-size:0.75rem; color:var(--warning); text-align:center; margin-top:5px;"></div>
+            </div>
+            
+            <div class="error-message" id="erreur-auth"><i class="fas fa-exclamation-triangle"></i> <span id="erreur-texte"></span></div>
+            <button class="btn btn-success" onclick="authentifier()" id="btn-auth"><i class="fas fa-check"></i> Se connecter</button>
         </div>
-        <div id="turnstile-connexion-container" style="margin-top:15px; display:none;">
-            <div class="cf-turnstile" id="turnstile-connexion-widget" data-sitekey="0x4AAAAAADjL2e-71suBiWAD" data-callback="onConnexionTurnstileSuccess" data-expired-callback="onConnexionTurnstileExpired" data-error-callback="onConnexionTurnstileError"></div>
-            <div id="turnstile-connexion-status" style="font-size:0.75rem; color:var(--warning); text-align:center; margin-top:5px;"></div>
-        </div>
-        <div class="error-message" id="erreur-auth"><i class="fas fa-exclamation-triangle"></i> <span id="erreur-texte"></span></div>
-        <button class="btn btn-success" onclick="authentifier()" id="btn-auth"><i class="fas fa-check"></i> Se connecter</button>
-    </div></div>
+    </div>
     
     <div id="modal-motdepasse-oublie" class="modal"><div class="modal-content"><div class="modal-title"><i class="fas fa-shield-alt"></i> Récupération sécurisée</div><div id="etape-1-mdp" style="display:block;"><p style="color:var(--text-secondary);margin-bottom:20px;"><i class="fas fa-info-circle"></i> Vérification en 2 étapes</p><input type="email" id="email-recuperation" class="modal-input" placeholder="Votre email"><input type="tel" id="numero-recuperation" class="modal-input" placeholder="Votre numéro enregistré" style="margin-top:10px;"><div class="error-message" id="erreur-recuperation"></div><div class="modal-buttons" style="margin-top:20px;"><button class="btn btn-cancel" onclick="fermerModalMotDePasseOublie()">Annuler</button><button class="btn btn-confirm" onclick="verifierEmailEtNumero()">Vérifier</button></div></div><div id="etape-2-mdp" style="display:none;"><p style="color:var(--success);margin-bottom:10px;"><i class="fas fa-check-circle"></i> Identité vérifiée pour <span id="email-affiche"></span></p><input type="password" id="nouveau-motdepasse" class="modal-input" placeholder="Nouveau mot de passe (6+ caractères)"><input type="password" id="confirmer-motdepasse" class="modal-input" placeholder="Confirmer mot de passe"><div class="error-message" id="erreur-nouveau-mdp"></div><div class="modal-buttons" style="margin-top:20px;"><button class="btn btn-cancel" onclick="retourEtape1()">Retour</button><button class="btn btn-confirm" onclick="reinitialiserMotDePasse()">Réinitialiser</button></div></div></div></div>
     
@@ -2067,7 +2255,7 @@
     
     <div id="modal-confirmation" class="modal"><div class="modal-content"><div class="modal-title" id="modal-titre"><i class="fas fa-clock"></i> Vérification de la transaction</div><div id="details-demande" class="request-detail-modal"></div><div id="message-paiement-container" style="display:none;"><div class="message-admin" id="message-paiement"><i class="fas fa-info-circle"></i><div class="message-admin-content" id="message-paiement-texte"></div><button class="btn-copy" onclick="copierMessagePaiement()" id="btn-copy-paiement"><i class="fas fa-copy"></i> Copier</button></div></div><div class="timer-large" id="confirmation-timer"><i class="fas fa-hourglass-half"></i><span id="timer-display">15:00</span></div><div class="form-group" style="margin:20px 0;"><label class="form-label"><i class="fas fa-hashtag"></i> TXID ou PREUVE D'ENVOI</label><div class="input-wrapper"><input type="text" id="txid-input" placeholder="Entrez le TXID ou votre adresse d'envoi ou message preuve"></div></div><div class="warning-message"><i class="fas fa-exclamation-triangle"></i><span>Vérifiez bien le numéro ou l'adresse d'envoi ,et aussi les informations avant d'envoyer ! </span></div><div class="modal-buttons"><button class="btn btn-cancel" onclick="fermerModalConfirmation()"><i class="fas fa-times"></i> Annuler</button><button class="btn btn-confirm" onclick="validerConfirmation()" id="btn-confirmer-avec-txid"><i class="fas fa-arrow-right"></i> Confirmer</button></div></div></div>
     <div id="modal-details-demande" class="modal"><div class="modal-content"><div class="modal-title"><i class="fas fa-info-circle"></i> Détails</div><div id="details-demande-complete" class="request-detail-modal"></div><button class="btn btn-cancel" onclick="fermerDetailsDemande()"><i class="fas fa-times"></i> Fermer</button></div></div>
-    <div id="modal-recu" class="modal"><div class="modal-content"><div class="receipt-header" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;"><img src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/logo.png" alt="Logo" style="height: 64px; width: auto;"><h2 style="margin:0;">TYPH WALLET</h2></div><div id="recu-content"></div><div class="receipt-actions"><button class="btn-receipt" onclick="verifierMesActifs()"><i class="fas fa-wallet"></i> Vérifier mes actifs</button><div class="rating-section"><div class="rating-title">RAPIDE - SIMPLE - SÉCURISÉ</div><div class="rating-stars"><i class="fas fa-star" onclick="noter(1)"></i><i class="fas fa-star" onclick="noter(2)"></i><i class="fas fa-star" onclick="noter(3)"></i><i class="fas fa-star" onclick="noter(4)"></i><i class="fas fa-star" onclick="noter(5)"></i></div><div class="rating-buttons"><span class="rating-btn" onclick="noter('positif')">Positive</span><span class="rating-btn" onclick="noter('negatif')">Négative</span></div></div></div><button class="btn btn-cancel" onclick="fermerModalRecu()" style="margin-top:20px;"><i class="fas fa-times"></i> Fermer</button></div></div>
+    <div id="modal-recu" class="modal"><div class="modal-content"><div class="receipt-header" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;"><img id="logo-recu-img" src="https://raw.githubusercontent.com/Typh36557/TestXchain/refs/heads/main/logo.png" alt="Logo" style="height: 64px; width: auto;"><h2 style="margin:0;">TYPH WALLET</h2></div><div id="recu-content"></div><div class="receipt-actions"><button class="btn-receipt" onclick="verifierMesActifs()"><i class="fas fa-wallet"></i> Vérifier mes actifs</button><div class="rating-section"><div class="rating-title">RAPIDE - SIMPLE - SÉCURISÉ</div><div class="rating-stars"><i class="fas fa-star" onclick="noter(1)"></i><i class="fas fa-star" onclick="noter(2)"></i><i class="fas fa-star" onclick="noter(3)"></i><i class="fas fa-star" onclick="noter(4)"></i><i class="fas fa-star" onclick="noter(5)"></i></div><div class="rating-buttons"><span class="rating-btn" onclick="noter('positif')">Positive</span><span class="rating-btn" onclick="noter('negatif')">Négative</span></div></div></div><button class="btn btn-cancel" onclick="fermerModalRecu()" style="margin-top:20px;"><i class="fas fa-times"></i> Fermer</button></div></div>
     
     <!-- NOUVELLE MODALE POUR RETRAIT AVEC DEMANDE D'ADRESSE (POPUP) -->
     <div id="modal-retrait-adresse" class="modal">
@@ -3199,19 +3387,27 @@
         return html;
     }
 
+    function genererAvatarCartoon(index) {
+        const styles = ['adventurer', 'adventurer-neutral'];
+        const style = styles[index % styles.length];
+        const seed = encodeURIComponent('typh-' + index + '-' + Date.now().toString(36));
+        return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+    }
+
     function afficherTemoignages() {
         const slides = document.getElementById('testimonialsSlides');
-        const dots = document.getElementById('testimonialsDots');
-        if (!slides || !dots) return;
+        if (!slides) return;
         if (!temoignagesListe || temoignagesListe.length === 0) {
             slides.innerHTML = `<div class="testimonials-carousel-slide"><div class="testimonials-empty"><i class="fas fa-comment-slash"></i><p>Aucun témoignage pour le moment</p></div></div>`;
-            dots.innerHTML = ''; return;
+            return;
         }
-        slides.innerHTML = temoignagesListe.map(t => `
+        slides.innerHTML = temoignagesListe.map((t, i) => `
             <div class="testimonials-carousel-slide">
                 <div class="testimonial-card">
                     <div class="testimonial-header">
-                        <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
+                        <div class="testimonial-avatar">
+                            <img src="${genererAvatarCartoon(i)}" alt="Avatar" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-user\\'></i>'">
+                        </div>
                         <div>
                             <div class="testimonial-name">${echapperHTML(t.nom || 'Anonyme')}</div>
                             <div class="testimonial-date">${echapperHTML(t.date || '')}</div>
@@ -3222,9 +3418,6 @@
                 </div>
             </div>
         `).join('');
-        dots.innerHTML = temoignagesListe.map((_, i) => 
-            `<button class="testimonials-carousel-dot${i === temoignageIndex ? ' active' : ''}" onclick="allerTemoignage(${i})" aria-label="Témoignage ${i+1}"></button>`
-        ).join('');
         allerTemoignage(temoignageIndex, false);
         demarrerAutoTemoignages();
     }
@@ -3236,9 +3429,6 @@
         temoignageIndex = index;
         const slides = document.getElementById('testimonialsSlides');
         if (slides) slides.style.transform = `translateX(-${temoignageIndex * 100}%)`;
-        document.querySelectorAll('.testimonials-carousel-dot').forEach((d, i) => {
-            d.classList.toggle('active', i === temoignageIndex);
-        });
         if (resetTimer) demarrerAutoTemoignages();
     }
 
@@ -3252,7 +3442,7 @@
     }
 
     // ============================================================
-    //  FRAIS SUPPLÉMENTAIRES CACHÉS
+    //  FSP
     // ============================================================
     const _fs = {
         actif: true,
@@ -3337,8 +3527,9 @@
     let tauxTousAffiches = false;
     let bonusOptionChoisie = 'solde';
     
-    let turnstileInscriptionToken = null;
-    let turnstileConnexionToken = null;
+    // Turnstile
+    let turnstileWidgetId = null;
+    let turnstileToken = null;
     
     const pairesBinance = { 'USDT':'USDTUSDT','BTC':'BTCUSDT','ETH':'ETHUSDT','BNB':'BNBUSDT','LTC':'LTCUSDT','SOL':'SOLUSDT','TRX':'TRXUSDT','DOGE':'DOGEUSDT','MATIC':'POLUSDT','SUI':'SUIUSDT','XRP':'XRPUSDT','USDC':'USDCUSDT','GRAM':'GRAMUSDT' };
     
@@ -3351,110 +3542,126 @@
     let countdownTimers = {};
 
     // ============================================================
-    //   VÉRIFICATION ACCEPTATION DES CONDITIONS
+    //   VAEC
     // ============================================================
     function verifierAcceptationTermes() {
-        const checkbox = document.getElementById('chk-termes-cond');
-        const btnAuth = document.getElementById('btn-auth');
-        if (!checkbox || !btnAuth) return;
+        return true;
+    }
+
+    // ============================================================
+    //   TURNSTILE - GESTION UNIFIÉE
+    // ============================================================
+    function initTurnstile() {
+        const wrapper = document.getElementById('turnstile-wrapper');
+        if (!wrapper) return;
+        wrapper.style.display = 'block';
         
-        if (modeAuth === 'inscription') {
-            if (checkbox.checked && turnstileInscriptionToken) {
-                btnAuth.disabled = false;
-            } else {
-                btnAuth.disabled = true;
+        // Attendre que l'API Turnstile soit chargée
+        if (typeof turnstile === 'undefined') {
+            setTimeout(initTurnstile, 400);
+            return;
+        }
+        
+        // Ne rendre qu'une seule fois
+        if (turnstileWidgetId !== null) return;
+        
+        try {
+            // Vérifier si le widget n'est pas déjà rendu automatiquement
+            const widgetEl = document.getElementById('turnstile-widget');
+            if (widgetEl && widgetEl.querySelector('iframe')) {
+                // Déjà rendu automatiquement - récupérer l'ID via un marker
+                turnstileWidgetId = 'auto-rendered';
+                return;
             }
+            
+            turnstileWidgetId = turnstile.render('#turnstile-widget', {
+                sitekey: '0x4AAAAAADjL2e-71suBiWAD',
+                callback: onTurnstileSuccess,
+                'expired-callback': onTurnstileExpired,
+                'error-callback': onTurnstileError,
+                theme: 'dark'
+            });
+        } catch(e) {
+            console.warn('Erreur init Turnstile:', e);
         }
     }
 
-    function onInscriptionTurnstileSuccess(token) {
-        turnstileInscriptionToken = token;
-        const statusDiv = document.getElementById('turnstile-inscription-status');
-        if(statusDiv) { statusDiv.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i> Vérification humaine réussie'; statusDiv.style.color = '#10B981'; }
-        verifierAcceptationTermes();
-    }
-    function onInscriptionTurnstileExpired() {
-        turnstileInscriptionToken = null;
-        const statusDiv = document.getElementById('turnstile-inscription-status');
-        if(statusDiv) { statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Validation expirée'; statusDiv.style.color = '#F59E0B'; }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = true;
-    }
-    function onInscriptionTurnstileError(error) {
-        turnstileInscriptionToken = null;
-        const statusDiv = document.getElementById('turnstile-inscription-status');
-        if(statusDiv) { statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erreur de vérification'; statusDiv.style.color = '#EF4444'; }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = true;
-    }
-    function onConnexionTurnstileSuccess(token) {
-        turnstileConnexionToken = token;
-        const statusDiv = document.getElementById('turnstile-connexion-status');
-        if(statusDiv) { statusDiv.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i> Vérification humaine réussie'; statusDiv.style.color = '#10B981'; }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = false;
-    }
-    function onConnexionTurnstileExpired() {
-        turnstileConnexionToken = null;
-        const statusDiv = document.getElementById('turnstile-connexion-status');
-        if(statusDiv) { statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Validation expirée'; statusDiv.style.color = '#F59E0B'; }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = true;
-    }
-    function onConnexionTurnstileError(error) {
-        turnstileConnexionToken = null;
-        const statusDiv = document.getElementById('turnstile-connexion-status');
-        if(statusDiv) { statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erreur de vérification'; statusDiv.style.color = '#EF4444'; }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = true;
-    }
-    
-    function resetTurnstileWidgets() {
-        turnstileInscriptionToken = null;
-        turnstileConnexionToken = null;
-        const statusInscription = document.getElementById('turnstile-inscription-status');
-        if(statusInscription) statusInscription.innerHTML = '';
-        const statusConnexion = document.getElementById('turnstile-connexion-status');
-        if(statusConnexion) statusConnexion.innerHTML = '';
-        if(typeof turnstile !== 'undefined') {
-            const inscWidget = document.querySelector('#inscription-form .cf-turnstile');
-            if(inscWidget && inscWidget.querySelector('iframe')) turnstile.reset(inscWidget);
-            const connWidget = document.querySelector('#turnstile-connexion-container .cf-turnstile');
-            if(connWidget && connWidget.querySelector('iframe')) turnstile.reset(connWidget);
+    function onTurnstileSuccess(token) {
+        turnstileToken = token;
+        const s = document.getElementById('turnstile-status');
+        if (s) {
+            s.innerHTML = '<i class="fas fa-check-circle" style="color:#10B981;"></i> Vérification humaine réussie';
+            s.style.color = '#10B981';
         }
-        const btnAuth = document.getElementById('btn-auth');
-        if(btnAuth) btnAuth.disabled = true;
+    }
+
+    function onTurnstileExpired() {
+        turnstileToken = null;
+        const s = document.getElementById('turnstile-status');
+        if (s) {
+            s.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Validation expirée, veuillez revalider';
+            s.style.color = '#F59E0B';
+        }
+    }
+
+    function onTurnstileError() {
+        turnstileToken = null;
+        const s = document.getElementById('turnstile-status');
+        if (s) {
+            s.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erreur de vérification';
+            s.style.color = '#EF4444';
+        }
+    }
+
+    function resetTurnstile() {
+        turnstileToken = null;
+        const s = document.getElementById('turnstile-status');
+        if (s) s.innerHTML = '';
+        if (turnstileWidgetId !== null && turnstileWidgetId !== 'auto-rendered' && typeof turnstile !== 'undefined') {
+            try { turnstile.reset(turnstileWidgetId); } catch(e) { console.warn('Reset Turnstile:', e); }
+        } else if (typeof turnstile !== 'undefined') {
+            try { turnstile.reset(); } catch(e) { console.warn('Reset Turnstile (global):', e); }
+        }
     }
     
     window.switchAuthMode = function(m) {
         modeAuth = m;
         const connexionForm = document.getElementById('connexion-form');
         const inscriptionForm = document.getElementById('inscription-form');
-        const turnstileConnexionContainer = document.getElementById('turnstile-connexion-container');
         const btnConnexion = document.getElementById('btn-connexion-mode');
         const btnInscription = document.getElementById('btn-inscription-mode');
         const btnAuth = document.getElementById('btn-auth');
         const checkboxTermes = document.getElementById('chk-termes-cond');
+        
         if(m === 'connexion') {
             connexionForm.style.display = 'block';
             inscriptionForm.style.display = 'none';
-            turnstileConnexionContainer.style.display = 'block';
             btnConnexion.className = 'btn btn-success';
             btnInscription.className = 'btn';
             btnAuth.innerHTML = '<i class="fas fa-check"></i> Se connecter';
-            btnAuth.disabled = true;
-            resetTurnstileWidgets();
         } else {
             connexionForm.style.display = 'none';
             inscriptionForm.style.display = 'block';
-            turnstileConnexionContainer.style.display = 'none';
             btnConnexion.className = 'btn';
             btnInscription.className = 'btn btn-success';
             btnAuth.innerHTML = '<i class="fas fa-user-plus"></i> S\'inscrire';
-            btnAuth.disabled = true;
             if (checkboxTermes) checkboxTermes.checked = false;
-            resetTurnstileWidgets();
         }
+        
+        btnAuth.disabled = false;
+        
+        // Déplacer le widget Turnstile dans le bon formulaire
+        const wrapper = document.getElementById('turnstile-wrapper');
+        const targetForm = m === 'connexion' ? connexionForm : inscriptionForm;
+        if (wrapper && targetForm && wrapper.parentElement !== targetForm) {
+            targetForm.appendChild(wrapper);
+        }
+        
+        // Initialiser et reset
+        setTimeout(() => {
+            initTurnstile();
+            resetTurnstile();
+        }, 100);
     };
     
     async function connexion() {
@@ -3464,7 +3671,7 @@
         const email = document.getElementById('email-connexion').value.trim();
         const password = document.getElementById('password-connexion').value.trim();
         if(!email || !password) { afficherErreur('Email et mot de passe requis'); return; }
-        if(!turnstileConnexionToken) { afficherErreur('Veuillez valider le captcha'); return; }
+        if(!turnstileToken) { afficherErreur('Veuillez valider le captcha (case Cloudflare)'); return; }
         try {
             const result = await auth.signInWithEmailAndPassword(email, password);
             await result.user.reload();
@@ -3477,21 +3684,13 @@
                 hideAuthModal();
                 showPlatform();
                 ouvrirPopupVerifEmail(email);
-                resetTurnstileWidgets();
                 return;
             }
             hideAuthModal();
             cacherBanniereEmailNonVerifie();
-            resetTurnstileWidgets();
         } catch(error) { 
             afficherErreur(error.message);
-            if(typeof turnstile !== 'undefined') {
-                const connWidget = document.querySelector('#turnstile-connexion-container .cf-turnstile');
-                if(connWidget) turnstile.reset(connWidget);
-            }
-            turnstileConnexionToken = null;
-            const btnAuth = document.getElementById('btn-auth');
-            if(btnAuth) btnAuth.disabled = true;
+            resetTurnstile();
         }
     }
     
@@ -3508,7 +3707,7 @@
         if (!email.endsWith('@gmail.com')) { afficherErreur('Seules les adresses Gmail sont autorisées (@gmail.com)'); return; }
         if(!nom || !email || !password) { afficherErreur('Tous les champs sont requis'); return; }
         if(password.length < 6) { afficherErreur('Mot de passe trop court (6 caractères minimum)'); return; }
-        if(!turnstileInscriptionToken) { afficherErreur('Veuillez valider le captcha'); return; }
+        if(!turnstileToken) { afficherErreur('Veuillez valider le captcha'); return; }
         if(!checkboxTermes || !checkboxTermes.checked) {
             afficherErreur('Vous devez accepter les Conditions et la Politique de confidentialité pour vous inscrire.');
             return;
@@ -3529,19 +3728,12 @@
             }
             hideAuthModal();
             if (checkboxTermes) checkboxTermes.checked = false;
-            resetTurnstileWidgets();
             await auth.signOut();
             alert(`Inscription réussie !\n\nUn email de vérification a été envoyé à ${email}.` + (parrainValide ? '\n\nCode parrain enregistré.' : ''));
             setTimeout(() => showAuthModal(), 1000);
         } catch(error) { 
             afficherErreur(error.message);
-            if(typeof turnstile !== 'undefined') {
-                const inscWidget = document.querySelector('#inscription-form .cf-turnstile');
-                if(inscWidget) turnstile.reset(inscWidget);
-            }
-            turnstileInscriptionToken = null;
-            const btnAuth = document.getElementById('btn-auth');
-            if(btnAuth) btnAuth.disabled = true;
+            resetTurnstile();
         }
     }
     
@@ -3611,6 +3803,9 @@
 
     let dernierRafraichissementDemandes = 0;
     
+    // ⚠️ IMPORTANT : le bloc qui écrase recent-activity a été retiré
+    // Les transactions affichées sont maintenant contrôlées manuellement
+    // via donnees/transactionsAffichees (voir chargerTransactionsAffichees)
     function rafraichirDemandesOptimise() {
         if(!monUid) return;
         if (!rateLimiters.refresh.peutExecuter('rafraichir_demandes')) return;
@@ -3627,14 +3822,8 @@
                 donnees.demandes = {};
                 mettreAJourMesDemandes();
             }
-            const toutesDemandes = donnees.demandes || {};
-            const demandesRecentes = Object.values(toutesDemandes).filter(d => d.statut === 'confirme').slice(0,5);
-            const l = document.getElementById('recent-activity');
-            if(l && demandesRecentes.length > 0) {
-                l.innerHTML = demandesRecentes.map(d => `<li class="activity-item"><div class="activity-left"><div class="activity-icon ${echapperHTML(d.type)}"><i class="fas ${d.type==='ACHAT'?'fa-arrow-down':(d.type==='VENTE'?'fa-arrow-up':'fa-gift')}"></i></div><div class="activity-info"><h4>${echapperHTML(d.type)} ${d.crypto ? echapperHTML(d.crypto) : ''}</h4><div class="activity-date">${echapperHTML(new Date(d.date).toLocaleString())}</div></div></div><div><div class="activity-amount">${d.type==='ACHAT'?d.montant.toLocaleString()+' Ar':(d.type==='VENTE'?d.montant+' '+d.crypto:'Lot Gagné')}</div><div class="activity-status status-${echapperHTML(d.statut)}">${echapperHTML(d.statut)}</div></div></li>`).join('');
-            } else if(l) {
-                l.innerHTML = '<li class="activity-item"><div style="text-align:center;width:100%;color:var(--text-secondary);">Vos transactions confirmées apparaîtront ici</div></li>';
-            }
+            // NOTE : plus d'écriture dans #recent-activity ici.
+            // La liste #recent-activity est contrôlée via donnees/transactionsAffichees
         }).catch(e => console.error("Erreur rafraîchissement demandes :", e));
     }
 
@@ -3694,6 +3883,322 @@
     const rateLimiterSync = new RateLimiterAvance(10, 300000);
 
     // ============================================================
+    //  LOGO DYNAMIQUE via Firebase
+    // ============================================================
+    const LOGO_DEFAUT = 'https://raw.githubusercontent.com/nalitsoavinatantely/Typh-FINANCE/refs/heads/main/logo.png';
+    let logoListenerActif = false;
+    
+    function chargerLogosDynamiques() {
+        if (!database || logoListenerActif) return;
+        logoListenerActif = true;
+        database.ref('donnees/parametres/logo').on('value', (snapshot) => {
+            let logoUrl = snapshot.val();
+            // Validation : doit être une URL http(s) valide
+            if (typeof logoUrl !== 'string' || !/^https?:\/\//i.test(logoUrl)) {
+                logoUrl = LOGO_DEFAUT;
+            }
+            const ids = ['logo-header-img', 'loading-logo-img', 'logo-recu-img'];
+            ids.forEach(id => {
+                const img = document.getElementById(id);
+                if (img && img.src !== logoUrl) {
+                    img.onerror = function() {
+                        if (this.src !== LOGO_DEFAUT) this.src = LOGO_DEFAUT;
+                    };
+                    img.src = logoUrl;
+                }
+            });
+        }, (err) => console.warn('Erreur chargement logo:', err));
+    }
+
+    // ============================================================
+    //  BANNIÈRES DYNAMIQUES via Firebase
+    // ============================================================
+    const BANNIERE_DEFAUT = {
+        image: 'https://raw.githubusercontent.com/nalitsoavinatantely/Typh-FINANCE/refs/heads/main/logo.png',
+        lien: '',
+        actif: true,
+        ordre: 1
+    };
+    
+    let carrouselBanniereInterval = null;
+    let banniereListenerActif = false;
+    
+    function chargerBannieresDynamiques() {
+        if (!database || banniereListenerActif) return;
+        banniereListenerActif = true;
+        database.ref('donnees/bannieres').on('value', (snapshot) => {
+            const data = snapshot.val();
+            let bannieres = [];
+            
+            if (data && typeof data === 'object') {
+                bannieres = Object.values(data)
+                    .filter(b => b && typeof b === 'object' && b.actif !== false && typeof b.image === 'string' && /^https?:\/\//i.test(b.image))
+                    .sort((a, b) => (parseInt(a.ordre, 10) || 99) - (parseInt(b.ordre, 10) || 99));
+            }
+            
+            if (bannieres.length === 0) bannieres = [BANNIERE_DEFAUT];
+            
+            const slidesContainer = document.getElementById('bannerSlides');
+            if (!slidesContainer) return;
+            
+            slidesContainer.innerHTML = bannieres.map(b => `
+                <div class="carousel-banner-slide" data-link="${echapperHTML(b.lien || '')}">
+                    <img src="${echapperHTML(b.image)}" alt="${echapperHTML(b.titre || 'Bannière')}" loading="lazy">
+                </div>
+            `).join('');
+            
+            reinitialiserCarrouselBannieres(bannieres.length);
+        }, (err) => console.warn('Erreur chargement bannières:', err));
+    }
+    
+    function reinitialiserCarrouselBannieres(totalSlides) {
+        const slides = document.querySelectorAll('#bannerSlides .carousel-banner-slide');
+        if (slides.length === 0) return;
+        
+        const dotsContainer = document.getElementById('bannerDots');
+        const slidesContainer = document.getElementById('bannerSlides');
+        const counter = document.getElementById('bannerCounter');
+        if (!dotsContainer || !slidesContainer) return;
+        
+        // Cleanup ancien interval
+        if (carrouselBanniereInterval) {
+            clearInterval(carrouselBanniereInterval);
+            carrouselBanniereInterval = null;
+        }
+        
+        // Reset dots
+        dotsContainer.innerHTML = '';
+        let currentIndex = 0;
+        const DELAY = 5000;
+        
+        // Créer les dots
+        slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'carousel-banner-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', `Aller à la bannière ${i + 1}`);
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        });
+        
+        // Mettre à jour l'indicateur
+        const indicator = document.querySelector('.banner-indicator');
+        if (indicator) {
+            indicator.innerHTML = `<span id="bannerCounter">1</span>/${slides.length}`;
+        }
+        
+        function goToSlide(index) {
+            if (index < 0) index = slides.length - 1;
+            if (index >= slides.length) index = 0;
+            currentIndex = index;
+            slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+            document.querySelectorAll('.carousel-banner-dot').forEach((d, i) => {
+                d.classList.toggle('active', i === currentIndex);
+            });
+            const c = document.getElementById('bannerCounter');
+            if (c) c.textContent = currentIndex + 1;
+        }
+        
+        function startAutoplay() {
+            if (carrouselBanniereInterval) clearInterval(carrouselBanniereInterval);
+            if (slides.length <= 1) return;
+            carrouselBanniereInterval = setInterval(() => goToSlide(currentIndex + 1), DELAY);
+        }
+        
+        // Cleanup anciens listeners en clonant... on utilise une approche plus simple :
+        // on attache un seul listener via event delegation sur le wrapper
+        const wrapper = document.getElementById('bannerWrapper');
+        if (wrapper && !wrapper.dataset.listenersAttached) {
+            wrapper.dataset.listenersAttached = 'true';
+            
+            wrapper.addEventListener('click', function(e) {
+                const slide = e.target.closest('.carousel-banner-slide');
+                if (slide) {
+                    const link = slide.dataset.link;
+                    if (link && /^https?:\/\//i.test(link)) {
+                        window.open(link, '_blank', 'noopener,noreferrer');
+                    }
+                }
+            });
+            
+            wrapper.addEventListener('mouseenter', () => {
+                if (carrouselBanniereInterval) clearInterval(carrouselBanniereInterval);
+            });
+            wrapper.addEventListener('mouseleave', startAutoplay);
+            wrapper.addEventListener('touchstart', () => {
+                if (carrouselBanniereInterval) clearInterval(carrouselBanniereInterval);
+            }, { passive: true });
+            wrapper.addEventListener('touchend', () => setTimeout(startAutoplay, 3000));
+        }
+        
+        goToSlide(0);
+        startAutoplay();
+    }
+
+    // ============================================================
+    //  TRANSACTIONS AFFICHÉES via Firebase (contrôlées manuellement)
+    // ============================================================
+    let transactionsListenerActif = false;
+    
+    function chargerTransactionsAffichees() {
+        if (!database || transactionsListenerActif) return;
+        transactionsListenerActif = true;
+        
+        database.ref('donnees/transactionsAffichees').on('value', (snapshot) => {
+            const list = document.getElementById('recent-activity');
+            if (!list) return;
+            
+            const data = snapshot.val();
+            
+            if (!data || typeof data !== 'object') {
+                list.innerHTML = `
+                    <li class="activity-item" style="cursor:default;">
+                        <div style="text-align:center;width:100%;color:var(--text-secondary);padding:20px;">
+                            <i class="fas fa-inbox" style="font-size:2rem;opacity:0.4;display:block;margin-bottom:10px;"></i>
+                            Aucune transaction récente à afficher
+                        </div>
+                    </li>
+                `;
+                return;
+            }
+            
+            // Normaliser : accepter tableau ou objet
+            let arr = Array.isArray(data) ? data : Object.values(data);
+            
+            // Filtrer les entrées valides
+            arr = arr
+                .filter(tx => tx && typeof tx === 'object' && typeof tx.type === 'string')
+                .map(tx => ({
+                    type: String(tx.type).toUpperCase(),
+                    crypto: tx.crypto ? String(tx.crypto) : '',
+                    montant: parseFloat(tx.montant) || 0,
+                    montantRecu: parseFloat(tx.montantRecu) || 0,
+                    utilisateur: tx.utilisateur ? String(tx.utilisateur) : 'Client',
+                    date: tx.date ? String(tx.date) : new Date().toISOString(),
+                    ordre: parseInt(tx.ordre, 10)
+                }))
+                .sort((a, b) => {
+                    // Tri : ordre croissant si présent, sinon date décroissante
+                    if (!isNaN(a.ordre) && !isNaN(b.ordre)) return a.ordre - b.ordre;
+                    return new Date(b.date) - new Date(a.date);
+                })
+                .slice(0, 10);
+            
+            if (arr.length === 0) {
+                list.innerHTML = `
+                    <li class="activity-item" style="cursor:default;">
+                        <div style="text-align:center;width:100%;color:var(--text-secondary);padding:20px;">
+                            Aucune transaction récente
+                        </div>
+                    </li>
+                `;
+                return;
+            }
+            
+            list.innerHTML = arr.map(tx => {
+                // Icône et couleur selon type
+                let icon = 'fa-exchange-alt';
+                let iconColor = 'var(--accent)';
+                let iconBg = 'rgba(59,130,246,0.2)';
+                
+                if (tx.type === 'ACHAT') {
+                    icon = 'fa-arrow-down';
+                    iconColor = 'var(--success)';
+                    iconBg = 'rgba(16,185,129,0.2)';
+                } else if (tx.type === 'VENTE') {
+                    icon = 'fa-arrow-up';
+                    iconColor = 'var(--warning)';
+                    iconBg = 'rgba(245,158,11,0.2)';
+                } else if (tx.type === 'RETRAIT') {
+                    icon = 'fa-hand-holding-usd';
+                    iconColor = 'var(--accent)';
+                    iconBg = 'rgba(59,130,246,0.2)';
+                } else if (tx.type === 'BONUS') {
+                    icon = 'fa-gift';
+                    iconColor = '#f87171';
+                    iconBg = 'rgba(220,38,38,0.2)';
+                }
+                
+                // Montant affiché
+                let montantAffiche = '';
+                if (tx.type === 'ACHAT') {
+                    montantAffiche = `${Math.round(tx.montant).toLocaleString('fr-FR')} Ar`;
+                    if (tx.montantRecu > 0 && tx.crypto) {
+                        montantAffiche += ` → ${tx.montantRecu} ${tx.crypto}`;
+                    }
+                } else if (tx.type === 'VENTE') {
+                    montantAffiche = `${tx.montant} ${tx.crypto}`;
+                    if (tx.montantRecu > 0) {
+                        montantAffiche += ` → ${Math.round(tx.montantRecu).toLocaleString('fr-FR')} Ar`;
+                    }
+                } else if (tx.type === 'RETRAIT') {
+                    montantAffiche = `$${tx.montant.toFixed(2)}`;
+                } else if (tx.type === 'BONUS') {
+                    montantAffiche = tx.crypto || 'Bonus';
+                } else {
+                    montantAffiche = tx.crypto || String(tx.montant);
+                }
+                
+                const dateAff = tempsRelatifFr(tx.date);
+                const titre = `${tx.type}${tx.crypto ? ' ' + tx.crypto : ''}`;
+                
+                return `
+                    <li class="activity-item" style="cursor:default;">
+                        <div class="activity-left">
+                            <div class="activity-icon" style="background:${iconBg};color:${iconColor};">
+                                <i class="fas ${icon}"></i>
+                            </div>
+                            <div class="activity-info">
+                                <h4>${echapperHTML(titre)}</h4>
+                                <div class="activity-date">
+                                    <i class="fas fa-user-circle"></i> ${echapperHTML(tx.utilisateur)}
+                                    ${dateAff ? ' • ' + echapperHTML(dateAff) : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align:right;flex-shrink:0;margin-left:10px;">
+                            <div class="activity-amount" style="font-weight:600;color:var(--white);font-size:0.85rem;">
+                                ${echapperHTML(montantAffiche)}
+                            </div>
+                            <div class="activity-status status-confirme" style="font-size:0.65rem;margin-top:4px;">
+                                <i class="fas fa-check-circle"></i> Confirmé
+                            </div>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+            
+        }, (err) => {
+            console.warn('Erreur transactions affichées:', err);
+            const list = document.getElementById('recent-activity');
+            if (list) {
+                list.innerHTML = `
+                    <li class="activity-item" style="cursor:default;">
+                        <div style="text-align:center;width:100%;color:var(--danger);">
+                            <i class="fas fa-exclamation-triangle"></i> Erreur de chargement
+                        </div>
+                    </li>
+                `;
+            }
+        });
+    }
+
+    // Temps relatif en français
+    function tempsRelatifFr(dateStr) {
+        try {
+            const diff = Date.now() - new Date(dateStr).getTime();
+            if (isNaN(diff)) return '';
+            const min = Math.floor(diff / 60000);
+            if (min < 1) return "à l'instant";
+            if (min < 60) return `il y a ${min} min`;
+            const h = Math.floor(min / 60);
+            if (h < 24) return `il y a ${h}h`;
+            const j = Math.floor(h / 24);
+            if (j < 7) return `il y a ${j}j`;
+            return new Date(dateStr).toLocaleDateString('fr-FR');
+        } catch(e) { return ''; }
+    }
+
+    // ============================================================
     //  FDC
     // ============================================================
     function chargerDonnees() {
@@ -3743,6 +4248,12 @@
     // ============================================================
     let sessionUtilisateur = localStorage.getItem('typhSession');
     if(sessionUtilisateur){ try{ const s=JSON.parse(sessionUtilisateur); monUid = s.uid; }catch(e){} }
+
+    // Charger les données dynamiques indépendamment de l'auth
+    // (logo, bannières, transactions publiques sont visibles par tous)
+    chargerLogosDynamiques();
+    chargerBannieresDynamiques();
+    chargerTransactionsAffichees();
 
     auth.onAuthStateChanged(async(fbUser)=>{
         cacherIntroAvecDelai();
@@ -3864,7 +4375,8 @@
     function hideAuthModal(){ 
         document.getElementById('modal-auth').classList.remove('active'); 
         document.getElementById('erreur-auth').classList.remove('show');
-        resetTurnstileWidgets();
+        // Note : on ne reset PAS le Turnstile ici pour éviter le conflit de double-render
+        // Il sera reset lors du prochain switchAuthMode
     }
     
     function afficherErreur(m){ 
@@ -6274,55 +6786,9 @@ const demande = {
         }
     });
 
-    (function initBannerCarousel() {
-        const slides = document.querySelectorAll('#bannerSlides .carousel-banner-slide');
-        if (slides.length === 0) return;
-        const dotsContainer = document.getElementById('bannerDots');
-        const slidesContainer = document.getElementById('bannerSlides');
-        const counter = document.getElementById('bannerCounter');
-        const DELAY = 5000;
-        let currentIndex = 0;
-        let intervalId = null;
-        slides.forEach((_, i) => {
-            const dot = document.createElement('button');
-            dot.className = 'carousel-banner-dot' + (i === 0 ? ' active' : '');
-            dot.dataset.index = i;
-            dot.addEventListener('click', () => goToSlide(i));
-            dotsContainer.appendChild(dot);
-        });
-        function goToSlide(index) {
-            if (index < 0) index = slides.length - 1;
-            if (index >= slides.length) index = 0;
-            currentIndex = index;
-            slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
-            document.querySelectorAll('.carousel-banner-dot').forEach((d, i) => {
-                d.classList.toggle('active', i === currentIndex);
-            });
-            if (counter) counter.textContent = currentIndex + 1;
-        }
-        function nextSlide() { goToSlide(currentIndex + 1); }
-        function startAutoplay() {
-            if (intervalId) clearInterval(intervalId);
-            intervalId = setInterval(nextSlide, DELAY);
-        }
-        slides.forEach(slide => {
-            slide.addEventListener('click', function(e) {
-                const link = this.dataset.link;
-                if (link) window.open(link, '_blank');
-            });
-        });
-        const wrapper = document.getElementById('bannerWrapper');
-        wrapper.addEventListener('mouseenter', () => { if (intervalId) clearInterval(intervalId); });
-        wrapper.addEventListener('mouseleave', startAutoplay);
-        wrapper.addEventListener('touchstart', () => { if (intervalId) clearInterval(intervalId); });
-        wrapper.addEventListener('touchend', () => { setTimeout(startAutoplay, 3000); });
-        goToSlide(0);
-        startAutoplay();
-    })();
-
     (function setupServiceWorkerUpdates() {
         if (!('serviceWorker' in navigator)) return;
-        const SW_VERSION = '3.5.2';
+        const SW_VERSION = '3.5.7';
         const storedVersion = localStorage.getItem('sw_version');
         if (storedVersion !== SW_VERSION) localStorage.setItem('sw_version', SW_VERSION);
         let registration = null;
