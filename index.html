@@ -780,6 +780,46 @@
             color: #EF4444;
         }
 
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10,15,31,0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(12px);
+        }
+        #loading-overlay.active {
+            display: flex;
+        }
+        #loading-overlay .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #1A253C;
+            border-top-color: #3B82F6;
+            border-radius: 50%;
+            animation: spin-loader 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin-loader {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        #loading-overlay .loader-text {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        #loading-overlay .loader-sub {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
         #numero-missing-banner {
             background: rgba(59,130,246,0.08);
             border: 2px solid #3B82F6;
@@ -903,6 +943,7 @@
             margin: 8px 0 4px 0;
         }
 
+        /* Styles pour le retrait avec demande d'adresse - NOUVELLE VERSION POPUP */
         .retrait-adresse-popup-waiting {
             text-align: center;
             padding: 30px 20px;
@@ -1219,415 +1260,15 @@
         html {
             scroll-behavior: smooth;
         }
-
-        /* ============================================================
-           NPAC
-           ============================================================ */
-        .btn-loading {
-            position: relative !important;
-            pointer-events: none !important;
-            opacity: 0.75 !important;
-        }
-        .btn-loading::after {
-            content: '';
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin-loader 0.7s linear infinite;
-        }
-        .btn-loading i {
-            opacity: 0.4;
-        }
-
-        /* ============================================================
-           NPVE
-           ============================================================ */
-        #modal-verif-email {
-            z-index: 1500;
-        }
-        .verif-email-popup-icon {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .verif-email-popup-icon i {
-            font-size: 4rem;
-            color: var(--warning);
-            text-shadow: 0 0 40px rgba(245,158,11,0.4);
-            animation: pulse-verif 2s ease-in-out infinite;
-        }
-        @keyframes pulse-verif {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.08); opacity: 0.85; }
-        }
-        .verif-email-popup-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            text-align: center;
-            color: var(--white);
-            margin-bottom: 10px;
-        }
-        .verif-email-popup-subtitle {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 22px;
-            line-height: 1.6;
-        }
-        .verif-email-popup-subtitle strong {
-            color: var(--accent);
-            word-break: break-all;
-        }
-        .verif-email-popup-info {
-            background: rgba(59,130,246,0.1);
-            border: 1px solid rgba(59,130,246,0.3);
-            border-radius: 20px;
-            padding: 16px;
-            margin: 18px 0;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-        .verif-email-popup-info strong {
-            color: var(--accent-light);
-            display: block;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-        }
-        .verif-email-popup-info ul {
-            margin: 8px 0 0 18px;
-            padding: 0;
-        }
-        .verif-email-popup-info ul li {
-            margin-bottom: 4px;
-        }
-        .verif-email-popup-spam-warning {
-            background: rgba(245,158,11,0.12);
-            border: 1px solid rgba(245,158,11,0.4);
-            border-radius: 16px;
-            padding: 14px 16px;
-            margin: 14px 0;
-            font-size: 0.85rem;
-            color: var(--warning);
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            line-height: 1.5;
-        }
-        .verif-email-popup-spam-warning i {
-            font-size: 1.2rem;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-        .verif-email-popup-countdown {
-            background: var(--primary);
-            border-radius: 16px;
-            padding: 12px 16px;
-            margin: 14px 0;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: center;
-        }
-        .verif-email-popup-countdown i {
-            color: var(--warning);
-        }
-        .verif-email-popup-countdown strong {
-            color: var(--warning);
-            font-variant-numeric: tabular-nums;
-        }
-        #btn-renvoyer-verif:disabled {
-            background: var(--gray-300) !important;
-            cursor: not-allowed !important;
-            opacity: 0.6 !important;
-            transform: none !important;
-        }
-
-        .verif-timer-badge {
-            display: inline-block;
-            background: rgba(245,158,11,0.2);
-            color: var(--warning);
-            padding: 3px 10px;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-
-        /* ============================================================
-           ITW
-           ============================================================ */
-        #loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 50% 50%, #1a2b47 0%, #0A0F1F 60%, #050a14 100%);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 20px;
-            z-index: 9999;
-            transition: opacity 0.8s ease, visibility 0.8s;
-            overflow: hidden;
-        }
-        #loading-overlay.active {
-            display: flex;
-        }
-        #loading-overlay.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-        #loading-overlay::before {
-            content: '';
-            position: absolute;
-            width: 280px; height: 280px;
-            border-radius: 50%;
-            background: conic-gradient(
-                from 0deg,
-                transparent 0deg,
-                rgba(59, 130, 246, 0) 90deg,
-                rgba(59, 130, 246, 0.4) 180deg,
-                rgba(96, 165, 250, 0.6) 270deg,
-                transparent 360deg
-            );
-            animation: rotate-loader 3s linear infinite;
-            filter: blur(40px);
-            z-index: 0;
-        }
-        #loading-overlay::after {
-            content: '';
-            position: absolute;
-            width: 240px; height: 240px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
-            animation: pulse-halo 2s ease-in-out infinite;
-            z-index: 0;
-        }
-        @keyframes rotate-loader { to { transform: rotate(360deg); } }
-        @keyframes pulse-halo {
-            0%, 100% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.3); opacity: 1; }
-        }
-        .loading-logo-container {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 18px;
-        }
-        .loading-logo {
-            width: 130px; height: 130px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1a2b47, #0A0F1F);
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; position: relative;
-            border: 3px solid rgba(59, 130, 246, 0.4);
-            box-shadow: 
-                0 0 40px rgba(59, 130, 246, 0.5),
-                0 0 80px rgba(59, 130, 246, 0.25),
-                inset 0 0 30px rgba(59, 130, 246, 0.15);
-            animation: logoIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
-                       logoFloat 3s ease-in-out infinite 1s;
-            transform: scale(0);
-            opacity: 0;
-        }
-        .loading-logo img { width: 100%; height: 100%; object-fit: cover; }
-        .loading-logo::after {
-            content: '';
-            position: absolute;
-            inset: -8px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            border-top-color: var(--accent-light);
-            border-right-color: rgba(96, 165, 250, 0.5);
-            animation: rotate-loader 1.5s linear infinite;
-        }
-        @keyframes logoIn {
-            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-            60% { transform: scale(1.15) rotate(10deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-        @keyframes logoFloat {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-8px) scale(1.02); }
-        }
-        .loading-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: 3px;
-            background: linear-gradient(90deg, #60A5FA, #ffffff, #60A5FA);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-align: center;
-            opacity: 0;
-            animation: titleIn 0.8s ease 0.8s forwards, shimmer 2.5s linear infinite 1.5s;
-        }
-        @keyframes titleIn {
-            from { opacity: 0; transform: translateY(10px); letter-spacing: 8px; }
-            to { opacity: 1; transform: translateY(0); letter-spacing: 3px; }
-        }
-        @keyframes shimmer { to { background-position: 200% center; } }
-        .loading-subtitle {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            opacity: 0;
-            animation: subtitleIn 0.8s ease 1.2s forwards;
-            text-align: center;
-            transition: opacity 0.25s ease;
-            min-height: 1.2em;
-        }
-        @keyframes subtitleIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 0.7; transform: translateY(0); }
-        }
-        .loading-bar {
-            width: 180px; height: 3px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 3px;
-            overflow: hidden;
-            position: relative;
-            margin-top: 6px;
-            opacity: 0;
-            animation: subtitleIn 0.5s ease 1.5s forwards;
-        }
-        .loading-bar::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            height: 100%;
-            width: 40%;
-            background: linear-gradient(90deg, transparent, var(--accent-light), transparent);
-            border-radius: 3px;
-            animation: loadingSlide 1.5s ease-in-out infinite;
-        }
-        @keyframes loadingSlide {
-            0% { left: -40%; }
-            100% { left: 100%; }
-        }
-        .loading-dots {
-            display: flex; gap: 6px;
-            margin-top: 4px;
-            opacity: 0;
-            animation: subtitleIn 0.5s ease 1.8s forwards;
-        }
-        .loading-dots span {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: var(--accent-light);
-            animation: dotBounce 1.4s ease-in-out infinite;
-        }
-        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes dotBounce {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-            30% { transform: translateY(-8px); opacity: 1; }
-        }
-        .loading-particles {
-            position: absolute;
-            inset: 0;
-            overflow: hidden;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .loading-particles span {
-            position: absolute;
-            width: 4px; height: 4px;
-            border-radius: 50%;
-            background: rgba(96, 165, 250, 0.6);
-            box-shadow: 0 0 10px rgba(96, 165, 250, 0.8);
-            animation: particleFloat 8s linear infinite;
-        }
-        .loading-particles span:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; animation-duration: 7s; }
-        .loading-particles span:nth-child(2) { left: 80%; top: 30%; animation-delay: 1s; animation-duration: 9s; }
-        .loading-particles span:nth-child(3) { left: 25%; top: 80%; animation-delay: 2s; animation-duration: 8s; }
-        .loading-particles span:nth-child(4) { left: 85%; top: 75%; animation-delay: 3s; animation-duration: 10s; }
-        .loading-particles span:nth-child(5) { left: 50%; top: 15%; animation-delay: 0.5s; animation-duration: 8.5s; }
-        .loading-particles span:nth-child(6) { left: 15%; top: 55%; animation-delay: 2.5s; animation-duration: 7.5s; }
-        .loading-particles span:nth-child(7) { left: 70%; top: 60%; animation-delay: 1.5s; animation-duration: 9.5s; }
-        .loading-particles span:nth-child(8) { left: 40%; top: 90%; animation-delay: 3.5s; animation-duration: 8.2s; }
-        @keyframes particleFloat {
-            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh) translateX(30px) scale(0.5); opacity: 0; }
-        }
-
-        /* ============================================================
-   BR
-   ============================================================ */
-#network-header-btn {
-    display: none;
-    margin-left: auto;
-}
-#network-header-btn a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    text-decoration: none;
-    cursor: pointer;
-    background: transparent;
-    border: none;
-    outline: none;
-    transition: transform 0.25s ease;
-}
-#network-header-btn a:hover {
-    transform: scale(1.12);
-}
-#network-header-btn a svg {
-    width: 32px;
-    height: 32px;
-    transition: transform 0.3s ease;
-}
-#network-header-btn a:hover svg {
-    transform: rotate(-12deg) scale(1.05);
-}
-#network-header-btn a svg {
-    width: 26px;
-    height: 26px;
-    filter: drop-shadow(0 0 6px #00D4FF) drop-shadow(0 0 12px #A855F7);
-    transition: all 0.3s;
-    position: relative;
-    z-index: 2;
-}
-#network-header-btn a:hover svg {
-    transform: rotate(-15deg) scale(1.1);
-}
     </style>
 </head>
 <body>
-    <!-- OVERLAY DE CHARGEMENT / INTRO ANIMÉE TYPH WALLET -->
-    <div id="loading-overlay" class="active">
-        <div class="loading-particles">
-            <span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span>
-        </div>
-        <div class="loading-logo-container">
-            <div class="loading-logo">
-                <img id="loading-logo-img" src="https://raw.githubusercontent.com/nalitsoavinatantely/Typh-FINANCE/refs/heads/main/logo.png" 
-                     alt="TYPH WALLET" 
-                     onerror="this.parentElement.innerHTML='<i class=\'fas fa-bolt\' style=\'font-size:3rem;color:#60A5FA;\'></i>'">
-            </div>
-            <div class="loading-title">TYPH WALLET</div>
-            <div class="loading-subtitle" id="loading-subtitle">TONGASOA - BIENVENUE - WELCOME</div>
-            <div class="loading-bar"></div>
-            <div class="loading-dots">
-                <span></span><span></span><span></span>
-            </div>
+    <!-- OVERLAY DE CHARGEMENT -->
+    <div id="loading-overlay">
+        <div style="text-align:center;">
+            <div class="loader-spinner"></div>
+            <p class="loader-text">Connexion en cours...</p>
+            <p class="loader-sub">Veuillez patienter</p>
         </div>
     </div>
 
@@ -1637,20 +1278,15 @@
                 <img src="https://raw.githubusercontent.com/nalitsoavinatantely/Typh-FINANCE/refs/heads/main/logo.png" alt="Logo" class="logo-img">
                 <span>TYPH WALLET</span>
             </div>
-            <div id="network-header-btn">
-    <a href="https://typh-xchain.site/network.html" target="_blank" rel="noopener noreferrer" title="Réseau TYPH">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="gradNetwork" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#00D4FF;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#A855F7;stop-opacity:1" />
-                </linearGradient>
-            </defs>
-            <path d="M22 2L11 13" stroke="url(#gradNetwork)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="url(#gradNetwork)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
-</div>
+            <div id="support-header-btn">
+                <button onclick="switchPlatformSection('support')" title="Support" 
+                        style="background: transparent; border: none; padding: 8px; cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s ease;"
+                        onmouseenter="this.style.background='rgba(0, 212, 255, 0.12)'; this.querySelector('i').style.color='#00D4FF'; this.querySelector('i').style.textShadow='0 0 20px rgba(0, 212, 255, 0.6)';"
+                        onmouseleave="this.style.background='transparent'; this.querySelector('i').style.color='#94A3B8'; this.querySelector('i').style.textShadow='none';">
+                    <i class="fas fa-headset" style="font-size: 1.5rem; color: #94A3B8; transition: all 0.3s ease;"></i>
+                    <span class="support-dot offline" id="support-header-dot" style="position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg-dark, #0A0F1F);"></span>
+                </button>
+            </div>
         </div>
     </div>
     <div class="container">
@@ -1689,7 +1325,7 @@
             <div style="display: flex; flex-direction: column; align-items: flex-end; margin: -10px 0 30px; padding-right: 10px;"><a href="https://www.mediafire.com/file/77fruf8hbz4lkwg/TYPH+WALLET.apk/file" target="_blank" class="btn-download-green"><i class="fas fa-arrow-down"></i></a><div style="margin-top:5px;"><span style="color:var(--text-secondary);font-size:0.85rem;"><i class="fas fa-download" style="color:#10B981;"></i> Télécharger l'application</span></div></div>
             <div class="features-grid"><div class="feature-card"><div class="feature-icon"><i class="fas fa-bolt"></i></div><h3 class="feature-title">Rapide</h3><p class="feature-description">Transactions en moins de 5 minutes, 15h/24 et 7j/7</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><h3 class="feature-title">Sécurisé</h3><p class="feature-description">Validation par code PIN à 6 chiffres</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-hand-holding-usd"></i></div><h3 class="feature-title">Meilleurs taux</h3><p class="feature-description">Des taux compétitifs mis à jour en temps réel</p></div><div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-alt"></i></div><h3 class="feature-title">Mobile Money</h3><p class="feature-description">Compatible MVola, Orange Money, Airtel Money</p></div></div>
             <div class="stats-section"><div class="stat-item"><div class="stat-number">1K+</div><div class="stat-label">Utilisateurs</div></div><div class="stat-item"><div class="stat-number">5K+</div><div class="stat-label">Transactions</div></div><div class="stat-item"><div class="stat-number">4.8</div><div class="stat-label">Note moyenne</div></div><div class="stat-item"><div class="stat-number">24/7</div><div class="stat-label">Support</div></div></div>
-            <div id="testimonials" class="testimonials-section"><h2 class="section-title">Ce que disent nos clients</h2><div class="testimonials-grid"><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Tantely Hervée</div><div class="testimonial-date">29 Mai 2026</div></div></div><div class="testimonial-text">"Atokisana à 100% no sady rapide !"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Santatra Cedrick</div><div class="testimonial-date">02 Juillet 2026</div></div></div><div class="testimonial-text">"Mahay mandray olona sady manoro sy manampy"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div></div><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Mahefa Rakotonirina</div><div class="testimonial-date">14 Juin 2026</div></div></div><div class="testimonial-text">"Efa 02 taona niarahana fa milam sady atokisana hatrany foana."</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div></div><div style="text-align:center;margin-top:30px;"><a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a></div></div>
+            <div id="testimonials" class="testimonials-section"><h2 class="section-title">Ce que disent nos clients</h2><div class="testimonials-grid"><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Tantely Hervée</div><div class="testimonial-date">Il y a 2 jours</div></div></div><div class="testimonial-text">"Atokisana à 100% no sady rapide !"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Santatra Cedrick</div><div class="testimonial-date">Il y a 5 jours</div></div></div><div class="testimonial-text">"Mahay mandray olona sady manoro sy manampy"</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div></div><div class="testimonial-card"><div class="testimonial-header"><div class="testimonial-avatar"><i class="fas fa-user"></i></div><div><div class="testimonial-name">Mahefa Rakotonirina</div><div class="testimonial-date">Il y a 1 semaine</div></div></div><div class="testimonial-text">"Efa 02 taona niarahana fa milam sady atokisana hatrany foana."</div><div class="testimonial-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div></div><div style="text-align:center;margin-top:30px;"><a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a></div></div>
             <div class="footer-copyright">Copyright ©2026 All rights reserved | Dev. Typh</div>
             <div class="terms-link">
                 <a href="https://policies.google.com/privacy?hl=fr" target="_blank" rel="noopener noreferrer">
@@ -1754,7 +1390,7 @@
                 </div>
                 <div class="carousel-banner-dots" id="bannerDots"></div>
             </div>
-            <div class="card"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-history"></i> Vos dernières transactions</h2><ul class="activity-list" id="recent-activity"></ul></div>
+            <div class="card"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-history"></i> Transactions par nos clients</h2><ul class="activity-list" id="recent-activity"></ul></div>
             <div class="card"><h2 class="card-title" style="margin-bottom:16px;"><i class="fas fa-newspaper"></i> Actualités & Annonces</h2><div class="news-container" id="news-container"></div></div>
         </div>
         <div id="achat-section" class="platform-section">
@@ -1762,7 +1398,7 @@
                 <h2 class="card-title"><i class="fas fa-arrow-down"></i> Achat crypto</h2>
                 <div id="blocage-achat" style="display:none;"></div>
                 <div id="pause-message-achat" class="pause-message" style="display:none;"><i class="fas fa-pause-circle"></i><span>Service temporairement suspendu</span></div>
-                <div id="achat-content"><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant <span id="montant-limite-achat" style="color:var(--warning);font-size:0.7rem;"></span></label><div class="input-wrapper"><input type="number" id="montant-achat" value="2000" oninput="estimerAchat(); verifierLimitesAchat()"></div><div class="limite-error" id="limite-error-achat">Le montant doit être entre <span id="min-affichage-achat">2 000</span> Ar et <span id="max-affichage-achat">200 000</span> Ar</div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-achat" onchange="estimerAchat(); mettreAJourReseaux('achat'); mettreAJourLimiteAchat()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-achat-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-achat" onchange="estimerAchat(); afficherFraisReseauAchat()"></select></div></div><div id="message-trx-special" class="frais-special" style="display:none;"><i class="fas fa-info-circle"></i> Frais réseau TRC20 : -0.3 TRX ou -1 TRX si activation</div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-qrcode"></i> Adresse</label><div class="input-wrapper"><input type="text" placeholder="ID ou Email ou Adresse..." id="adresse-achat"></div></div><div class="form-group" id="groupe-numero-achat" style="display:none;"><label class="form-label"><i class="fas fa-phone-alt"></i> Numéro à débiter</label><div class="input-wrapper"><select id="numero-achat-select" onchange="afficherInfosNumeroAchat()"><option value="">Sélectionnez un numéro</option></select></div><div id="info-numero-achat-selectionne" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div></div><div class="limite-info"><span class="limite-label"><i class="fas fa-info-circle"></i> Limites d'échange</span><span class="limite-valeur" id="limite-affichee-achat">2 000 Ar - 200 000 Ar</span></div><div class="estimated-value" id="estimation-achat-container"></div><button class="btn btn-success" onclick="preparerConfirmation('ACHAT')" id="btn-confirmer-achat"><i class="fas fa-lock"></i> Suivant</button></div></div></div>
+                <div id="achat-content"><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant <span id="montant-limite-achat" style="color:var(--warning);font-size:0.7rem;"></span></label><div class="input-wrapper"><input type="number" id="montant-achat" value="2000" oninput="estimerAchat(); verifierLimitesAchat()"></div><div class="limite-error" id="limite-error-achat">Le montant doit être entre <span id="min-affichage-achat">2 000</span> Ar et <span id="max-affichage-achat">200 000</span> Ar</div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-achat" onchange="estimerAchat(); mettreAJourReseaux('achat'); mettreAJourLimiteAchat()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-achat-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-achat" onchange="estimerAchat(); afficherFraisReseauAchat()"></select></div></div><div id="message-trx-special" class="frais-special" style="display:none;"><i class="fas fa-info-circle"></i> Frais réseau TRC20 : 3% ou -1 TRX si activation</div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-achat"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-qrcode"></i> Adresse</label><div class="input-wrapper"><input type="text" placeholder="ID ou Email ou Adresse..." id="adresse-achat"></div></div><div class="form-group" id="groupe-numero-achat" style="display:none;"><label class="form-label"><i class="fas fa-phone-alt"></i> Numéro à débiter</label><div class="input-wrapper"><select id="numero-achat-select" onchange="afficherInfosNumeroAchat()"><option value="">Sélectionnez un numéro</option></select></div><div id="info-numero-achat-selectionne" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary);"></div></div><div class="limite-info"><span class="limite-label"><i class="fas fa-info-circle"></i> Limites d'échange</span><span class="limite-valeur" id="limite-affichee-achat">2 000 Ar - 200 000 Ar</span></div><div class="estimated-value" id="estimation-achat-container"></div><button class="btn btn-success" onclick="preparerConfirmation('ACHAT')" id="btn-confirmer-achat"><i class="fas fa-lock"></i> Suivant</button></div></div></div>
         <div id="vente-section" class="platform-section"><div class="card"><h2 class="card-title"><i class="fas fa-arrow-up"></i> Vente crypto</h2><div id="blocage-vente" style="display:none;"></div><div id="pause-message-vente" class="pause-message" style="display:none;"><i class="fas fa-pause-circle"></i><span>Service temporairement suspendu</span></div><div id="vente-content"><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Crypto</label><div class="input-wrapper"><select id="crypto-vente" onchange="estimerVente(); mettreAJourReseaux('vente'); mettreAJourChampAdresseVente()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-coins"></i> Montant</label><div class="input-wrapper"><input type="number" id="montant-vente" value="0.6" oninput="estimerVente()"></div></div><div class="form-group"><label class="form-label"><i class="fas fa-network-wired"></i> Réseau <span class="frais-valeur" id="frais-reseau-vente-affichage" style="font-size:0.7rem;"></span></label><div class="input-wrapper"><select id="reseau-vente" onchange="estimerVente(); afficherFraisReseauVente(); mettreAJourChampAdresseVente()"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-sim-card"></i> Opérateur</label><div class="input-wrapper"><select id="operateur-vente"></select></div></div><div class="form-group"><label class="form-label"><i class="fas fa-briefcase"></i> Portefeuille</label><div class="input-wrapper"><select id="portefeuille-vente" onchange="afficherReponseVente(); mettreAJourChampAdresseVente()"></select></div></div>
             <div id="groupe-adresse-liee" style="display:none; margin-bottom: 20px;">
                 <label class="form-label"><i class="fas fa-link"></i> 📍 Mon adresse de réception</label>
@@ -1834,7 +1470,7 @@
                 <button class="btn btn-success" onclick="ouvrirModalAjoutAdresse()" style="margin-bottom: 10px;"><i class="fas fa-plus"></i> Ajouter une adresse</button>
                 <div class="info-message"><i class="fas fa-info-circle"></i> Les adresses approuvées par l'administrateur seront utilisées lors de vos retraits.</div>
             </div>
-            <div class="card"><h2 class="card-title"><i class="fas fa-phone-alt"></i> Mes numéros (max 3)</h2><div id="liste-numeros-utilisateur" class="activity-list"></div><div id="form-ajout-numero" style="margin-top:20px;"><div class="form-group"><label class="form-label">Nom complet</label><div class="input-wrapper"><input type="text" id="nouveau-nom" placeholder="Rakoto Jean"></div></div><div class="form-group"><label class="form-label">Numéro</label><div class="input-wrapper"><input type="tel" id="nouveau-numero" placeholder="034 00 000 00"></div></div><button class="btn btn-success" onclick="ajouterNumero()" id="btn-ajouter-numero"><i class="fas fa-plus"></i> Ajouter un numéro</button></div><div style="margin-top:20px;text-align:center;"><div id="user-badge-bottom-container" style="margin-bottom: 15px;"></div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><button class="btn btn-refresh-small" onclick="switchPlatformSection('support')" style="width:auto;display:inline-flex;background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);color:var(--white);"><i class="fas fa-headset"></i> Support</button><a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support" style="margin:0;"><i class="fab fa-facebook-f"></i> Support Facebook</a></div></div></div>
+            <div class="card"><h2 class="card-title"><i class="fas fa-phone-alt"></i> Mes numéros (max 3)</h2><div id="liste-numeros-utilisateur" class="activity-list"></div><div id="form-ajout-numero" style="margin-top:20px;"><div class="form-group"><label class="form-label">Nom complet</label><div class="input-wrapper"><input type="text" id="nouveau-nom" placeholder="Rakoto Jean"></div></div><div class="form-group"><label class="form-label">Numéro</label><div class="input-wrapper"><input type="tel" id="nouveau-numero" placeholder="034 00 000 00"></div></div><button class="btn btn-success" onclick="ajouterNumero()" id="btn-ajouter-numero"><i class="fas fa-plus"></i> Ajouter un numéro</button></div><div style="margin-top:20px;text-align:center;"><div id="user-badge-bottom-container" style="margin-bottom: 15px;"></div><a href="https://www.facebook.com/profile.php?id=100091581669686" target="_blank" class="btn-support"><i class="fab fa-facebook-f"></i> Support Facebook</a></div></div>
             
             <div class="card">
                 <h2 class="card-title"><i class="fas fa-database"></i> Gestion du cache</h2>
@@ -2034,96 +1670,12 @@
         </div>
     </div>
 
-    <!-- NVE -->
-    <div id="modal-verif-email" class="modal">
-        <div class="modal-content" style="border: 2px solid var(--warning);">
-            <div class="verif-email-popup-icon">
-                <i class="fas fa-envelope-open-text"></i>
-            </div>
-            <div class="verif-email-popup-title">Vérifiez votre email</div>
-            <div class="verif-email-popup-subtitle">
-                Un email de vérification a été envoyé à<br>
-                <strong id="verif-email-adresse">votre adresse</strong>
-            </div>
-
-            <div class="verif-email-popup-info">
-                <strong><i class="fas fa-info-circle"></i> Pourquoi vérifier ?</strong>
-                <ul>
-                    <li>Accéder à toutes les fonctionnalités</li>
-                    <li>Sécuriser votre compte</li>
-                    <li>Recevoir les notifications importantes</li>
-                </ul>
-            </div>
-
-            <div class="verif-email-popup-spam-warning">
-                <i class="fas fa-exclamation-triangle"></i>
-                <div>
-                    <strong>Email introuvable ?</strong><br>
-                    Pensez à vérifier votre dossier <strong>SPAM</strong> ou <strong>Courrier indésirable</strong>.
-                </div>
-            </div>
-
-            <div id="verif-email-countdown-container" class="verif-email-popup-countdown" style="display:none;">
-                <i class="fas fa-hourglass-half"></i>
-                <span>Nouvel envoi disponible dans <strong id="verif-email-countdown">60:00</strong></span>
-            </div>
-
-            <div id="verif-email-error" class="error-message"></div>
-
-            <button class="btn btn-success" id="btn-renvoyer-verif" onclick="renvoyerEmailPopup()" style="margin-top:6px;">
-                <i class="fas fa-paper-plane"></i> Renvoyer l'email
-            </button>
-            <button class="btn btn-refresh-small" onclick="verifierEmailMaintenant()" style="margin-top:10px; width:100%;">
-                <i class="fas fa-sync-alt"></i> J'ai vérifié, actualiser
-            </button>
-            <button class="btn btn-cancel" onclick="fermerPopupVerifEmail()" style="margin-top:10px;">
-                <i class="fas fa-times"></i> Plus tard
-            </button>
-        </div>
-    </div>
-
     <script>
     // ============================================================
-    //  ITP
-    // ============================================================
-    const MIN_LOADING_DURATION = 10000; // 10 secondes
-    const loadingStartTime = Date.now();
-    let loadingMsgIndex = 0;
-    const loadingMessages = ['TONGASOA - BIENVENUE - WELCOME', 'UNE EXCELLENTE JOURNÉE À VOUS...', 'Veuillez patienter...'];
-    const loadingMsgInterval = setInterval(() => {
-        loadingMsgIndex++;
-        if (loadingMsgIndex >= loadingMessages.length) {
-            clearInterval(loadingMsgInterval);
-            return;
-        }
-        const el = document.getElementById('loading-subtitle');
-        if (el) {
-            el.style.opacity = '0';
-            setTimeout(() => {
-                el.textContent = loadingMessages[loadingMsgIndex];
-                el.style.opacity = '0.7';
-            }, 250);
-        }
-    }, 2500);
-
-    function cacherIntroAvecDelai() {
-        const elapsed = Date.now() - loadingStartTime;
-        const remaining = Math.max(0, MIN_LOADING_DURATION - elapsed);
-        setTimeout(() => {
-            const loader = document.getElementById('loading-overlay');
-            if (loader) {
-                loader.classList.remove('active');
-                loader.classList.add('hidden');
-            }
-            clearInterval(loadingMsgInterval);
-        }, remaining);
-    }
-
-    // ============================================================
-    //  🔒 S-A
+    //  🔒 SÉCURITÉ AVANCÉE 
     // ============================================================
 
-    // VAP
+    // VERSION AMÉLIORÉE - Protection renforcée du solde
     let _soldeProtect = 0;
     
     function verrouillerUtilisateur() {
@@ -2307,184 +1859,153 @@
     });
 
     // ============================================================
-    //  ⚡ PAC
+    //  CSRF TOKEN PROTECTION - NOUVEAU
     // ============================================================
-    async function avecProtection(btnOrEvent, asyncFn) {
-        let btn = btnOrEvent;
-        if (btnOrEvent && btnOrEvent.currentTarget) {
-            btn = btnOrEvent.currentTarget;
-        }
-        
-        if (!btn || !(btn instanceof HTMLElement)) {
-            return await asyncFn();
-        }
-        
-        if (btn.dataset.loading === 'true' || btn.disabled) {
-            return;
-        }
-        
-        const originalHTML = btn.innerHTML;
-        const originalWidth = btn.offsetWidth;
-        
-        btn.dataset.loading = 'true';
-        btn.classList.add('btn-loading');
-        btn.disabled = true;
-        
-        if (originalWidth > 0) {
-            btn.style.minWidth = originalWidth + 'px';
-        }
-        
-        try {
-            await asyncFn();
-        } catch (error) {
-            console.error('❌ Erreur dans avecProtection:', error);
-        } finally {
-            btn.dataset.loading = 'false';
-            btn.classList.remove('btn-loading');
-            btn.disabled = false;
-            btn.innerHTML = originalHTML;
-            btn.style.minWidth = '';
-        }
-    }
 
-    // ============================================================
-    //  📧 PVE
-    // ============================================================
-    let verifEmailCountdownInterval = null;
-
-    async function renvoyerEmailPopup() {
-        return avecProtection(document.getElementById('btn-renvoyer-verif'), async () => {
-            if (!auth.currentUser) {
-                afficherErreurVerifEmail('❌ Aucun utilisateur connecté.');
-                return;
+    const csrfTokens = {
+        tokens: {},
+        expiration: 30 * 60 * 1000, // 30 minutes
+        
+        generer(action) {
+            const token = crypto.randomUUID ? crypto.randomUUID() : 
+                'csrf_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8);
+            const expires = Date.now() + this.expiration;
+            this.tokens[token] = { action, expires, used: false };
+            this.sauvegarder();
+            return token;
+        },
+        
+        valider(token, action) {
+            const data = this.tokens[token];
+            if (!data) return false;
+            if (data.used) return false;
+            if (data.action !== action) return false;
+            if (Date.now() > data.expires) {
+                delete this.tokens[token];
+                this.sauvegarder();
+                return false;
             }
-            
-            const erreurDiv = document.getElementById('verif-email-error');
-            erreurDiv.classList.remove('show');
-            
+            data.used = true;
+            this.sauvegarder();
+            return true;
+        },
+        
+        sauvegarder() {
             try {
-                const snapshot = await database.ref(`donnees/utilisateurs/${monUid}/derniereVerifEmail`).once('value');
-                const derniereVerif = snapshot.val() || 0;
-                const maintenant = Date.now();
-                const uneHeure = 60 * 60 * 1000;
-                
-                if (derniereVerif && (maintenant - derniereVerif) < uneHeure) {
-                    const restant = uneHeure - (maintenant - derniereVerif);
-                    const minutes = Math.floor(restant / 60000);
-                    const secondes = Math.floor((restant % 60000) / 1000);
-                    afficherErreurVerifEmail(`⏳ Veuillez attendre ${minutes}m ${secondes}s avant de renvoyer.`);
-                    return;
+                // Chiffrer les tokens avant stockage
+                const data = JSON.stringify(this.tokens);
+                const encoded = btoa(data);
+                localStorage.setItem('csrf_tokens', encoded);
+            } catch(e) {}
+        },
+        
+        charger() {
+            try {
+                const encoded = localStorage.getItem('csrf_tokens');
+                if (encoded) {
+                    const data = atob(encoded);
+                    this.tokens = JSON.parse(data);
+                    // Nettoyer les tokens expirés
+                    const maintenant = Date.now();
+                    let nettoyage = false;
+                    for (const [token, data] of Object.entries(this.tokens)) {
+                        if (data.expires < maintenant || data.used) {
+                            delete this.tokens[token];
+                            nettoyage = true;
+                        }
+                    }
+                    if (nettoyage) this.sauvegarder();
                 }
-                
-                await auth.currentUser.sendEmailVerification();
-                await database.ref(`donnees/utilisateurs/${monUid}/derniereVerifEmail`).set(maintenant);
-                
-                afficherErreurVerifEmail('✅ Email envoyé ! Vérifiez votre boîte et vos SPAM.', 'success');
-                demarrerCountdownVerifEmail(uneHeure);
-                
-            } catch (error) {
-                console.error('Erreur renvoi email:', error);
-                afficherErreurVerifEmail('❌ Erreur lors de l\'envoi. Réessayez plus tard.');
+            } catch(e) {
+                this.tokens = {};
             }
-        });
-    }
-
-    function afficherErreurVerifEmail(message, type = 'error') {
-        const erreurDiv = document.getElementById('verif-email-error');
-        if (!erreurDiv) return;
-        erreurDiv.textContent = message;
-        erreurDiv.classList.add('show');
-        erreurDiv.style.color = type === 'success' ? 'var(--success)' : 'var(--danger)';
-    }
-
-    function demarrerCountdownVerifEmail(dureeMs) {
-        if (verifEmailCountdownInterval) {
-            clearInterval(verifEmailCountdownInterval);
         }
-        
-        const container = document.getElementById('verif-email-countdown-container');
-        const display = document.getElementById('verif-email-countdown');
-        const btn = document.getElementById('btn-renvoyer-verif');
-        
-        if (!container || !display) return;
-        
-        const fin = Date.now() + dureeMs;
-        container.style.display = 'flex';
-        if (btn) btn.disabled = true;
-        
-        const updateCountdown = () => {
-            const restant = fin - Date.now();
-            if (restant <= 0) {
-                clearInterval(verifEmailCountdownInterval);
-                verifEmailCountdownInterval = null;
-                container.style.display = 'none';
-                if (btn) btn.disabled = false;
-                return;
-            }
-            const minutes = Math.floor(restant / 60000);
-            const secondes = Math.floor((restant % 60000) / 1000);
-            display.textContent = `${minutes}:${secondes.toString().padStart(2,'0')}`;
-        };
-        
-        updateCountdown();
-        verifEmailCountdownInterval = setInterval(updateCountdown, 1000);
+    };
+
+    // Charger les tokens CSRF au démarrage
+    csrfTokens.charger();
+
+    // Fonction pour ajouter un token CSRF à une action
+    function ajouterTokenCSRF(action) {
+        const token = csrfTokens.generer(action);
+        return token;
     }
 
-    async function verifierEmailMaintenant() {
-        if (!auth.currentUser) return;
-        try {
-            await auth.currentUser.reload();
-            const verified = auth.currentUser.emailVerified;
-            if (verified) {
-                emailVerifie = true;
-                fermerPopupVerifEmail();
-                cacherBanniereEmailNonVerifie();
-                alert('✅ Email vérifié ! Rechargement...');
-                setTimeout(() => window.location.reload(), 800);
-            } else {
-                alert('⏳ Email toujours non vérifié. Vérifiez votre boîte mail et SPAM.');
-            }
-        } catch(e) {
-            console.error(e);
-            alert('❌ Erreur de vérification.');
-        }
-    }
-
-    function ouvrirPopupVerifEmail(email) {
-        const modal = document.getElementById('modal-verif-email');
-        const adresseSpan = document.getElementById('verif-email-adresse');
-        if (adresseSpan) adresseSpan.textContent = email || 'votre adresse';
-        verifierCountdownVerifEmailExistant();
-        modal.classList.add('active');
-    }
-
-    async function verifierCountdownVerifEmailExistant() {
-        if (!monUid) return;
-        try {
-            const snapshot = await database.ref(`donnees/utilisateurs/${monUid}/derniereVerifEmail`).once('value');
-            const derniereVerif = snapshot.val() || 0;
-            const maintenant = Date.now();
-            const uneHeure = 60 * 60 * 1000;
-            const restant = uneHeure - (maintenant - derniereVerif);
-            
-            if (derniereVerif && restant > 0) {
-                demarrerCountdownVerifEmail(restant);
-            }
-        } catch(e) {
-            console.warn('Erreur vérification countdown:', e);
-        }
-    }
-
-    function fermerPopupVerifEmail() {
-        document.getElementById('modal-verif-email').classList.remove('active');
-        if (verifEmailCountdownInterval) {
-            clearInterval(verifEmailCountdownInterval);
-            verifEmailCountdownInterval = null;
-        }
+    // Fonction pour valider un token CSRF
+    function validerTokenCSRF(token, action) {
+        return csrfTokens.valider(token, action);
     }
 
     // ============================================================
-    //  FRDA
+    //  CHIFFREMENT DES DONNÉES LOCALES - NOUVEAU
+    // ============================================================
+
+    function chiffrerDonnees(data, clef = 'typh_secret_key') {
+        try {
+            const str = JSON.stringify(data);
+            // Chiffrement simple mais efficace avec CryptoJS
+            const encrypted = CryptoJS.AES.encrypt(str, clef).toString();
+            return encrypted;
+        } catch(e) {
+            return btoa(JSON.stringify(data));
+        }
+    }
+
+    function dechiffrerDonnees(encrypted, clef = 'typh_secret_key') {
+        try {
+            const decrypted = CryptoJS.AES.decrypt(encrypted, clef).toString(CryptoJS.enc.Utf8);
+            if (decrypted) {
+                return JSON.parse(decrypted);
+            }
+            return null;
+        } catch(e) {
+            try {
+                return JSON.parse(atob(encrypted));
+            } catch(e2) {
+                return null;
+            }
+        }
+    }
+
+    // Surcharge de la sauvegarde de session avec chiffrement
+    const originalSetSession = localStorage.setItem;
+    localStorage.setItem = function(key, value) {
+        if (key === 'typhSession' || key === 'rate_limiter' || key === 'csrf_tokens') {
+            try {
+                // Ne pas chiffrer les tokens CSRF déjà chiffrés
+                if (key === 'csrf_tokens') {
+                    return originalSetSession.call(this, key, value);
+                }
+                const chiffre = chiffrerDonnees(value);
+                return originalSetSession.call(this, key + '_enc', chiffre);
+            } catch(e) {
+                return originalSetSession.call(this, key, value);
+            }
+        }
+        return originalSetSession.call(this, key, value);
+    };
+
+    // Surcharge de la récupération de session avec déchiffrement
+    const originalGetSession = localStorage.getItem;
+    localStorage.getItem = function(key) {
+        if (key === 'typhSession' || key === 'rate_limiter') {
+            try {
+                const encrypted = originalGetSession.call(this, key + '_enc');
+                if (encrypted) {
+                    const decrypted = dechiffrerDonnees(encrypted);
+                    if (decrypted) return decrypted;
+                }
+                return originalGetSession.call(this, key);
+            } catch(e) {
+                return originalGetSession.call(this, key);
+            }
+        }
+        return originalGetSession.call(this, key);
+    };
+
+    // ============================================================
+    //  RETRAIT AVEC DEMANDE D'ADRESSE - NOUVELLE VERSION POPUP
+    //  MODIFICATION : Réutilisation 
     // ============================================================
 
     let retraitAdresseDemandeId = null;
@@ -2498,6 +2019,7 @@
         return portefeuille && portefeuille.retraitAvecDemande === true;
     }
 
+    // NOUVELLE FONCTION : Récupérer les demandes en attente (max 2)
     function getDemandesEnAttente() {
         if (!monUid || !utilisateurCourant) return [];
         const demandesArray = getDemandesTableau();
@@ -2507,6 +2029,7 @@
         );
     }
 
+    // MODIFICATION : Vérifier si l'utilisateur peut faire une nouvelle demande (max 2)
     function peutFaireNouvelleDemande() {
         const demandesEnAttente = getDemandesEnAttente();
         return demandesEnAttente.length < 2;
@@ -2516,6 +2039,7 @@
         return getDemandesEnAttente().length;
     }
 
+    // MODIFICATION : Fonction pour vérifier et réutiliser une demande d'adresse existante
     function getDemandeAdresseExistante() {
         const demandesEnAttente = getDemandesEnAttente();
         return demandesEnAttente.find(d => 
@@ -2524,13 +2048,16 @@
         );
     }
 
+    // MODIFICATION : Fonction pour vérifier si une demande d'adresse existe et réutiliser son adresse
     async function verifierEtReutiliserDemandeAdresse() {
         const demandeExistante = getDemandeAdresseExistante();
         
         if (demandeExistante) {
+            // Vérifier si la deadline est expirée
             const deadlineExpiree = demandeExistante.deadline && new Date(demandeExistante.deadline) < new Date();
             
             if (deadlineExpiree) {
+                // Si expirée, on supprime la demande et on continue
                 try {
                     await database.ref(`donnees/demandes/${demandeExistante.id}`).remove();
                     if (donnees.demandes) {
@@ -2542,11 +2069,14 @@
                 return null;
             }
             
+            // Si la demande a une adresse (statut 'adresse_recue'), on la réutilise
             if (demandeExistante.statut === 'adresse_recue' && demandeExistante.adresseRetrait) {
                 return demandeExistante;
             }
             
+            // Si la demande est en attente d'adresse ('attente_adresse'), on bloque
             if (demandeExistante.statut === 'attente_adresse') {
+                // On réutilise la demande existante
                 return demandeExistante;
             }
         }
@@ -2554,6 +2084,7 @@
         return null;
     }
 
+    // MODIFICATION : initierRetraitAvecDemande avec réutilisation
     async function initierRetraitAvecDemande() {
         if (!sessionValide || !utilisateurCourant) { alert('Veuillez vous connecter'); showAuthModal(); return; }
         if (!emailVerifie) { alert('⚠️ Veuillez vérifier votre email avant d\'effectuer un retrait.'); return; }
@@ -2562,6 +2093,7 @@
             return;
         }
         
+        // MODIFICATION : Vérifier la limite de 2 demandes en attente
         if (!peutFaireNouvelleDemande()) {
             alert('⛔ Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.');
             switchPlatformSection('demandes');
@@ -2574,23 +2106,28 @@
             return;
         }
 
+        // MODIFICATION : Vérifier si une demande d'adresse existe déjà
         const demandeExistante = await verifierEtReutiliserDemandeAdresse();
         
         if (demandeExistante) {
+            // Réutiliser la demande existante
             retraitAdresseDemandeId = demandeExistante.id;
             retraitAdresseDemandeEnCours = demandeExistante;
             
             if (demandeExistante.statut === 'adresse_recue' && demandeExistante.adresseRetrait) {
+                // L'adresse est déjà disponible, ouvrir directement la popup avec l'adresse
                 ouvrirPopupRetraitAdresse(demandeExistante);
                 demarrerEcouteRetraitAdresse(demandeExistante.id);
                 return;
             } else if (demandeExistante.statut === 'attente_adresse') {
+                // En attente d'adresse, ouvrir la popup d'attente
                 ouvrirPopupRetraitAdresse(demandeExistante);
                 demarrerEcouteRetraitAdresse(demandeExistante.id);
                 return;
             }
         }
 
+        // Si aucune demande existante, créer une nouvelle
         const crypto = document.getElementById('crypto-vente')?.value;
         const reseau = document.getElementById('reseau-vente')?.value;
         const montant = parseFloat(document.getElementById('montant-vente')?.value) || 0;
@@ -2639,9 +2176,11 @@
             retraitAdresseDemandeId = demandeId;
             retraitAdresseDemandeEnCours = demande;
             
+            // Ouvrir la popup avec l'état d'attente
             ouvrirPopupRetraitAdresse(demande);
             demarrerEcouteRetraitAdresse(demandeId);
             
+            // Notification à l'admin via le support
             await envoyerMessageAdminRetrait(demandeId);
 
         } catch (error) {
@@ -2656,6 +2195,7 @@
         
         if (!modal || !content) return;
         
+        // Générer le contenu en fonction du statut
         afficherContenuPopupRetrait(demande);
         
         modal.classList.add('active');
@@ -2664,12 +2204,14 @@
     function fermerPopupRetraitAdresse() {
         const modal = document.getElementById('modal-retrait-adresse');
         if (modal) modal.classList.remove('active');
+        // Ne pas arrêter l'écoute, elle continue en arrière-plan
     }
 
     function afficherContenuPopupRetrait(demande) {
         const content = document.getElementById('popup-retrait-adresse-content');
         if (!content) return;
 
+        // Vérifier si la deadline est expirée
         const deadlineExpiree = demande.deadline && new Date(demande.deadline) < new Date();
 
         if (demande.statut === 'attente_adresse') {
@@ -2752,6 +2294,7 @@
                 </div>
             `;
 
+            // Démarrer le countdown
             demarrerCountdownRetraitAdressePopup(demande.deadline);
             return;
         }
@@ -2791,6 +2334,7 @@
             return;
         }
 
+        // Fallback
         content.innerHTML = `
             <div class="retrait-adresse-popup-waiting">
                 <span class="waiting-icon"><i class="fas fa-clock"></i></span>
@@ -2817,6 +2361,7 @@
                     display.style.color = 'var(--danger)';
                     clearInterval(retraitAdresseTimerInterval);
                     retraitAdresseTimerInterval = null;
+                    // Recharger l'interface pour afficher l'expiration
                     if (retraitAdresseDemandeEnCours) {
                         afficherContenuPopupRetrait(retraitAdresseDemandeEnCours);
                     }
@@ -2860,12 +2405,15 @@
             const demande = snapshot.val();
             if (demande && demande.userID === monUid) {
                 retraitAdresseDemandeEnCours = demande;
+                // Si la popup est ouverte, mettre à jour le contenu
                 const modal = document.getElementById('modal-retrait-adresse');
                 if (modal && modal.classList.contains('active')) {
                     afficherContenuPopupRetrait(demande);
                 }
+                // Si la demande est confirmée ou rejetée, arrêter l'écoute
                 if (demande.statut === 'confirme' || demande.statut === 'rejete') {
                     arreterEcouteRetraitAdresse();
+                    // Si la popup est ouverte, fermer après un délai
                     if (modal && modal.classList.contains('active')) {
                         setTimeout(() => {
                             fermerPopupRetraitAdresse();
@@ -2876,6 +2424,7 @@
         });
     }
 
+    // Bouton actualiser de la popup
     async function actualiserPopupRetraitAdresse() {
         const btn = document.getElementById('btn-refresh-popup-retrait');
         if (btn) {
@@ -2965,6 +2514,7 @@
             return;
         }
 
+        // Ouvrir la modale PIN pour validation
         transactionEnAttente = {
             type: 'RETRAIT_AVEC_DEMANDE',
             demandeId: retraitAdresseDemandeId,
@@ -3003,6 +2553,7 @@
         }
     }
 
+    // Surcharge de la fonction creerDemande pour gérer RETRAIT_AVEC_DEMANDE
     const originalCreerDemande = creerDemande;
     creerDemande = async function() {
         if (!transactionEnAttente) return;
@@ -3046,8 +2597,13 @@
             return;
         }
         
+        // Appeler la fonction originale pour les autres types
         originalCreerDemande();
     };
+
+    // ============================================================
+    //  FIN 
+    // ============================================================
 
     async function demanderRetrait() {
         if (!rateLimiters.demande.peutExecuter('demander_retrait')) {
@@ -3091,6 +2647,7 @@
             return;
         }
         
+        // MODIFICATION : Vérifier la limite de 2 demandes en attente
         if (!peutFaireNouvelleDemande()) {
             alert('⛔ Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.');
             fermerModalRetrait();
@@ -3139,6 +2696,7 @@
         
         if(!lotGagneInfo || !utilisateurCourant) return;
         
+        // MODIFICATION : Vérifier la limite de 2 demandes en attente
         if (!peutFaireNouvelleDemande()) {
             alert('⛔ Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.');
             switchPlatformSection('demandes');
@@ -3221,6 +2779,7 @@
     async function reclamerBonusAuto() {
         if(!lotGagneInfo || !utilisateurCourant) return;
         
+        // MODIFICATION : Vérifier la limite de 2 demandes en attente
         if (!peutFaireNouvelleDemande()) {
             alert('⛔ Vous avez déjà 2 demandes en attente. Le bonus sera traité plus tard.');
             document.getElementById('btn-fermer-roue').style.display = 'block';
@@ -3305,7 +2864,7 @@
     }
 
     // ============================================================
-    //  FOM
+    //  FONCTIONS D'OUVERTURE MODALES
     // ============================================================
 
     function ouvrirModalRetraitOptions() {
@@ -3323,31 +2882,29 @@
     }
 
     async function renvoyerEmailDepuisAccueil() {
-        return avecProtection(event?.currentTarget || null, async () => {
-            if (!auth.currentUser) {
-                alert('❌ Aucun utilisateur connecté.');
-                return;
+        if (!auth.currentUser) {
+            alert('❌ Aucun utilisateur connecté.');
+            return;
+        }
+        try {
+            await auth.currentUser.sendEmailVerification();
+            alert('📧 Un nouvel email de vérification a été envoyé !\n\n💡 Pensez à vérifier vos spams.');
+            
+            const banner = document.getElementById('auth-error-banner');
+            if(banner) {
+                banner.style.display = 'none';
+                setTimeout(() => {
+                    auth.currentUser.reload().then(() => {
+                        if (!auth.currentUser.emailVerified) {
+                            const banner = document.getElementById('auth-error-banner');
+                            if(banner) banner.style.display = 'block';
+                        }
+                    });
+                }, 3000);
             }
-            try {
-                await auth.currentUser.sendEmailVerification();
-                alert('📧 Un nouvel email de vérification a été envoyé !\n\n💡 Pensez à vérifier vos spams.');
-                
-                const banner = document.getElementById('auth-error-banner');
-                if(banner) {
-                    banner.style.display = 'none';
-                    setTimeout(() => {
-                        auth.currentUser.reload().then(() => {
-                            if (!auth.currentUser.emailVerified) {
-                                const banner = document.getElementById('auth-error-banner');
-                                if(banner) banner.style.display = 'block';
-                            }
-                        });
-                    }, 3000);
-                }
-            } catch(e) {
-                alert('❌ Erreur lors de l\'envoi: ' + e.message);
-            }
-        });
+        } catch(e) {
+            alert('❌ Erreur lors de l\'envoi: ' + e.message);
+        }
     }
 
     function afficherBanniereEmailNonVerifie(email) {
@@ -3419,6 +2976,7 @@
     let lotsRoue = [];
     let lotGagneInfo = null;
 
+    // SUPPORT VARIABLES
     let messagesSupport = [];
     let supportRefreshCount = 0;
     let dernierRefreshSupport = 0;
@@ -3541,6 +3099,7 @@
     };
     
     async function connexion() {
+        // RATE LIMITING RENFORCÉ
         if (!rateLimiters.auth.peutExecuter('connexion')) {
             afficherErreur('⏳ Trop de tentatives de connexion. Veuillez attendre 60 secondes.');
             return;
@@ -3562,11 +3121,9 @@
             if (!result.user.emailVerified) {
                 afficherBanniereEmailNonVerifie(email);
                 monUid = result.user.uid;
-                
-                const nomAuto = genererNomDepuisEmail(email);
                 utilisateurCourant = {
                     email: email,
-                    nom: nomAuto,
+                    nom: result.user.displayName || 'Utilisateur',
                     uid: monUid,
                     _solde: 0,
                     emailVerifie: false
@@ -3574,9 +3131,6 @@
                 sessionValide = false;
                 hideAuthModal();
                 showPlatform();
-                
-                ouvrirPopupVerifEmail(email);
-                
                 resetTurnstileWidgets();
                 return;
             }
@@ -3596,6 +3150,7 @@
     }
     
     async function inscription() {
+        // RATE LIMITING RENFORCÉ
         if (!rateLimiters.auth.peutExecuter('inscription')) {
             afficherErreur('⏳ Trop de tentatives d\'inscription. Veuillez attendre 60 secondes.');
             return;
@@ -3675,18 +3230,39 @@
         else inscription(); 
     }
     
-    function genererNomDepuisEmail(email) {
-        if (!email || typeof email !== 'string') return 'Utilisateur';
-        const partieLocale = email.split('@')[0] || 'Utilisateur';
-        if (!partieLocale) return 'Utilisateur';
-        const premierSegment = partieLocale.split('.')[0] || partieLocale;
-        return premierSegment.charAt(0).toUpperCase() + premierSegment.slice(1).toLowerCase();
-    }
-
     function getDemandesTableau() {
         if(!donnees.demandes) return [];
         if(Array.isArray(donnees.demandes)) return donnees.demandes;
         return Object.values(donnees.demandes);
+    }
+    
+    // MODIFICATION : Nouvelle fonction pour les demandes en attente (max 2)
+    function getDemandesEnAttente() {
+        if (!monUid || !utilisateurCourant) return [];
+        const demandesArray = getDemandesTableau();
+        return demandesArray.filter(d => 
+            d.userID === monUid && 
+            (d.statut === 'en_attente' || d.statut === 'attente_adresse' || d.statut === 'adresse_recue')
+        );
+    }
+
+    function peutFaireNouvelleDemande() {
+        return getDemandesEnAttente().length < 2;
+    }
+
+    function getNombreDemandesEnAttente() {
+        return getDemandesEnAttente().length;
+    }
+
+    // MODIFICATION : Fonction de vérification pour le blocage
+    function verifierEtBloquerSiLimiteAtteinte() {
+        const nbDemandes = getNombreDemandesEnAttente();
+        if (nbDemandes >= 2) {
+            alert(`⛔ Vous avez déjà ${nbDemandes} demande(s) en attente. Veuillez attendre qu'elles soient traitées avant d'en envoyer une nouvelle.`);
+            switchPlatformSection('demandes');
+            return false;
+        }
+        return true;
     }
 
     const cacheTaux = {
@@ -3760,7 +3336,7 @@
     }
 
     // ============================================================
-    //  RL
+    //  RATE LIMITER 
     // ============================================================
     class RateLimiterAvance {
         constructor(limite = 15, fenetre = 60000) {
@@ -3826,7 +3402,7 @@
     const rateLimiterSync = new RateLimiterAvance(10, 300000);
 
     // ============================================================
-    //  FDC
+    //  FONCTIONS DE CHARGEMENT
     // ============================================================
     function chargerDonnees() {
         if(!monUid) return;
@@ -3878,14 +3454,14 @@
     }
 
     // ============================================================
-    //  F-A
+    //  FONCTIONS D'AUTHENTIFICATION
     // ============================================================
     let sessionUtilisateur = localStorage.getItem('typhSession');
     if(sessionUtilisateur){ try{ const s=JSON.parse(sessionUtilisateur); monUid = s.uid; }catch(e){} }
 
     auth.onAuthStateChanged(async(fbUser)=>{
-        // Cacher l'intro après 10s minimum (déjà géré par cacherIntroAvecDelai)
-        cacherIntroAvecDelai();
+        const loader = document.getElementById('loading-overlay');
+        if(loader) loader.classList.remove('active');
 
         if(fbUser){
             monUid = fbUser.uid;
@@ -3896,11 +3472,9 @@
             if (!emailVerifie) {
                 afficherBanniereEmailNonVerifie(fbUser.email);
                 
-                const nomAuto = fbUser.displayName || genererNomDepuisEmail(fbUser.email);
-                
                 utilisateurCourant = {
                     email: fbUser.email,
-                    nom: nomAuto,
+                    nom: fbUser.displayName || 'Utilisateur',
                     uid: monUid,
                     _solde: 0,
                     emailVerifie: false
@@ -3909,8 +3483,6 @@
                 
                 showPlatform();
                 mettreAJourAffichage();
-                
-                ouvrirPopupVerifEmail(fbUser.email);
                 return;
             }
             
@@ -3928,25 +3500,15 @@
                 utilisateurCourant.solde = utilisateurCourant._solde;
                 utilisateurCourant.emailVerifie = true;
                 
-                if (!utilisateurCourant.nom || 
-                    utilisateurCourant.nom === 'Inconnu' || 
-                    utilisateurCourant.nom === 'Non renseigné' ||
-                    utilisateurCourant.nom.trim() === '') {
-                    const nomAuto = genererNomDepuisEmail(fbUser.email);
-                    utilisateurCourant.nom = nomAuto;
-                    database.ref(`donnees/utilisateurs/${monUid}/nom`).set(nomAuto).catch(() => {});
-                }
-                
                 adressesUtilisateur = utilisateurCourant.adressesLiees || {};
                 toursGratuits = utilisateurCourant.toursGratuits || 0;
                 filleulsCount = utilisateurCourant.filleulsCount || 0;
             } else {
                 const urlParams = new URLSearchParams(window.location.search);
                 const refId = urlParams.get('ref');
-                const nomAuto = fbUser.displayName || genererNomDepuisEmail(fbUser.email);
                 const nouvelUtilisateur = {
-                    id: genererIDStable(fbUser.email, nomAuto),
-                    nom: nomAuto,
+                    id: genererIDStable(fbUser.email, fbUser.displayName || 'Utilisateur'),
+                    nom: fbUser.displayName || fbUser.email.split('@')[0],
                     email: fbUser.email,
                     dateInscription: new Date().toISOString(),
                     numeros: {},
@@ -4011,14 +3573,13 @@
             cacherBanniereEmailNonVerifie();
             cacherBanniereNumeroManquant();
             mettreAJourAffichage();
-            document.getElementById('network-header-btn').style.display = 'none';
+            document.getElementById('support-header-btn').style.display = 'none';
             arreterEcouteRetraitAdresse();
-            fermerPopupVerifEmail();
         }
     });
 
     // ============================================================
-    //  FAM
+    //  FONCTIONS D'AFFICHAGE ET DE MISE À JOUR
     // ============================================================
     function showAuthModal(){ 
         const urlParams = new URLSearchParams(window.location.search);
@@ -4067,21 +3628,28 @@
         switchPlatformSection('accueil'); 
     }
 
+    // ============================================================
+    // FONCTION PRINCIPALE switchPlatformSection AVEC FLUIDITÉ
+    // ============================================================
     function switchPlatformSection(s) { 
+        // Désactiver temporairement les clics pour éviter les spams
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
             item.style.pointerEvents = 'none';
             item.style.opacity = '0.6';
         });
         
+        // Masquer toutes les sections
         document.querySelectorAll('.platform-section').forEach(sec => {
             sec.classList.remove('active');
             sec.style.opacity = '0';
             sec.style.transform = 'translateY(10px)';
         });
         
+        // Désactiver tous les nav items
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         
+        // Afficher la section cible avec animation
         const targetSection = document.getElementById(`${s}-section`);
         if (targetSection) {
             targetSection.style.opacity = '0';
@@ -4095,6 +3663,7 @@
             });
         }
         
+        // Activer l'élément de navigation correspondant
         const navItem = document.getElementById(`nav-${s}`);
         if (navItem) {
             setTimeout(() => {
@@ -4102,6 +3671,7 @@
             }, 50);
         }
         
+        // Réactiver les clics après un délai
         setTimeout(() => {
             navItems.forEach(item => {
                 item.style.pointerEvents = 'auto';
@@ -4109,7 +3679,12 @@
             });
         }, 300);
         
+        // ============================================================
+        // LOGIQUE MÉTIER
+        // ============================================================
+        
         if (s === 'vente') { 
+            // Force la mise à jour du réseau au chargement de la page Vente
             mettreAJourReseaux('vente');
             afficherFraisReseauVente();
             estimerVente();
@@ -4169,7 +3744,11 @@
         }
     }
 
+    // ============================================================
+    // FONCTION verifierAvantAcces AVEC GESTION DE L'ÉVÉNEMENT
+    // ============================================================
     function verifierAvantAcces(s, event) { 
+        // Si un événement est passé, prévenir le comportement par défaut
         if (event) {
             event.preventDefault();
             event.stopPropagation();
@@ -4182,7 +3761,6 @@
         
         if (!emailVerifie) {
             alert('⚠️ Veuillez vérifier votre email avant d\'accéder à cette fonctionnalité.');
-            ouvrirPopupVerifEmail(utilisateurCourant.email);
             return;
         }
         
@@ -4202,6 +3780,7 @@
             return; 
         } 
         
+        // MODIFICATION : Vérifier la limite de 2 demandes en attente
         if (s === 'achat' || s === 'vente' || s === 'demandes') {
             const demandesEnAttente = getDemandesEnAttente();
             if (demandesEnAttente.length >= 2 && (s === 'achat' || s === 'vente')) {
@@ -4215,6 +3794,7 @@
         switchPlatformSection(s); 
         
         if (s === 'vente') { 
+            // Force la mise à jour du réseau également ici
             mettreAJourReseaux('vente');
             afficherFraisReseauVente();
             estimerVente();
@@ -4234,6 +3814,9 @@
         if (s === 'demandes') mettreAJourMesDemandes(); 
     }
 
+    // ============================================================
+    // FONCTION mettreAJourReseaux AMÉLIORÉE
+    // ============================================================
     function mettreAJourReseaux(t) { 
         const c = document.getElementById(`crypto-${t}`)?.value; 
         const s = document.getElementById(`reseau-${t}`); 
@@ -4243,6 +3826,7 @@
         const rf = donnees.reseaux.filter(r => r.crypto === c); 
         
         if (rf.length === 0) {
+            // Si aucun réseau n'est trouvé, on affiche un message
             s.innerHTML = `<option value="">Aucun réseau disponible pour ${c}</option>`;
         } else {
             s.innerHTML = rf.map(r => `<option value="${echapperHTML(r.nom)}" data-frais="${r.fraisReseau || 0}">${echapperHTML(r.nom)}</option>`).join(''); 
@@ -4261,6 +3845,9 @@
         } 
     }
 
+    // ============================================================
+    // FONCTIONS RESTANTES 
+    // ============================================================
     function deconnexion(){
         if(confirm('Êtes-vous sûr de vouloir vous déconnecter ?')){
             auth.signOut().then(()=>{
@@ -4276,9 +3863,8 @@
                 cacherBanniereNumeroManquant();
                 showLandingPage();
                 mettreAJourAffichage();
-                document.getElementById('network-header-btn').style.display = 'none';
+                document.getElementById('support-header-btn').style.display = 'none';
                 arreterEcouteRetraitAdresse();
-                fermerPopupVerifEmail();
             });
         }
     }
@@ -4320,7 +3906,7 @@
                 userBadgeContainer.innerHTML = `<div class="user-badge-bottom" onclick="showAuthModal()"><i class="fas fa-user-check"></i> ${echapperHTML(nomTronque)}</div>`;
             }
             document.getElementById('carte-deconnexion').style.display='block';
-            document.getElementById('network-header-btn').style.display = 'flex';
+            document.getElementById('support-header-btn').style.display = 'flex';
             initialiserSupport();
         }else{
             const userBadgeContainer = document.getElementById('user-badge-bottom-container');
@@ -4328,7 +3914,7 @@
                 userBadgeContainer.innerHTML = `<div class="user-badge-bottom" onclick="showAuthModal()"><i class="fas fa-user-circle"></i> Connexion</div>`;
             }
             document.getElementById('carte-deconnexion').style.display='none';
-            document.getElementById('network-header-btn').style.display = 'none';
+            document.getElementById('support-header-btn').style.display = 'none';
             cacherBanniereEmailNonVerifie();
             cacherBanniereNumeroManquant();
         }
@@ -4342,6 +3928,10 @@
         return mots.slice(0, 4).join(' ');
     }
 
+    // ============================================================
+    //  GESTION DU NOM D'UTILISATEUR
+    // ============================================================
+
     function ouvrirModalModifierNom() {
         if (!utilisateurCourant || !monUid) {
             alert('Veuillez vous connecter d\'abord.');
@@ -4351,7 +3941,7 @@
         const nomActuel = utilisateurCourant.nom || '';
         const nouveauNom = prompt('Entrez votre nouveau nom complet :', nomActuel);
         
-        if (nouveauNom === null) return;
+        if (nouveauNom === null) return; // Annulé
         
         const nomTrim = nouveauNom.trim();
         if (!nomTrim) {
@@ -4386,12 +3976,17 @@
         }
     }
 
+    // ============================================================
+    //  GESTION DE LA DATE D'INSCRIPTION
+    // ============================================================
+
     async function genererDateInscription() {
         if (!utilisateurCourant || !monUid) {
             alert('Veuillez vous connecter d\'abord.');
             return;
         }
         
+        // Vérifier si une date existe déjà
         if (utilisateurCourant.dateInscription && utilisateurCourant.dateInscription !== 'Non définie') {
             if (!confirm('⚠️ Une date d\'inscription existe déjà (le ' + new Date(utilisateurCourant.dateInscription).toLocaleDateString('fr-FR') + ').\nVoulez-vous vraiment la remplacer par la date d\'aujourd\'hui ?')) {
                 return;
@@ -4421,11 +4016,7 @@
         if(utilisateurCourant) {
             const id = utilisateurCourant.id || 'Non attribué';
             const idEscape = echapperHTML(id);
-            let nomAffiche = utilisateurCourant.nom;
-            if (!nomAffiche || nomAffiche === 'Inconnu' || nomAffiche === 'Non renseigné' || nomAffiche.trim() === '') {
-                nomAffiche = genererNomDepuisEmail(utilisateurCourant.email);
-            }
-            const nom = echapperHTML(nomAffiche);
+            const nom = echapperHTML(utilisateurCourant.nom);
             const email = echapperHTML(utilisateurCourant.email||'Non renseigné');
             
             let dateInscription = utilisateurCourant.dateInscription;
@@ -4628,6 +4219,9 @@
         }
     }
 
+    // ============================================================
+    //  FONCTIONS DE TAUX ET SYNCHRONISATION
+    // ============================================================
     function demarrerSyncBinance() {
         if(binanceInterval) clearInterval(binanceInterval);
         if(cacheTaux.chargerLocal() && cacheTaux.donnees) {
@@ -4758,6 +4352,9 @@
         afficherTauxSimplifies();
     }
 
+    // ============================================================
+    //  FONCTIONS NEWS
+    // ============================================================
     function afficherNews(){ 
         const c=document.getElementById('news-container'); 
         if(!c) return; 
@@ -4788,6 +4385,9 @@
     
     function fermerModalNews(){ document.getElementById('modal-news-detail').classList.remove('active'); }
 
+    // ============================================================
+    //  FONCTIONS DE NUMÉROS ET ADRESSES
+    // ============================================================
     let ecouteNumerosActive = false;
     let ecouteAdressesActive = false;
     
@@ -4818,38 +4418,37 @@
         });
     }
 
+    // MODIFICATION : Ajout d'un numéro avec vérification email
     async function ajouterNumero() {
-        return avecProtection(event?.currentTarget || document.getElementById('btn-ajouter-numero'), async () => {
-            if(!utilisateurCourant || !monUid){ showAuthModal(); return; }
-            
-            if (!emailVerifie) {
-                alert('⚠️ Vous devez vérifier votre email avant d\'ajouter un numéro. Veuillez vérifier votre boîte mail ou renvoyer le lien de vérification.');
-                ouvrirPopupVerifEmail(utilisateurCourant.email);
-                return;
-            }
-            
-            const nom = document.getElementById('nouveau-nom').value.trim();
-            const numero = document.getElementById('nouveau-numero').value.trim();
-            
-            if(!nom || !numero){ alert('Veuillez remplir tous les champs'); return; }
-            
-            if (!rateLimiters.default.peutExecuter('ajout_numero')) {
-                alert('⏳ Trop de tentatives d\'ajout de numéro. Veuillez patienter.');
-                return;
-            }
-            
-            const numerosActuels = utilisateurCourant.numeros || {};
-            if(Object.keys(numerosActuels).length >= 3){ alert('Limite de 3 numéros atteinte'); return; }
-            const idNumero = Date.now().toString();
-            const nouveauNumero = { nom: nom, numero: numero, statut: 'en_attente', dateAjout: new Date().toISOString() };
-            const chemin = `donnees/utilisateurs/${monUid}/numeros/${idNumero}`;
-            try {
-                await database.ref(chemin).set(nouveauNumero);
-                document.getElementById('nouveau-nom').value = '';
-                document.getElementById('nouveau-numero').value = '';
-                alert('Numéro ajouté ! En attente d\'approbation par l\'administrateur.');
-            } catch(error) { console.error(error); alert('Erreur lors de l\'ajout du numéro'); }
-        });
+        if(!utilisateurCourant || !monUid){ showAuthModal(); return; }
+        
+        // MODIFICATION : Vérification de l'email obligatoire
+        if (!emailVerifie) {
+            alert('⚠️ Vous devez vérifier votre email avant d\'ajouter un numéro. Veuillez vérifier votre boîte mail ou renvoyer le lien de vérification.');
+            return;
+        }
+        
+        const nom = document.getElementById('nouveau-nom').value.trim();
+        const numero = document.getElementById('nouveau-numero').value.trim();
+        
+        if(!nom || !numero){ alert('Veuillez remplir tous les champs'); return; }
+        
+        if (!rateLimiters.default.peutExecuter('ajout_numero')) {
+            alert('⏳ Trop de tentatives d\'ajout de numéro. Veuillez patienter.');
+            return;
+        }
+        
+        const numerosActuels = utilisateurCourant.numeros || {};
+        if(Object.keys(numerosActuels).length >= 3){ alert('Limite de 3 numéros atteinte'); return; }
+        const idNumero = Date.now().toString();
+        const nouveauNumero = { nom: nom, numero: numero, statut: 'en_attente', dateAjout: new Date().toISOString() };
+        const chemin = `donnees/utilisateurs/${monUid}/numeros/${idNumero}`;
+        try {
+            await database.ref(chemin).set(nouveauNumero);
+            document.getElementById('nouveau-nom').value = '';
+            document.getElementById('nouveau-numero').value = '';
+            alert('Numéro ajouté ! En attente d\'approbation par l\'administrateur.');
+        } catch(error) { console.error(error); alert('Erreur lors de l\'ajout du numéro'); }
     }
 
     function mettreAJourNumerosUtilisateur() {
@@ -4914,12 +4513,14 @@
         else if(infoDiv){ infoDiv.innerHTML = ''; }
     }
 
+    // ============================================================
+    //  FONCTIONS ADRESSES 
+    // ============================================================
     function ouvrirModalAjoutAdresse() {
         if(!utilisateurCourant || !monUid){ showAuthModal(); return; }
         
         if (!emailVerifie) {
             alert('⚠️ Veuillez vérifier votre email avant d\'ajouter une adresse.');
-            ouvrirPopupVerifEmail(utilisateurCourant.email);
             return;
         }
         
@@ -4947,48 +4548,46 @@
     }
     
     async function enregistrerAdresse() {
-        return avecProtection(event?.currentTarget || null, async () => {
-            if (!rateLimiters.default.peutExecuter('enregistrer_adresse')) {
-                alert('⏳ Trop de tentatives d\'enregistrement. Veuillez patienter.');
-                return;
-            }
-            
-            const label = document.getElementById('nouvelle-adresse-label').value.trim();
-            const adresse = document.getElementById('nouvelle-adresse-valeur').value.trim();
-            const crypto = document.getElementById('nouvelle-adresse-crypto')?.value;
-            const reseau = document.getElementById('nouvelle-adresse-reseau')?.value;
-            
-            if(!label || !adresse || !crypto || !reseau) {
-                document.getElementById('erreur-adresse').textContent = 'Tous les champs sont requis';
-                document.getElementById('erreur-adresse').classList.add('show');
-                return;
-            }
-            
-            if(adressesUtilisateur) {
-                for(const [id, addr] of Object.entries(adressesUtilisateur)) {
-                    if(addr.adresse === adresse && addr.crypto === crypto && addr.reseau === reseau) {
-                        document.getElementById('erreur-adresse').textContent = 'Vous avez déjà enregistré cette adresse pour ce couple crypto/réseau';
-                        document.getElementById('erreur-adresse').classList.add('show');
-                        return;
-                    }
+        if (!rateLimiters.default.peutExecuter('enregistrer_adresse')) {
+            alert('⏳ Trop de tentatives d\'enregistrement. Veuillez patienter.');
+            return;
+        }
+        
+        const label = document.getElementById('nouvelle-adresse-label').value.trim();
+        const adresse = document.getElementById('nouvelle-adresse-valeur').value.trim();
+        const crypto = document.getElementById('nouvelle-adresse-crypto')?.value;
+        const reseau = document.getElementById('nouvelle-adresse-reseau')?.value;
+        
+        if(!label || !adresse || !crypto || !reseau) {
+            document.getElementById('erreur-adresse').textContent = 'Tous les champs sont requis';
+            document.getElementById('erreur-adresse').classList.add('show');
+            return;
+        }
+        
+        if(adressesUtilisateur) {
+            for(const [id, addr] of Object.entries(adressesUtilisateur)) {
+                if(addr.adresse === adresse && addr.crypto === crypto && addr.reseau === reseau) {
+                    document.getElementById('erreur-adresse').textContent = 'Vous avez déjà enregistré cette adresse pour ce couple crypto/réseau';
+                    document.getElementById('erreur-adresse').classList.add('show');
+                    return;
                 }
             }
-            
-            const nouvelleAdresse = { 
-                label: label, 
-                adresse: adresse, 
-                crypto: crypto, 
-                reseau: reseau, 
-                statut: 'en_attente',
-                dateAjout: new Date().toISOString() 
-            };
-            const idAdresse = Date.now().toString();
-            try {
-                await database.ref(`donnees/utilisateurs/${monUid}/adressesLiees/${idAdresse}`).set(nouvelleAdresse);
-                fermerModalAjoutAdresse();
-                alert('✅ Adresse envoyée pour approbation ! L\'administrateur va la vérifier.');
-            } catch(error) { console.error(error); alert('Erreur lors de l\'enregistrement'); }
-        });
+        }
+        
+        const nouvelleAdresse = { 
+            label: label, 
+            adresse: adresse, 
+            crypto: crypto, 
+            reseau: reseau, 
+            statut: 'en_attente',
+            dateAjout: new Date().toISOString() 
+        };
+        const idAdresse = Date.now().toString();
+        try {
+            await database.ref(`donnees/utilisateurs/${monUid}/adressesLiees/${idAdresse}`).set(nouvelleAdresse);
+            fermerModalAjoutAdresse();
+            alert('✅ Adresse envoyée pour approbation ! L\'administrateur va la vérifier.');
+        } catch(error) { console.error(error); alert('Erreur lors de l\'enregistrement'); }
     }
     
     async function supprimerAdresse(id) {
@@ -5089,6 +4688,9 @@
         }
     }
 
+    // ============================================================
+    //  FONCTIONS TRANSACTIONS
+    // ============================================================
     function getDemandeEnAttente() {
         if(!monUid || !utilisateurCourant) return null;
         const demandesArray = getDemandesTableau();
@@ -5100,6 +4702,7 @@
         return getDemandeEnAttente() !== null;
     }
 
+    // MODIFICATION : afficherBlocageDemande avec la nouvelle limite de 2
     function afficherBlocageDemande(section) {
         const blocageDiv = document.getElementById(`blocage-${section}`);
         if(!blocageDiv) return;
@@ -5132,6 +4735,9 @@
         return Object.values(numeros).some(num => num.statut === 'approuve');
     }
 
+    // ============================================================
+    //  FONCTIONS DEMANDES
+    // ============================================================
     function mettreAJourMesDemandes(){ 
         const l=document.getElementById('mes-demandes-liste'); 
         if(!l) return; 
@@ -5172,32 +4778,29 @@
     }
     
     function rafraichirMesDemandes() {
-        return avecProtection(event?.currentTarget || null, async () => {
-            if (!rateLimiters.refresh.peutExecuter('rafraichir_mes_demandes')) {
-                alert('⏳ Trop de rafraîchissements. Veuillez patienter.');
-                return;
-            }
-            
-            console.log('🔄 Rafraîchissement des demandes...');
-            if(monUid) {
-                try {
-                    const snapshot = await database.ref('donnees/demandes').orderByChild('userID').equalTo(monUid).once('value');
-                    const demandes = snapshot.val();
-                    if(demandes) { 
-                        donnees.demandes = demandes; 
-                        mettreAJourMesDemandes(); 
-                        verifierAccesBonus(); 
-                        alert('✅ Demandes actualisées');
-                    }
-                    else { donnees.demandes = {}; mettreAJourMesDemandes(); alert('Aucune demande trouvée'); }
-                } catch(err) {
-                    console.error(err); 
-                    alert('Erreur lors du rafraîchissement. Vérifiez votre connexion.');
+        if (!rateLimiters.refresh.peutExecuter('rafraichir_mes_demandes')) {
+            alert('⏳ Trop de rafraîchissements. Veuillez patienter.');
+            return;
+        }
+        
+        console.log('🔄 Rafraîchissement des demandes...');
+        if(monUid) {
+            database.ref('donnees/demandes').orderByChild('userID').equalTo(monUid).once('value').then((snapshot) => {
+                const demandes = snapshot.val();
+                if(demandes) { 
+                    donnees.demandes = demandes; 
+                    mettreAJourMesDemandes(); 
+                    verifierAccesBonus(); 
+                    alert('✅ Demandes actualisées');
                 }
-            } else { alert('Veuillez vous connecter'); }
-        });
+                else { donnees.demandes = {}; mettreAJourMesDemandes(); alert('Aucune demande trouvée'); }
+            }).catch(err => { console.error(err); alert('Erreur lors du rafraîchissement. Vérifiez votre connexion.'); });
+        } else { alert('Veuillez vous connecter'); }
     }
 
+    // ============================================================
+    //  FONCTIONS ACHAT / VENTE
+    // ============================================================
     function mettreAJourSelecteurs(){ 
         const oa=document.getElementById('operateur-achat')?.value,ca=document.getElementById('crypto-achat')?.value,pa=document.getElementById('portefeuille-achat')?.value,ra=document.getElementById('reseau-achat')?.value; 
         const cv=document.getElementById('crypto-vente')?.value,rv=document.getElementById('reseau-vente')?.value,ov=document.getElementById('operateur-vente')?.value,pv=document.getElementById('portefeuille-vente')?.value; 
@@ -5331,87 +4934,89 @@
         if(vc&&pmv){ vc.style.display=pv?'none':'block'; pmv.style.display=pv?'flex':'none'; } 
     }
 
+    // ============================================================
+    //  FONCTIONS DE CONFIRMATION
+    // ============================================================
     function preparerConfirmation(type) {
-        return avecProtection(event?.currentTarget || (type === 'ACHAT' ? document.getElementById('btn-confirmer-achat') : document.getElementById('btn-confirmer-vente')), async () => {
-            if(!sessionValide || !utilisateurCourant){ alert('Veuillez vous connecter'); showAuthModal(); return; }
+        if(!sessionValide || !utilisateurCourant){ alert('Veuillez vous connecter'); showAuthModal(); return; }
+        
+        if (!emailVerifie) {
+            alert('⚠️ Veuillez vérifier votre email avant d\'effectuer une transaction.');
+            return;
+        }
+        
+        // MODIFICATION : Vérifier la limite de 2 demandes en attente
+        if (!peutFaireNouvelleDemande()) {
+            alert(`⛔ Vous avez déjà ${getNombreDemandesEnAttente()} demande(s) en attente. Veuillez attendre qu'elles soient traitées.`);
+            switchPlatformSection('demandes');
+            return;
+        }
+        
+        // Vérifier si c'est un portefeuille avec demande d'adresse
+        const portefeuilleNom = document.getElementById('portefeuille-vente')?.value;
+        if (type === 'VENTE' && estPortefeuilleAvecDemandeAdresse(portefeuilleNom)) {
+            initierRetraitAvecDemande();
+            return;
+        }
+        
+        if (!rateLimiters.demande.peutExecuter('preparer_' + type)) {
+            alert('⏳ Trop de préparations de demande. Veuillez patienter.');
+            return;
+        }
+        
+        if(type === 'ACHAT'){
+            const selectNumero = document.getElementById('numero-achat-select');
+            if(!selectNumero || !selectNumero.value){ alert('Veuillez sélectionner un numéro à débiter'); return; }
+            if(!verifierLimitesAchat()){ alert('Montant hors limites'); return; }
+            const montant = parseFloat(document.getElementById('montant-achat').value);
+            if(isNaN(montant) || montant <= 0){ alert('Montant invalide'); return; }
+        } else if(type === 'VENTE'){
+            const selectNumero = document.getElementById('numero-vente-select');
+            if(!selectNumero || !selectNumero.value){ alert('Veuillez sélectionner un numéro à créditer'); return; }
+            if(!verifierLimitesVente()){ alert('Montant hors limites'); return; }
+            const montant = parseFloat(document.getElementById('montant-vente').value);
+            if(isNaN(montant) || montant <= 0){ alert('Montant invalide'); return; }
             
-            if (!emailVerifie) {
-                alert('⚠️ Veuillez vérifier votre email avant d\'effectuer une transaction.');
-                ouvrirPopupVerifEmail(utilisateurCourant.email);
-                return;
+            const portefeuilleNomLocal = document.getElementById('portefeuille-vente')?.value;
+            const portefeuille = donnees.portefeuilles?.find(p => p.nom === portefeuilleNomLocal);
+            if(portefeuille?.liaisonRequise) {
+                if(!adresseLieeSelectionnee) { alert('Veuillez sélectionner votre adresse de réception'); return; }
             }
+        }
+        
+        if(type === 'ACHAT'){
+            transactionEnAttente = {
+                type: 'ACHAT',
+                montant: parseFloat(document.getElementById('montant-achat').value),
+                operateur: document.getElementById('operateur-achat').value,
+                crypto: document.getElementById('crypto-achat').value,
+                reseau: document.getElementById('reseau-achat').value,
+                portefeuille: document.getElementById('portefeuille-achat').value,
+                adresse: document.getElementById('adresse-achat').value,
+                numero: document.getElementById('numero-achat-select').value,
+                nomNumero: document.getElementById('numero-achat-select').selectedOptions[0]?.dataset?.nom || '',
+                montantRecu: montantRecuAchat
+            };
+        } else {
+            const portefeuilleNomLocal = document.getElementById('portefeuille-vente')?.value;
+            const portefeuille = donnees.portefeuilles?.find(p => p.nom === portefeuilleNomLocal);
+            const adresseUtilisee = (portefeuille?.liaisonRequise && adresseLieeSelectionnee) ? adresseLieeSelectionnee : null;
             
-            if (!peutFaireNouvelleDemande()) {
-                alert(`⛔ Vous avez déjà ${getNombreDemandesEnAttente()} demande(s) en attente. Veuillez attendre qu'elles soient traitées.`);
-                switchPlatformSection('demandes');
-                return;
-            }
-            
-            const portefeuilleNom = document.getElementById('portefeuille-vente')?.value;
-            if (type === 'VENTE' && estPortefeuilleAvecDemandeAdresse(portefeuilleNom)) {
-                initierRetraitAvecDemande();
-                return;
-            }
-            
-            if (!rateLimiters.demande.peutExecuter('preparer_' + type)) {
-                alert('⏳ Trop de préparations de demande. Veuillez patienter.');
-                return;
-            }
-            
-            if(type === 'ACHAT'){
-                const selectNumero = document.getElementById('numero-achat-select');
-                if(!selectNumero || !selectNumero.value){ alert('Veuillez sélectionner un numéro à débiter'); return; }
-                if(!verifierLimitesAchat()){ alert('Montant hors limites'); return; }
-                const montant = parseFloat(document.getElementById('montant-achat').value);
-                if(isNaN(montant) || montant <= 0){ alert('Montant invalide'); return; }
-            } else if(type === 'VENTE'){
-                const selectNumero = document.getElementById('numero-vente-select');
-                if(!selectNumero || !selectNumero.value){ alert('Veuillez sélectionner un numéro à créditer'); return; }
-                if(!verifierLimitesVente()){ alert('Montant hors limites'); return; }
-                const montant = parseFloat(document.getElementById('montant-vente').value);
-                if(isNaN(montant) || montant <= 0){ alert('Montant invalide'); return; }
-                
-                const portefeuilleNomLocal = document.getElementById('portefeuille-vente')?.value;
-                const portefeuille = donnees.portefeuilles?.find(p => p.nom === portefeuilleNomLocal);
-                if(portefeuille?.liaisonRequise) {
-                    if(!adresseLieeSelectionnee) { alert('Veuillez sélectionner votre adresse de réception'); return; }
-                }
-            }
-            
-            if(type === 'ACHAT'){
-                transactionEnAttente = {
-                    type: 'ACHAT',
-                    montant: parseFloat(document.getElementById('montant-achat').value),
-                    operateur: document.getElementById('operateur-achat').value,
-                    crypto: document.getElementById('crypto-achat').value,
-                    reseau: document.getElementById('reseau-achat').value,
-                    portefeuille: document.getElementById('portefeuille-achat').value,
-                    adresse: document.getElementById('adresse-achat').value,
-                    numero: document.getElementById('numero-achat-select').value,
-                    nomNumero: document.getElementById('numero-achat-select').selectedOptions[0]?.dataset?.nom || '',
-                    montantRecu: montantRecuAchat
-                };
-            } else {
-                const portefeuilleNomLocal = document.getElementById('portefeuille-vente')?.value;
-                const portefeuille = donnees.portefeuilles?.find(p => p.nom === portefeuilleNomLocal);
-                const adresseUtilisee = (portefeuille?.liaisonRequise && adresseLieeSelectionnee) ? adresseLieeSelectionnee : null;
-                
-                transactionEnAttente = {
-                    type: 'VENTE',
-                    montant: parseFloat(document.getElementById('montant-vente').value),
-                    crypto: document.getElementById('crypto-vente').value,
-                    reseau: document.getElementById('reseau-vente').value,
-                    operateur: document.getElementById('operateur-vente').value,
-                    portefeuille: portefeuilleNomLocal,
-                    numero: document.getElementById('numero-vente-select').value,
-                    nomNumero: document.getElementById('numero-vente-select').selectedOptions[0]?.dataset?.nom || '',
-                    montantRecu: montantRecuVente,
-                    adresseLiee: adresseUtilisee 
-                };
-            }
-            
-            ouvrirModalConfirmation();
-        });
+            transactionEnAttente = {
+                type: 'VENTE',
+                montant: parseFloat(document.getElementById('montant-vente').value),
+                crypto: document.getElementById('crypto-vente').value,
+                reseau: document.getElementById('reseau-vente').value,
+                operateur: document.getElementById('operateur-vente').value,
+                portefeuille: portefeuilleNomLocal,
+                numero: document.getElementById('numero-vente-select').value,
+                nomNumero: document.getElementById('numero-vente-select').selectedOptions[0]?.dataset?.nom || '',
+                montantRecu: montantRecuVente,
+                adresseLiee: adresseUtilisee 
+            };
+        }
+        
+        ouvrirModalConfirmation();
     }
     
     function ouvrirModalConfirmation(){
@@ -5462,22 +5067,23 @@
     function copierMessagePaiement(){ const message = document.getElementById('message-paiement-texte').textContent; navigator.clipboard.writeText(message).then(() => { alert('Message copié !'); }); }
     
     function validerConfirmation(){
-        return avecProtection(event?.currentTarget || document.getElementById('btn-confirmer-avec-txid'), async () => {
-            if (!rateLimiters.demande.peutExecuter('valider_confirmation')) {
-                alert('⏳ Trop de tentatives de validation. Veuillez patienter.');
-                return;
-            }
-            
-            const txid = document.getElementById('txid-input').value.trim();
-            if(!txid){ alert('Veuillez fournir le TXID ou la preuve d\'envoi'); return; }
-            if(!utilisateurCourant.codePIN || !utilisateurCourant.codePIN.actif){ alert('Veuillez d\'abord configurer votre code PIN dans le profil'); fermerModalConfirmation(); switchPlatformSection('profil'); return; }
-            if(utilisateurCourant.codePIN.bloque){ alert('Code PIN bloqué après trop de tentatives. Contactez l\'administrateur pour le débloquer.'); fermerModalConfirmation(); return; }
-            transactionEnAttente.txid = txid;
-            fermerModalConfirmation();
-            ouvrirModalPIN();
-        });
+        if (!rateLimiters.demande.peutExecuter('valider_confirmation')) {
+            alert('⏳ Trop de tentatives de validation. Veuillez patienter.');
+            return;
+        }
+        
+        const txid = document.getElementById('txid-input').value.trim();
+        if(!txid){ alert('Veuillez fournir le TXID ou la preuve d\'envoi'); return; }
+        if(!utilisateurCourant.codePIN || !utilisateurCourant.codePIN.actif){ alert('Veuillez d\'abord configurer votre code PIN dans le profil'); fermerModalConfirmation(); switchPlatformSection('profil'); return; }
+        if(utilisateurCourant.codePIN.bloque){ alert('Code PIN bloqué après trop de tentatives. Contactez l\'administrateur pour le débloquer.'); fermerModalConfirmation(); return; }
+        transactionEnAttente.txid = txid;
+        fermerModalConfirmation();
+        ouvrirModalPIN();
     }
 
+    // ============================================================
+    //  FONCTIONS PIN
+    // ============================================================
     function ouvrirModalPIN(){
         const modal = document.getElementById('modal-pin');
         const setupDiv = document.getElementById('pin-setup');
@@ -5618,6 +5224,9 @@
         }
     }
 
+    // ============================================================
+    //  CREATION DEMANDE
+    // ============================================================
     async function creerDemande(){
         if (!rateLimiters.demande.peutExecuter('creer_demande')) {
             alert('⏳ Trop de demandes. Veuillez patienter.');
@@ -5626,6 +5235,7 @@
         
         if(!transactionEnAttente || !utilisateurCourant) return;
         
+        // MODIFICATION : Vérifier la limite de 2 demandes en attente
         if (!peutFaireNouvelleDemande()) {
             alert('⛔ Vous avez déjà 2 demandes en attente. Veuillez attendre qu\'elles soient traitées.');
             return;
@@ -5709,12 +5319,18 @@
         else if(d.type==='VENTE'){ mp=Math.round(d.montantRecu||0).toLocaleString()+' Ar'; desc=`Vente ${st} de ${d.montant} ${d.crypto}`; } 
         else if(d.type==='RETRAIT'){ mp='$'+d.montant.toFixed(2); desc=`Retrait ${st} de $${d.montant.toFixed(2)}`; }
         else if(d.type==='RETRAIT_AVEC_DEMANDE'){ 
+            // Récupérer le montant en Ar APRÈS déduction des frais
             let montantAr = 'N/A';
+            
             if (d.montantRecu) {
+                // Si montantRecu existe déjà (déjà calculé)
                 montantAr = Math.round(d.montantRecu).toLocaleString() + ' Ar';
             } else if (d.montant && d.crypto) {
+                // Calculer le montant après déduction des frais
                 const taux = donnees.taux?.[d.crypto]?.prixMGA || 4700;
                 const montantBrutAr = d.montant * taux;
+                
+                // Déduire les frais (frais de vente + frais réseau)
                 const fraisVente = donnees.frais?.vente || 2.0;
                 const reseauSelect = document.getElementById('reseau-vente');
                 let fraisReseau = 0;
@@ -5722,11 +5338,15 @@
                     const option = reseauSelect.options[reseauSelect.selectedIndex];
                     fraisReseau = option ? parseFloat(option.dataset.frais) || 0 : 0;
                 }
+                
+                // Calculer les frais en Ar
                 const fraisTotalPourcent = fraisVente + fraisReseau;
                 const fraisAr = montantBrutAr * (fraisTotalPourcent / 100);
                 const montantNetAr = montantBrutAr - fraisAr;
+                
                 montantAr = Math.round(montantNetAr).toLocaleString() + ' Ar';
             }
+            
             if(d.statut==='attente_adresse'){ mp=montantAr; desc='Demande d\'adresse de retrait en cours'; }
             else if(d.statut==='adresse_recue'){ mp=montantAr; desc='Adresse de retrait reçue, en attente de confirmation'; }
             else if(d.statut==='en_attente'){ mp=montantAr; desc='Retrait en attente de validation'; }
@@ -5841,6 +5461,9 @@
     function scrollToTestimonials(){ document.getElementById('testimonials').scrollIntoView({behavior:'smooth'}); }
     function fermerDetailsDemande(){ document.getElementById('modal-details-demande').classList.remove('active'); }
 
+    // ============================================================
+    //  FONCTIONS BONUS - ROUE
+    // ============================================================
     function verifierAccesBonus() {
         const btnRoue = document.getElementById('btn-roue-action');
         const msgRestriction = document.getElementById('bonus-restriction');
@@ -6003,10 +5626,10 @@
         
         if (!emailVerifie) {
             alert('⚠️ Veuillez vérifier votre email avant de jouer à la roue.');
-            ouvrirPopupVerifEmail(utilisateurCourant.email);
             return;
         }
         
+        // MODIFICATION : Vérifier la limite de 2 demandes en attente
         if (!peutFaireNouvelleDemande()) {
             alert(`⛔ Vous avez déjà ${getNombreDemandesEnAttente()} demande(s) en attente. Veuillez attendre qu'elles soient traitées.`);
             switchPlatformSection('demandes');
@@ -6202,6 +5825,9 @@
         }
     }
 
+    // ============================================================
+    //  FONCTIONS MOT DE PASSE OUBLIÉ
+    // ============================================================
     async function verifierEmailEtNumero() {
         const email = document.getElementById('email-recuperation').value.trim();
         const numero = document.getElementById('numero-recuperation').value.trim();
@@ -6244,6 +5870,9 @@
         document.getElementById('modal-motdepasse-oublie').classList.remove('active');
     }
 
+    // ============================================================
+    //  FONCTIONS DIVERSES
+    // ============================================================
     function mettreAJourBanniereEmail() {
         const banner = document.getElementById('email-verification-banner');
         if (!banner) return;
@@ -6271,6 +5900,7 @@
     function ouvrirModalRetrait() {
         if(!utilisateurCourant || !monUid) { showAuthModal(); return; }
         
+        // MODIFICATION : Vérifier la limite de 2 demandes en attente
         if (!peutFaireNouvelleDemande()) {
             alert(`⛔ Vous avez déjà ${getNombreDemandesEnAttente()} demande(s) en attente. Veuillez attendre qu'elles soient traitées.`);
             switchPlatformSection('demandes');
@@ -6324,6 +5954,10 @@
         }
     }
 
+    // ============================================================
+    //  SUPPORT
+    // ============================================================
+
     let ecouteSupportActive = false;
     let messagesSupportCharges = false;
 
@@ -6341,13 +5975,11 @@
 
     function initialiserSupport() {
         if (!peutUtiliserSupport()) {
-            const networkBtn = document.getElementById('network-header-btn');
-            if(networkBtn) networkBtn.style.display = 'none';
+            document.getElementById('support-header-btn').style.display = 'none';
             return;
         }
         
-        const networkBtn = document.getElementById('network-header-btn');
-        if(networkBtn) networkBtn.style.display = 'flex';
+        document.getElementById('support-header-btn').style.display = 'flex';
         
         if (!ecouteSupportActive) {
             ecouteSupportActive = true;
@@ -6360,55 +5992,62 @@
     }
 
     async function actualiserSupport() {
-        return avecProtection(document.getElementById('support-refresh-btn'), async () => {
-            if (!peutUtiliserSupport()) {
-                alert('Veuillez vous connecter pour utiliser le support.');
-                return;
-            }
-            
-            if (!rateLimiters.support.peutExecuter('refresh_support')) {
-                const statusSpan = document.getElementById('support-refresh-status');
-                if (statusSpan) {
-                    statusSpan.textContent = '⏳ Attendez...';
-                    statusSpan.style.color = 'var(--warning)';
-                    setTimeout(() => {
-                        statusSpan.textContent = '';
-                    }, 3000);
-                }
-                return;
-            }
-            
-            const btn = document.getElementById('support-refresh-btn');
+        if (!peutUtiliserSupport()) {
+            alert('Veuillez vous connecter pour utiliser le support.');
+            return;
+        }
+        
+        if (!rateLimiters.support.peutExecuter('refresh_support')) {
             const statusSpan = document.getElementById('support-refresh-status');
+            if (statusSpan) {
+                statusSpan.textContent = '⏳ Attendez...';
+                statusSpan.style.color = 'var(--warning)';
+                setTimeout(() => {
+                    statusSpan.textContent = '';
+                }, 3000);
+            }
+            return;
+        }
+        
+        const btn = document.getElementById('support-refresh-btn');
+        const statusSpan = document.getElementById('support-refresh-status');
+        
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Chargement...';
+        }
+        if (statusSpan) {
+            statusSpan.textContent = '🔄 Chargement...';
+            statusSpan.style.color = 'var(--neon-blue)';
+        }
+        
+        try {
+            await chargerMessagesSupport();
+            marquerMessagesCommeLus();
+            afficherMessagesSupport();
             
             if (statusSpan) {
-                statusSpan.textContent = '🔄 Chargement...';
-                statusSpan.style.color = 'var(--neon-blue)';
+                statusSpan.textContent = '✅ Mis à jour';
+                statusSpan.style.color = 'var(--success)';
+                setTimeout(() => {
+                    statusSpan.textContent = '';
+                }, 2000);
             }
-            
-            try {
-                await chargerMessagesSupport();
-                marquerMessagesCommeLus();
-                afficherMessagesSupport();
-                
-                if (statusSpan) {
-                    statusSpan.textContent = '✅ Mis à jour';
-                    statusSpan.style.color = 'var(--success)';
-                    setTimeout(() => {
-                        statusSpan.textContent = '';
-                    }, 2000);
-                }
-            } catch(e) {
-                console.error('Erreur actualisation support:', e);
-                if (statusSpan) {
-                    statusSpan.textContent = '❌ Erreur';
-                    statusSpan.style.color = 'var(--danger)';
-                    setTimeout(() => {
-                        statusSpan.textContent = '';
-                    }, 3000);
-                }
+        } catch(e) {
+            console.error('Erreur actualisation support:', e);
+            if (statusSpan) {
+                statusSpan.textContent = '❌ Erreur';
+                statusSpan.style.color = 'var(--danger)';
+                setTimeout(() => {
+                    statusSpan.textContent = '';
+                }, 3000);
             }
-        });
+        }
+        
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualiser';
+        }
     }
 
     async function chargerMessagesSupport() {
@@ -6635,65 +6274,63 @@
     }
 
     async function envoyerMessageSupport() {
-        return avecProtection(document.getElementById('support-send-btn'), async () => {
-            if (!peutUtiliserSupport()) {
-                alert('Veuillez vous connecter pour utiliser le support.');
-                return;
+        if (!peutUtiliserSupport()) {
+            alert('Veuillez vous connecter pour utiliser le support.');
+            return;
+        }
+        
+        if (!emailVerifie) {
+            alert('Veuillez vérifier votre email avant d\'utiliser le support.');
+            return;
+        }
+        
+        const input = document.getElementById('support-input');
+        const message = input.value.trim();
+        
+        if (!message) {
+            input.focus();
+            return;
+        }
+        
+        if (message.length > 2000) {
+            alert('Message trop long (2000 caractères maximum)');
+            return;
+        }
+        
+        if (!rateLimiters.default.peutExecuter('support_message')) {
+            alert('⏳ Trop de messages envoyés. Veuillez patienter.');
+            return;
+        }
+        
+        const messageData = {
+            expediteur: 'user',
+            message: message,
+            timestamp: Date.now(),
+            lu: false
+        };
+        
+        try {
+            const ref = database.ref(`donnees/support/conversations/${monUid}/messages`).push();
+            await ref.set(messageData);
+            
+            await database.ref(`donnees/support/conversations/${monUid}/derniereActivite`).set(Date.now());
+            
+            input.value = '';
+            input.focus();
+            
+            await chargerMessagesSupport();
+            afficherMessagesSupport();
+            
+            const wrapper = document.getElementById('support-messages-wrapper');
+            if (wrapper) {
+                setTimeout(() => {
+                    wrapper.scrollTop = wrapper.scrollHeight;
+                }, 100);
             }
-            
-            if (!emailVerifie) {
-                alert('Veuillez vérifier votre email avant d\'utiliser le support.');
-                return;
-            }
-            
-            const input = document.getElementById('support-input');
-            const message = input.value.trim();
-            
-            if (!message) {
-                input.focus();
-                return;
-            }
-            
-            if (message.length > 2000) {
-                alert('Message trop long (2000 caractères maximum)');
-                return;
-            }
-            
-            if (!rateLimiters.default.peutExecuter('support_message')) {
-                alert('⏳ Trop de messages envoyés. Veuillez patienter.');
-                return;
-            }
-            
-            const messageData = {
-                expediteur: 'user',
-                message: message,
-                timestamp: Date.now(),
-                lu: false
-            };
-            
-            try {
-                const ref = database.ref(`donnees/support/conversations/${monUid}/messages`).push();
-                await ref.set(messageData);
-                
-                await database.ref(`donnees/support/conversations/${monUid}/derniereActivite`).set(Date.now());
-                
-                input.value = '';
-                input.focus();
-                
-                await chargerMessagesSupport();
-                afficherMessagesSupport();
-                
-                const wrapper = document.getElementById('support-messages-wrapper');
-                if (wrapper) {
-                    setTimeout(() => {
-                        wrapper.scrollTop = wrapper.scrollHeight;
-                    }, 100);
-                }
-            } catch(error) {
-                console.error('Erreur envoi message:', error);
-                alert('Erreur lors de l\'envoi du message. Veuillez réessayer.');
-            }
-        });
+        } catch(error) {
+            console.error('Erreur envoi message:', error);
+            alert('Erreur lors de l\'envoi du message. Veuillez réessayer.');
+        }
     }
 
     function ecouterStatutAdmin() {
@@ -6723,10 +6360,15 @@
     function mettreAJourStatutAdmin(enLigne, info) {
         const dot = document.getElementById('support-status-dot');
         const text = document.getElementById('support-status-text');
+        const headerDot = document.getElementById('support-header-dot');
         
         if (enLigne) {
             dot.className = 'support-status-dot online';
             if (text) text.textContent = '🟢 En ligne';
+            
+            if (headerDot) {
+                headerDot.className = 'support-dot online';
+            }
         } else {
             dot.className = 'support-status-dot offline';
             if (text) {
@@ -6736,6 +6378,10 @@
                 } else {
                     text.textContent = '🔴 Discussion professionnelle';
                 }
+            }
+            
+            if (headerDot) {
+                headerDot.className = 'support-dot offline';
             }
         }
     }
@@ -6775,6 +6421,11 @@
         }
     });
 
+    console.log('💬 Système de support avec messages en clair et actualisation manuelle');
+
+    // ============================================================
+    //  CARROUSEL BANNIÈRE
+    // ============================================================
     (function initBannerCarousel() {
         const slides = document.querySelectorAll('#bannerSlides .carousel-banner-slide');
         if (slides.length === 0) return;
@@ -6838,17 +6489,23 @@
 
         goToSlide(0);
         startAutoplay();
+        console.log('🎠 Bannière carrousel démarrée (16:6)');
     })();
 
+    // ============================================================
+    //  SERVICE WORKER
+    // ============================================================
     (function setupServiceWorkerUpdates() {
         if (!('serviceWorker' in navigator)) {
+            console.log('❌ Service Worker non supporté');
             return;
         }
 
-        const SW_VERSION = '3.5.2';
+        const SW_VERSION = '3.4.0';
 
         const storedVersion = localStorage.getItem('sw_version');
         if (storedVersion !== SW_VERSION) {
+            console.log(`🔄 Nouvelle version SW détectée: ${SW_VERSION}`);
             localStorage.setItem('sw_version', SW_VERSION);
         }
 
@@ -6858,6 +6515,7 @@
         navigator.serviceWorker.register('/sw.js')
             .then((reg) => {
                 registration = reg;
+                console.log('✅ Service Worker enregistré');
 
                 checkForUpdate();
 
@@ -6865,9 +6523,11 @@
 
                 registration.addEventListener('updatefound', () => {
                     const newWorker = registration.installing;
+                    console.log('🔄 Nouveau SW détecté en installation...');
 
                     newWorker.addEventListener('statechange', () => {
                         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            console.log('🔄 Nouveau SW installé, mise à jour disponible');
                             pendingUpdate = true;
                             showUpdateNotification();
                         }
@@ -6875,6 +6535,7 @@
                 });
 
                 if (registration.waiting) {
+                    console.log('🔄 SW en attente détecté');
                     pendingUpdate = true;
                     showUpdateNotification();
                 }
@@ -6884,6 +6545,7 @@
             });
 
         navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log('🔄 Contrôleur SW changé');
             setTimeout(() => {
                 if (pendingUpdate) {
                     pendingUpdate = false;
@@ -6895,7 +6557,9 @@
         function checkForUpdate() {
             if (registration) {
                 registration.update()
-                    .then(() => {})
+                    .then(() => {
+                        console.log('🔍 Vérification des mises à jour effectuée');
+                    })
                     .catch((error) => {
                         console.warn('⚠️ Erreur vérification mise à jour:', error);
                     });
@@ -6975,6 +6639,8 @@
         }
 
         window.forceUpdateApp = function() {
+            console.log('🔄 Forçage de la mise à jour...');
+            
             const notif = document.getElementById('sw-update-notification');
             if (notif) notif.remove();
             
@@ -6990,16 +6656,32 @@
         window.getSWVersion = function() {
             return SW_VERSION;
         };
+
+        console.log(`📱 Version SW: ${SW_VERSION}`);
     })();
 
+    // ============================================================
+    //  INITIALISATION FINALE
+    // ============================================================
     document.querySelector('.logo').addEventListener('dblclick',()=>window.open('conditions.html','_blank'));
     
     window.addEventListener('load',function(){ 
+        console.log('🚀 Page index chargée - Version avec support manuel, adresses approuvées, countdown et retrait avec demande d\'adresse (POPUP)'); 
+        
+        const loader = document.getElementById('loading-overlay');
+        if(loader) {
+            loader.classList.add('active');
+            setTimeout(() => {
+                loader.classList.remove('active');
+            }, 3000);
+        }
+        
         if (utilisateurCourant) {
             initialiserSecuriteSolde();
             initialiserSupport();
         }
         
+        // Ajouter l'écoute sur le select portefeuille pour détecter le mode retrait avec demande
         const portefeuilleVente = document.getElementById('portefeuille-vente');
         if (portefeuilleVente) {
             portefeuilleVente.addEventListener('change', function() {
