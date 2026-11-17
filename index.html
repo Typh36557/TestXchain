@@ -1859,151 +1859,6 @@
     });
 
     // ============================================================
-    //  CSRF TOKEN PROTECTION - NOUVEAU
-    // ============================================================
-
-    const csrfTokens = {
-        tokens: {},
-        expiration: 30 * 60 * 1000, // 30 minutes
-        
-        generer(action) {
-            const token = crypto.randomUUID ? crypto.randomUUID() : 
-                'csrf_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8);
-            const expires = Date.now() + this.expiration;
-            this.tokens[token] = { action, expires, used: false };
-            this.sauvegarder();
-            return token;
-        },
-        
-        valider(token, action) {
-            const data = this.tokens[token];
-            if (!data) return false;
-            if (data.used) return false;
-            if (data.action !== action) return false;
-            if (Date.now() > data.expires) {
-                delete this.tokens[token];
-                this.sauvegarder();
-                return false;
-            }
-            data.used = true;
-            this.sauvegarder();
-            return true;
-        },
-        
-        sauvegarder() {
-            try {
-                // Chiffrer les tokens avant stockage
-                const data = JSON.stringify(this.tokens);
-                const encoded = btoa(data);
-                localStorage.setItem('csrf_tokens', encoded);
-            } catch(e) {}
-        },
-        
-        charger() {
-            try {
-                const encoded = localStorage.getItem('csrf_tokens');
-                if (encoded) {
-                    const data = atob(encoded);
-                    this.tokens = JSON.parse(data);
-                    // Nettoyer les tokens expirés
-                    const maintenant = Date.now();
-                    let nettoyage = false;
-                    for (const [token, data] of Object.entries(this.tokens)) {
-                        if (data.expires < maintenant || data.used) {
-                            delete this.tokens[token];
-                            nettoyage = true;
-                        }
-                    }
-                    if (nettoyage) this.sauvegarder();
-                }
-            } catch(e) {
-                this.tokens = {};
-            }
-        }
-    };
-
-    // Charger les tokens CSRF au démarrage
-    csrfTokens.charger();
-
-    // Fonction pour ajouter un token CSRF à une action
-    function ajouterTokenCSRF(action) {
-        const token = csrfTokens.generer(action);
-        return token;
-    }
-
-    // Fonction pour valider un token CSRF
-    function validerTokenCSRF(token, action) {
-        return csrfTokens.valider(token, action);
-    }
-
-    // ============================================================
-    //  CHIFFREMENT DES DONNÉES LOCALES - NOUVEAU
-    // ============================================================
-
-    function chiffrerDonnees(data, clef = 'typh_secret_key') {
-        try {
-            const str = JSON.stringify(data);
-            // Chiffrement simple mais efficace avec CryptoJS
-            const encrypted = CryptoJS.AES.encrypt(str, clef).toString();
-            return encrypted;
-        } catch(e) {
-            return btoa(JSON.stringify(data));
-        }
-    }
-
-    function dechiffrerDonnees(encrypted, clef = 'typh_secret_key') {
-        try {
-            const decrypted = CryptoJS.AES.decrypt(encrypted, clef).toString(CryptoJS.enc.Utf8);
-            if (decrypted) {
-                return JSON.parse(decrypted);
-            }
-            return null;
-        } catch(e) {
-            try {
-                return JSON.parse(atob(encrypted));
-            } catch(e2) {
-                return null;
-            }
-        }
-    }
-
-    // Surcharge de la sauvegarde de session avec chiffrement
-    const originalSetSession = localStorage.setItem;
-    localStorage.setItem = function(key, value) {
-        if (key === 'typhSession' || key === 'rate_limiter' || key === 'csrf_tokens') {
-            try {
-                // Ne pas chiffrer les tokens CSRF déjà chiffrés
-                if (key === 'csrf_tokens') {
-                    return originalSetSession.call(this, key, value);
-                }
-                const chiffre = chiffrerDonnees(value);
-                return originalSetSession.call(this, key + '_enc', chiffre);
-            } catch(e) {
-                return originalSetSession.call(this, key, value);
-            }
-        }
-        return originalSetSession.call(this, key, value);
-    };
-
-    // Surcharge de la récupération de session avec déchiffrement
-    const originalGetSession = localStorage.getItem;
-    localStorage.getItem = function(key) {
-        if (key === 'typhSession' || key === 'rate_limiter') {
-            try {
-                const encrypted = originalGetSession.call(this, key + '_enc');
-                if (encrypted) {
-                    const decrypted = dechiffrerDonnees(encrypted);
-                    if (decrypted) return decrypted;
-                }
-                return originalGetSession.call(this, key);
-            } catch(e) {
-                return originalGetSession.call(this, key);
-            }
-        }
-        return originalGetSession.call(this, key);
-    };
-
-    // ============================================================
     //  RETRAIT AVEC DEMANDE D'ADRESSE - NOUVELLE VERSION POPUP
     //  MODIFICATION : Réutilisation 
     // ============================================================
@@ -5319,42 +5174,42 @@
         else if(d.type==='VENTE'){ mp=Math.round(d.montantRecu||0).toLocaleString()+' Ar'; desc=`Vente ${st} de ${d.montant} ${d.crypto}`; } 
         else if(d.type==='RETRAIT'){ mp='$'+d.montant.toFixed(2); desc=`Retrait ${st} de $${d.montant.toFixed(2)}`; }
         else if(d.type==='RETRAIT_AVEC_DEMANDE'){ 
-            // Récupérer le montant en Ar APRÈS déduction des frais
-            let montantAr = 'N/A';
-            
-            if (d.montantRecu) {
-                // Si montantRecu existe déjà (déjà calculé)
-                montantAr = Math.round(d.montantRecu).toLocaleString() + ' Ar';
-            } else if (d.montant && d.crypto) {
-                // Calculer le montant après déduction des frais
-                const taux = donnees.taux?.[d.crypto]?.prixMGA || 4700;
-                const montantBrutAr = d.montant * taux;
-                
-                // Déduire les frais (frais de vente + frais réseau)
-                const fraisVente = donnees.frais?.vente || 2.0;
-                const reseauSelect = document.getElementById('reseau-vente');
-                let fraisReseau = 0;
-                if (reseauSelect) {
-                    const option = reseauSelect.options[reseauSelect.selectedIndex];
-                    fraisReseau = option ? parseFloat(option.dataset.frais) || 0 : 0;
-                }
-                
-                // Calculer les frais en Ar
-                const fraisTotalPourcent = fraisVente + fraisReseau;
-                const fraisAr = montantBrutAr * (fraisTotalPourcent / 100);
-                const montantNetAr = montantBrutAr - fraisAr;
-                
-                montantAr = Math.round(montantNetAr).toLocaleString() + ' Ar';
-            }
-            
-            if(d.statut==='attente_adresse'){ mp=montantAr; desc='Demande d\'adresse de retrait en cours'; }
-            else if(d.statut==='adresse_recue'){ mp=montantAr; desc='Adresse de retrait reçue, en attente de confirmation'; }
-            else if(d.statut==='en_attente'){ mp=montantAr; desc='Retrait en attente de validation'; }
-            else if(d.statut==='confirme'){ mp=montantAr; desc='Retrait confirmé'; }
-            else if(d.statut==='rejete'){ mp=montantAr; desc='Retrait rejeté'; }
-            else { mp=montantAr; desc='Retrait '+st; }
-            cl = d.statut;
+    // Récupérer le montant en Ar APRÈS déduction des frais
+    let montantAr = 'N/A';
+    
+    if (d.montantRecu) {
+        // Si montantRecu existe déjà (déjà calculé)
+        montantAr = Math.round(d.montantRecu).toLocaleString() + ' Ar';
+    } else if (d.montant && d.crypto) {
+        // Calculer le montant après déduction des frais
+        const taux = donnees.taux?.[d.crypto]?.prixMGA || 4700;
+        const montantBrutAr = d.montant * taux;
+        
+        // Déduire les frais (frais de vente + frais réseau)
+        const fraisVente = donnees.frais?.vente || 2.0;
+        const reseauSelect = document.getElementById('reseau-vente');
+        let fraisReseau = 0;
+        if (reseauSelect) {
+            const option = reseauSelect.options[reseauSelect.selectedIndex];
+            fraisReseau = option ? parseFloat(option.dataset.frais) || 0 : 0;
         }
+        
+        // Calculer les frais en Ar
+        const fraisTotalPourcent = fraisVente + fraisReseau;
+        const fraisAr = montantBrutAr * (fraisTotalPourcent / 100);
+        const montantNetAr = montantBrutAr - fraisAr;
+        
+        montantAr = Math.round(montantNetAr).toLocaleString() + ' Ar';
+    }
+    
+    if(d.statut==='attente_adresse'){ mp=montantAr; desc='Demande d\'adresse de retrait en cours'; }
+    else if(d.statut==='adresse_recue'){ mp=montantAr; desc='Adresse de retrait reçue, en attente de confirmation'; }
+    else if(d.statut==='en_attente'){ mp=montantAr; desc='Retrait en attente de validation'; }
+    else if(d.statut==='confirme'){ mp=montantAr; desc='Retrait confirmé'; }
+    else if(d.statut==='rejete'){ mp=montantAr; desc='Retrait rejeté'; }
+    else { mp=montantAr; desc='Retrait '+st; }
+    cl = d.statut;
+}
         else if(d.type==='BONUS'){ mp=echapperHTML(d.lotGagne || d.montant || 'N/A'); desc=`Bonus de fidélité ${st}`; }
         
         let b='';
